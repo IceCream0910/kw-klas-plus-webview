@@ -35,13 +35,13 @@ export default function Home() {
             console.log(subjList.current);
         };
 
-        Android.completePageLoad();
+        //Android.completePageLoad();
     }, [])
 
 
     const sendMessage = async (conversation) => {
         try {
-            const response = await fetch("/api/chat", {
+            const response = await fetch("https://klas-gpt-api.taein.workers.dev", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ conversation, subjList: subjList.current, token }),
