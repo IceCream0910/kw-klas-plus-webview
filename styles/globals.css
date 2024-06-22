@@ -30,13 +30,13 @@
   -webkit-user-select: none;
   -khtml-user-select: none;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
   padding: 0;
   margin: 1rem;
   color: var(--text-color);
-  background-color: #121212;
 }
 
 h1,
@@ -50,6 +50,10 @@ h6 {
 
 .tossface {
   font-family: Tossface;
+}
+
+svg {
+  position: relative !important;
 }
 
 button {
@@ -66,11 +70,8 @@ button {
   transition: all 0.3s;
 }
 
-button:hover {
-  background-color: var(--card-background);
-}
-
 button:active {
+  background-color: var(--card-background);
   transform: scale(0.98);
 }
 

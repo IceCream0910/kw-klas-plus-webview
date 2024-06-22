@@ -6,12 +6,15 @@ export default function Home() {
   const [token, setToken] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
+
   useEffect(() => {
-    const storedToken = localStorage.getItem("klas-plus-token");
-    if (storedToken) {
-      setToken(storedToken);
-    }
-  }, []);
+    window.receiveToken = function (receivedToken) {
+      if (!receivedToken) return;
+      setToken(receivedToken);
+    };
+
+    Android.completePageLoad();
+  }, [])
 
   useEffect(() => {
     if (!token) return;
@@ -173,22 +176,33 @@ export default function Home() {
     <main>
       {data && (
         <div className="profile-card">
-          <h3>{data.kname}</h3>
-          <span style={{ opacity: .8, fontSize: '14px' }}>{data.hakgwa} | {data.hakbun}</span>
-          <span style={{ opacity: .5, fontSize: '12px' }}>{data.hakjukStatu}</span>
-          <button className="icon" style={{ position: 'absolute', right: '40px' }}>
-            <IonIcon name="chevron-forward-outline" />
+          <div className="profile-card" style={{ padding: 0 }} onClick={() => Android.openPage('https://klas.kw.ac.kr/std/cps/inqire/AtnlcScreStdPage.do')}>
+            <h3>{data.kname}</h3>
+            <span style={{ opacity: .8, fontSize: '14px' }}>{data.hakgwa} | {data.hakbun}</span>
+            <span style={{ opacity: .5, fontSize: '12px' }}>{data.hakjukStatu}</span>
+            <button className="icon" style={{ position: 'absolute', right: '40px' }}>
+              <IonIcon name="chevron-forward-outline" />
+            </button>
+          </div>
+          <br />
+          <button onClick={() => Android.openLibraryQR()}
+            style={{ background: 'var(--notice-hover)', borderRadius: '10px' }}>
+            <span className="tossface">🪪</span>모바일 학생증
+            <IonIcon name="chevron-forward-outline" style={{ position: 'relative', top: '2px' }} />
           </button>
         </div>
       )}
 
-      <br /><br />
 
-      <input
-        placeholder="메뉴 검색"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
+      <div className="search-container">
+        <span className="tossface" style={{ position: 'relative', left: '10px', top: '30px' }}>🔍</span>
+        <input
+          style={{ paddingLeft: '35px' }}
+          placeholder={"메뉴 검색"}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
 
 
       {filteredMenuItems.map((category, index) => (
