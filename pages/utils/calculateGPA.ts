@@ -1,4 +1,4 @@
-export const handleCalculateGPA = (scoreData): Object => {
+export default function handleCalculateGPA(scoreData): Object {
   const semesters = [];
 
   // 평점 계산을 위한 데이터 생성
