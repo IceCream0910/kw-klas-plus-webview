@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import IonIcon from '@reacticons/ionicons';
-import { handleCalculateGPA, calculateGPA } from "./utils/calculateGPA";
+import handleCalculateGPA, { calculateGPA } from "./utils/calculateGPA";
 
 export default function Home() {
   const [data, setData] = useState(null);
@@ -225,20 +225,22 @@ export default function Home() {
             <IonIcon name="chevron-forward-outline" style={{ position: 'relative', top: '2px' }} />
           </button>
           <br />
-          <div className="profile-card grade-card" style={{ padding: 0, flexDirection: 'row', alignItems: 'space-between', width: '100%' }} onClick={() => Android.openLink('https://kw-klas-plus-webview.vercel.app/grade')}>
-            <div style={{ textAlign: 'center', width: '100%' }}>
-              <span style={{ opacity: .8, fontSize: '12px' }}>취득학점</span>
-              <h3>{totGrade.credit}</h3>
-            </div>
-            <div style={{ textAlign: 'center', width: '100%' }}>
-              <span style={{ opacity: .8, fontSize: '12px' }}>전체평점</span>
-              <h3>{totGrade.averageGPA.includeF}</h3>
-            </div>
-            <div style={{ textAlign: 'center', width: '100%' }}>
-              <span style={{ opacity: .8, fontSize: '12px' }}>전공평점</span>
-              <h3>{totGrade.majorGPA.includeF}</h3>
-            </div>
-          </div>
+          {totGrade &&
+            <div className="profile-card grade-card" style={{ padding: 0, flexDirection: 'row', alignItems: 'space-between', width: '100%' }} onClick={() => Android.openLink('https://kw-klas-plus-webview.vercel.app/grade')}>
+              <div style={{ textAlign: 'center', width: '100%' }}>
+                <span style={{ opacity: .8, fontSize: '12px' }}>취득학점</span>
+                <h3>{totGrade.credit}</h3>
+              </div>
+              <div style={{ textAlign: 'center', width: '100%' }}>
+                <span style={{ opacity: .8, fontSize: '12px' }}>전체평점</span>
+                <h3>{totGrade.averageGPA.includeF}</h3>
+              </div>
+              <div style={{ textAlign: 'center', width: '100%' }}>
+                <span style={{ opacity: .8, fontSize: '12px' }}>전공평점</span>
+                <h3>{totGrade.majorGPA.includeF}</h3>
+              </div>
+            </div>}
+
         </div>
       )}
 
