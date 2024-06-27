@@ -105,7 +105,7 @@ export default function Home() {
     <main>
       <h2 style={{ marginBottom: '20px', marginTop: '20px' }}>성적
 
-        <button onClick={() => location.href = 'https://klas.kw.ac.kr/std/cps/inqire/AtnlcScreStdPage.do'}
+        <button onClick={() => Android.openPage('https://klas.kw.ac.kr/std/cps/inqire/AtnlcScreStdPage.do')}
           style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-5px', borderRadius: '20px', padding: '10px 15px' }}>
           KLAS에서 열기
         </button>
@@ -214,12 +214,6 @@ export default function Home() {
           }} />
         </div>
       )}
-
-      <style jsx>{`
-body {
-  background-color: var(--background) !important;
-}
-`}</style>
     </main >
   );
 }

@@ -76,6 +76,16 @@ export default function Home() {
 
   const menuItems = [
     {
+      title: "1학기 끝, 방학 시작",
+      items: [
+        { name: "수강/성적 조회", icon: "🔍", url: "https://klas.kw.ac.kr/std/cps/inqire/AtnlcScreStdPage.do" },
+        { name: "석차 조회", icon: "🏆", url: "https://klas.kw.ac.kr/std/cps/inqire/StandStdPage.do" },
+        { name: "장학 조회", icon: "💰", url: "https://klas.kw.ac.kr/std/cps/inqire/JanghakStdPage.do" },
+        { name: "강의계획서 조회", icon: "📚", url: "https://klas.kw.ac.kr/std/cps/atnlc/LectrePlanStdPage.do" },
+        { name: "수강신청 프로그램", icon: "🖥️", url: "https://klas.kw.ac.kr/std/cps/atnlc/LctreReqstNewProgPage.do" },
+      ]
+    },
+    {
       title: "수강관리",
       items: [
         { name: "수업시간표", icon: "📅", url: "https://klas.kw.ac.kr/std/cps/atnlc/TimetableStdPage.do" },
