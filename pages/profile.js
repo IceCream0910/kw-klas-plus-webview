@@ -226,7 +226,7 @@ export default function Home() {
           </button>
           <br />
           {totGrade &&
-            <div className="profile-card grade-card" style={{ padding: 0, flexDirection: 'row', alignItems: 'space-between', width: '100%' }} onClick={() => location.href = '/grade'}>
+            <div className="profile-card grade-card" style={{ padding: 0, flexDirection: 'row', alignItems: 'space-between', width: '100%' }} onClick={() => Android.openPage('https://kw-klas-plus-webview.vercel.app/grade')}>
               <div style={{ textAlign: 'center', width: '100%' }}>
                 <span style={{ opacity: .8, fontSize: '12px' }}>취득학점</span>
                 <h3>{totGrade.credit}</h3>

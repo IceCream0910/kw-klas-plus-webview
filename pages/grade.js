@@ -214,6 +214,12 @@ export default function Home() {
           }} />
         </div>
       )}
+
+      <style jsx>{`
+body {
+  background-color: var(--background) !important;
+}
+`}</style>
     </main >
   );
 }
