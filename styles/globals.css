@@ -2,6 +2,7 @@
 @import url("https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css");
 
 :root {
+  --background: #fffbff;
   --text-color: #000000;
   --card-background: #eeeeee;
   --card-border: #e0e0e0;
@@ -13,6 +14,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
+    --background: #1c1b20;
     --text-color: #e0e0e0;
     --card-background: #302f34;
     --card-border: #2c2c2c;
