@@ -37,6 +37,7 @@ body {
   padding: 0;
   margin: 1rem;
   color: var(--text-color);
+  background-color: #1c1c1c;
 }
 
 h1,
@@ -101,13 +102,17 @@ input {
   justify-content: center;
   padding: 1rem;
   border-radius: 15px;
-  cursor: pointer;
   background-color: var(--card-background);
 }
 
 .profile-card h3 {
   margin-bottom: 0.5rem;
 }
+
+.grade-card div:not(:last-child) {
+  border-right: 1px solid var(--card-border);
+}
+
 
 .chat-input-container {
   display: flex;
@@ -191,4 +196,65 @@ input {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+#synthesis-score-table {
+  max-width: 100%;
+  border-radius: 15px;
+  overflow: hidden;
+  border-collapse: collapse;
+  box-sizing: border-box;
+}
+
+
+#synthesis-score-table th,
+#synthesis-score-table td {
+  border: 1px solid var(--card-background);
+  padding: 8px;
+  text-align: center;
+}
+
+#synthesis-score-table th {
+  background-color: var(--card-background);
+}
+
+#synthesis-score-table tr:nth-child(even) {
+  background-color: var(--card-background);
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+
+  #synthesis-score-table th,
+  #synthesis-score-table td {
+    font-size: 14px;
+  }
+}
+
+
+#synthesis-score-table th:first-child,
+#synthesis-score-table td:first-child {
+  text-align: left;
+}
+
+
+#synthesis-score-table tr:first-child th:first-child {
+  border-top-left-radius: 15px;
+}
+
+#synthesis-score-table tr:first-child th:last-child {
+  border-top-right-radius: 15px;
+}
+
+#synthesis-score-table tr:last-child td:first-child {
+  border-bottom-left-radius: 15px;
+}
+
+#synthesis-score-table tr:last-child td:last-child {
+  border-bottom-right-radius: 15px;
 }

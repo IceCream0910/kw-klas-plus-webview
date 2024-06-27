@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
 import IonIcon from '@reacticons/ionicons';
+import { handleCalculateGPA, calculateGPA } from "./utils/calculateGPA";
 
 export default function Home() {
   const [data, setData] = useState(null);
   const [token, setToken] = useState("");
+  const [grade, setGrade] = useState(null);
+  const [synthesisGPAs, setSynthesisGPAs] = useState();
+  const [totGrade, setTotGrade] = useState();
   const [searchTerm, setSearchTerm] = useState("");
 
 
@@ -26,19 +30,49 @@ export default function Home() {
       },
       body: JSON.stringify({ token }),
     })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch data");
-        }
-        return response.json();
-      })
+      .then((response) => response.json())
       .then((data) => {
         setData(data);
       })
       .catch((error) => {
         console.error(error);
       });
+
+    fetch("/api/grade", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ token }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setGrade(data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }, [token]);
+
+  useEffect(() => {
+    if (!grade) return;
+
+    const getData = async () => {
+      const semesters = await handleCalculateGPA(grade)
+      const synthesisGPAs = await calculateGPA(semesters)
+      setSynthesisGPAs(synthesisGPAs);
+    }
+
+    getData();
+  }, [grade]);
+
+
+  useEffect(() => {
+    if (!synthesisGPAs) return;
+    const tot = synthesisGPAs.find(semester => semester.name === '전체 학기');
+    setTotGrade(tot)
+  }, [synthesisGPAs]);
+
 
   const menuItems = [
     {
@@ -176,7 +210,7 @@ export default function Home() {
     <main>
       {data && (
         <div className="profile-card">
-          <div className="profile-card" style={{ padding: 0 }} onClick={() => Android.openPage('https://klas.kw.ac.kr/std/cps/inqire/AtnlcScreStdPage.do')}>
+          <div className="profile-card" style={{ padding: 0 }}>
             <h3>{data.kname}</h3>
             <span style={{ opacity: .8, fontSize: '14px' }}>{data.hakgwa} | {data.hakbun}</span>
             <span style={{ opacity: .5, fontSize: '12px' }}>{data.hakjukStatu}</span>
@@ -190,6 +224,21 @@ export default function Home() {
             <span className="tossface">🪪</span>모바일 학생증
             <IonIcon name="chevron-forward-outline" style={{ position: 'relative', top: '2px' }} />
           </button>
+          <br />
+          <div className="profile-card grade-card" style={{ padding: 0, flexDirection: 'row', alignItems: 'space-between', width: '100%' }} onClick={() => Android.openLink('https://kw-klas-plus-webview.vercel.app/grade')}>
+            <div style={{ textAlign: 'center', width: '100%' }}>
+              <span style={{ opacity: .8, fontSize: '12px' }}>취득학점</span>
+              <h3>{totGrade.credit}</h3>
+            </div>
+            <div style={{ textAlign: 'center', width: '100%' }}>
+              <span style={{ opacity: .8, fontSize: '12px' }}>전체평점</span>
+              <h3>{totGrade.averageGPA.includeF}</h3>
+            </div>
+            <div style={{ textAlign: 'center', width: '100%' }}>
+              <span style={{ opacity: .8, fontSize: '12px' }}>전공평점</span>
+              <h3>{totGrade.majorGPA.includeF}</h3>
+            </div>
+          </div>
         </div>
       )}
 
@@ -201,6 +250,12 @@ export default function Home() {
           placeholder={"메뉴 검색"}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          onKeyUp={(e) => {
+            if (e.key === 'Enter') {
+              e.target.blur();
+            }
+          }
+          }
         />
       </div>
 
