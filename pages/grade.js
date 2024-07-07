@@ -239,7 +239,7 @@ export default function Home() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '10px', borderBottom: '1px solid var(--card-border)' }}>
                 <div>
                   <h3>{value.gwamokKname}</h3>
-                  <span style={{ opacity: .8, fontSize: '14px' }}>{value.codeName1} | {value.entrytime}학점</span>
+                  <span style={{ opacity: .8, fontSize: '14px' }}>{value.codeName1}, {value.hakjumNum}학점</span>
                 </div>
                 <h3 style={{ float: 'right' }}>{value.getGrade}</h3>
               </div>
