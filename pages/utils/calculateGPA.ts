@@ -150,6 +150,6 @@ export const calculateGPA = (semesters: Semester[]): SynthesisGPA[] => {
     averageScoreDatas[i] = averageScoreDatas[i + 1] > 0 ? averageScoreDatas[i] / averageScoreDatas[i + 1] : 0;
   }
 
-  pushToSynthesisGPAs('전체 학기', averageScoreDatas);
+  pushToSynthesisGPAs('전체 학기', averageScoreDatas, []);
   return synthesisGPAs;
 };
