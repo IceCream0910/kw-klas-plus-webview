@@ -218,15 +218,13 @@ export default function Home() {
 
   return (
     <main>
-      {data && (
-        <div className="profile-card">
+
+      <div className="profile-card">
+        {data ? <>
           <div className="profile-card" style={{ padding: 0 }}>
             <h3>{data.kname}</h3>
             <span style={{ opacity: .8, fontSize: '14px' }}>{data.hakgwa} | {data.hakbun}</span>
             <span style={{ opacity: .5, fontSize: '12px' }}>{data.hakjukStatu}</span>
-            <button className="icon" style={{ position: 'absolute', right: '40px' }}>
-              <IonIcon name="chevron-forward-outline" />
-            </button>
           </div>
           <br />
           <button onClick={() => Android.openLibraryQR()}
@@ -242,7 +240,7 @@ export default function Home() {
                 <h3>{totGrade.credit}</h3>
               </div>
               <div style={{ textAlign: 'center', width: '100%' }}>
-                <span style={{ opacity: .8, fontSize: '12px' }}>전체평점</span>
+                <span style={{ opacity: .8, fontSize: '12px' }}>평균평점</span>
                 <h3>{totGrade.averageGPA.includeF}</h3>
               </div>
               <div style={{ textAlign: 'center', width: '100%' }}>
@@ -250,9 +248,29 @@ export default function Home() {
                 <h3>{totGrade.majorGPA.includeF}</h3>
               </div>
             </div>}
+        </>
+          :
+          <>
+            <div className="skeleton" style={{ height: '30px', width: '30%' }} />
+            <div className="skeleton" style={{ height: '20px', width: '80%' }} />
+            <div className="skeleton" style={{ height: '10px', width: '60%' }} />
+            <button onClick={() => Android.openLibraryQR()}
+              style={{ background: 'var(--notice-hover)', borderRadius: '10px' }}>
+              <span className="tossface">🪪</span>모바일 학생증
+              <IonIcon name="chevron-forward-outline" style={{ position: 'relative', top: '2px' }} />
+            </button>
+            <div style={{ marginTop: '15px', display: 'flex', justifyContent: 'center', width: '100%', gap: '20px' }}>
+              <div className="skeleton" style={{ height: '40px', width: '33%' }} />
+              <div className="skeleton" style={{ height: '40px', width: '33%' }} />
+              <div className="skeleton" style={{ height: '40px', width: '33%' }} />
+            </div>
 
-        </div>
-      )}
+          </>
+        }
+
+
+      </div>
+
 
 
       <div className="search-container">

@@ -6,6 +6,8 @@ export default function handleCalculateGPA(scoreData): Object {
     semesters.push({
       year: parseInt(scoreData[i].thisYear, 10),
       semester: parseInt(scoreData[i].hakgi, 10),
+      hakgiOrder: scoreData[i].hakgiOrder,
+      subjects: scoreData[i].sungjukList,
       lectures: scoreData[i].sungjukList.map((value) => ({
         name: value.gwamokKname,
         classification: value.codeName1.trim(),
@@ -24,7 +26,9 @@ export type Grade = 'A+' | 'A0' | 'B+' | 'B0' | 'C+' | 'C0' | 'D+' | 'D0' | 'F' 
 export interface Semester {
   year: number;
   semester: number;
+  hakgiOrder: string;
   lectures: Lecture[];
+  subjects: any[];
 }
 
 export interface Lecture {
@@ -40,6 +44,7 @@ export interface SynthesisGPA {
   majorGPA: GPA;
   nonMajorGPA: GPA;
   averageGPA: GPA;
+  subjects: any[];
 }
 
 export interface GPA {
@@ -78,7 +83,7 @@ export const calculateGPA = (semesters: Semester[]): SynthesisGPA[] => {
   const synthesisGPAs: SynthesisGPA[] = [];
   const averageScoreDatas: number[] = Array(13).fill(0);
 
-  const pushToSynthesisGPAs = (name: string, scoreDatas: number[]): void => {
+  const pushToSynthesisGPAs = (name: string, scoreDatas: number[], subjects: any[]): void => {
     const stringScoreDatas = scoreDatas.map((value, index) => value ? (index === 0 ? value.toString() : floorFixed(value)) : '-');
 
     synthesisGPAs.push({
@@ -96,16 +101,11 @@ export const calculateGPA = (semesters: Semester[]): SynthesisGPA[] => {
         includeF: stringScoreDatas[9],
         excludeF: stringScoreDatas[11],
       },
+      subjects: subjects
     });
   };
 
   for (const semester of semesters) {
-    // 계절 학기의 경우 계산에서 제외
-    if (semester.semester > 2) {
-      averageScoreDatas[0] += semester.lectures.reduce((previous, current) => previous + (checkPass(current.grade) ? current.credit : 0), 0);
-      continue;
-    }
-
     const scoreDatas = semester.lectures.reduce((previous: number[], current) => {
       const classification = current.classification;
       const credit = current.credit;
@@ -142,7 +142,7 @@ export const calculateGPA = (semesters: Semester[]): SynthesisGPA[] => {
       scoreDatas[i] = scoreDatas[i + 1] > 0 ? scoreDatas[i] / scoreDatas[i + 1] : 0;
     }
 
-    pushToSynthesisGPAs(`${semester.year}학년도 ${semester.semester}학기`, scoreDatas);
+    pushToSynthesisGPAs(`${semester.year}학년도 ${semester.semester > 2 ? semester.hakgiOrder : semester.semester + '학기'}`, scoreDatas, semester.subjects);
   }
 
   // 전체 학기 평점 계산

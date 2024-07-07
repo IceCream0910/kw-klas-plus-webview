@@ -3,6 +3,8 @@ import { Line } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import handleCalculateGPA, { calculateGPA } from "./utils/calculateGPA";
 import IonIcon from '@reacticons/ionicons';
+import { BottomSheet } from 'react-spring-bottom-sheet';
+import 'react-spring-bottom-sheet/dist/style.css'
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 export default function Home() {
@@ -12,6 +14,8 @@ export default function Home() {
   const [totGrade, setTotGrade] = useState();
   const [chartDatasets, setChartDatasets] = useState();
   const [prefersDarkMode, setPrefersDarkMode] = useState(false);
+  const [subjects, setSubjects] = useState();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     window.receiveToken = function (receivedToken) {
@@ -43,7 +47,6 @@ export default function Home() {
 
   useEffect(() => {
     if (!grade) return;
-
     const getData = async () => {
       const semesters = await handleCalculateGPA(grade)
       const synthesisGPAs = await calculateGPA(semesters)
@@ -101,6 +104,14 @@ export default function Home() {
     })
   }
 
+  const openDetailModal = (id) => {
+    const data = { name: synthesisGPAs[id].name, subjects: synthesisGPAs[id].subjects };
+    if (!data) return;
+    setSubjects(data);
+    setIsModalOpen(true);
+    console.log(data)
+  }
+
   return (
     <main>
       <h2 style={{ marginBottom: '20px', marginTop: '20px' }}>성적
@@ -112,71 +123,75 @@ export default function Home() {
 
 
       </h2>
-      <br />
-      {totGrade && (
-        <div className="profile-card grade-card" style={{ flexDirection: 'row', alignItems: 'space-between' }}>
-          <div style={{ textAlign: 'center', width: '100%' }}>
-            <span style={{ opacity: .8, fontSize: '12px' }}>취득학점</span>
-            <h3>{totGrade.credit}</h3>
-          </div>
-          <div style={{ textAlign: 'center', width: '100%' }}>
-            <span style={{ opacity: .8, fontSize: '12px' }}>전체평점</span>
-            <h3>{totGrade.averageGPA.includeF}</h3>
-          </div>
-          <div style={{ textAlign: 'center', width: '100%' }}>
-            <span style={{ opacity: .8, fontSize: '12px' }}>전공평점</span>
-            <h3>{totGrade.majorGPA.includeF}</h3>
-          </div>
-        </div>
-      )}
+      {synthesisGPAs && synthesisGPAs.map((value, id) => (
+        value.name === '전체 학기' ? (
+          <div className="profile-card"
+            style={{ border: '2px solid rgba(165, 165, 165, 0.3)' }}>
+            <h3>{value.name}</h3>
+            <div style={{ display: 'flex', justifyContent: 'center', width: '100%', gap: '20px' }}>
+              <div style={{ textAlign: 'center', width: '100%' }}>
+                <span style={{ opacity: .8, fontSize: '12px' }}>취득학점</span>
+                <h3 style={{ margin: 0 }}>{value.credit}</h3>
+                <span style={{ opacity: .5, fontSize: '12px' }}>F 미포함 :</span>
 
-      <h4 style={{ marginTop: '30px', marginBottom: '10px' }}>학기 별 학점</h4>
-      {synthesisGPAs &&
-        <div className="table-container">
-          <table id="synthesis-score-table">
-            <colgroup>
-              <col width="25%" />
-              <col width="15%" />
-              <col width="10%" />
-              <col width="10%" />
-              <col width="10%" />
-              <col width="10%" />
-              <col width="10%" />
-              <col width="10%" />
-            </colgroup>
-            <thead>
-              <tr>
-                <th rowSpan="2">학기</th>
-                <th rowSpan="2">취득 학점</th>
-                <th colSpan="2">전공 평점</th>
-                <th colSpan="2">전공 외 평점</th>
-                <th colSpan="2">평균 평점</th>
-              </tr>
-              <tr>
-                <th>F 포함</th>
-                <th>미포함</th>
-                <th>F 포함</th>
-                <th>미포함</th>
-                <th>F 포함</th>
-                <th>미포함</th>
-              </tr>
-            </thead>
-            <tbody>
-              {synthesisGPAs && synthesisGPAs.map((value) => (
-                <tr key={value.name} style={{ fontWeight: value.name === '전체 학기' ? 'bold' : 'normal' }}>
-                  <td>{value.name}</td>
-                  <td>{value.credit}</td>
-                  <td>{value.majorGPA.includeF}</td>
-                  <td>{value.majorGPA.excludeF}</td>
-                  <td>{value.nonMajorGPA.includeF}</td>
-                  <td>{value.nonMajorGPA.excludeF}</td>
-                  <td>{value.averageGPA.includeF}</td>
-                  <td>{value.averageGPA.excludeF}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>}
+              </div>
+              <div style={{ textAlign: 'center', width: '100%' }}>
+                <span style={{ opacity: .8, fontSize: '12px' }}>전공</span>
+                <h3 style={{ margin: 0 }}>{value.majorGPA.includeF}</h3>
+                <span style={{ opacity: .5, fontSize: '12px' }}>{value.majorGPA.excludeF}</span>
+              </div>
+              <div style={{ textAlign: 'center', width: '100%' }}>
+                <span style={{ opacity: .8, fontSize: '12px' }}>전공 외</span>
+                <h3 style={{ margin: 0 }}>{value.nonMajorGPA.includeF}</h3>
+                <span style={{ opacity: .5, fontSize: '12px' }}>{value.nonMajorGPA.excludeF}</span>
+              </div>
+              <div style={{ textAlign: 'center', width: '100%' }}>
+                <span style={{ opacity: .8, fontSize: '12px' }}>평균</span>
+                <h3 style={{ margin: 0 }}>{value.averageGPA.includeF}</h3>
+                <span style={{ opacity: .5, fontSize: '12px' }}>{value.averageGPA.excludeF}</span>
+              </div>
+            </div>
+          </div>
+        ) : value.name.includes('계절학기') ? (
+          <button className="profile-card"
+            onClick={() => openDetailModal(id)}
+            style={{ marginBottom: '10px' }}>
+            <h3 style={{ width: '100%', margin: 0 }}>{value.name}
+              <IonIcon style={{ float: 'right' }} name="chevron-forward" /></h3>
+          </button>
+        ) :
+          (
+            <button className="profile-card"
+              onClick={() => openDetailModal(id)}
+              style={{ marginBottom: '10px' }}>
+              <h3 style={{ width: '100%' }}>{value.name}
+                <IonIcon style={{ float: 'right' }} name="chevron-forward" /></h3>
+              <div style={{ display: 'flex', justifyContent: 'center', width: '100%', gap: '20px' }}>
+                <div style={{ textAlign: 'center', width: '100%' }}>
+                  <span style={{ opacity: .8, fontSize: '12px' }}>취득학점</span>
+                  <h3 style={{ margin: 0 }}>{value.credit}</h3>
+                  <span style={{ opacity: .5, fontSize: '12px' }}>F 미포함 :</span>
+
+                </div>
+                <div style={{ textAlign: 'center', width: '100%' }}>
+                  <span style={{ opacity: .8, fontSize: '12px' }}>전공</span>
+                  <h3 style={{ margin: 0 }}>{value.majorGPA.includeF}</h3>
+                  <span style={{ opacity: .5, fontSize: '12px' }}>{value.majorGPA.excludeF}</span>
+                </div>
+                <div style={{ textAlign: 'center', width: '100%' }}>
+                  <span style={{ opacity: .8, fontSize: '12px' }}>전공 외</span>
+                  <h3 style={{ margin: 0 }}>{value.nonMajorGPA.includeF}</h3>
+                  <span style={{ opacity: .5, fontSize: '12px' }}>{value.nonMajorGPA.excludeF}</span>
+                </div>
+                <div style={{ textAlign: 'center', width: '100%' }}>
+                  <span style={{ opacity: .8, fontSize: '12px' }}>평균</span>
+                  <h3 style={{ margin: 0 }}>{value.averageGPA.includeF}</h3>
+                  <span style={{ opacity: .5, fontSize: '12px' }}>{value.averageGPA.excludeF}</span>
+                </div>
+              </div>
+            </button>
+          )
+      ))}
 
       <h4 style={{ marginTop: '30px', marginBottom: '10px' }}>성적 추이</h4>
       {synthesisGPAs && synthesisGPAs.length >= 1 && (
@@ -214,6 +229,26 @@ export default function Home() {
           }} />
         </div>
       )}
+
+      <BottomSheet open={isModalOpen} expandOnContentDrag={false} scrollLocking={true} onDismiss={() => setIsModalOpen(false)}>
+        <div className="bottom-sheet">
+          <h2>{subjects && subjects.name}</h2>
+          <br />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: "70dvh", overflowY: 'scroll', msOverflowStyle: 'none' }}>
+            {subjects && subjects.subjects.map((value) => (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '10px', borderBottom: '1px solid var(--card-border)' }}>
+                <div>
+                  <h3>{value.gwamokKname}</h3>
+                  <span style={{ opacity: .8, fontSize: '14px' }}>{value.codeName1} | {value.entrytime}학점</span>
+                </div>
+                <h3 style={{ float: 'right' }}>{value.getGrade}</h3>
+              </div>
+            ))}
+          </div>
+          <br />
+          <button onClick={() => setIsModalOpen(false)}>닫기</button>
+        </div>
+      </BottomSheet>
     </main >
   );
 }

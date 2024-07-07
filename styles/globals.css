@@ -259,3 +259,64 @@ input {
 #synthesis-score-table tr:last-child td:last-child {
   border-bottom-right-radius: 15px;
 }
+
+@-webkit-keyframes skeleton-gradient {
+  0% {
+    background-color: rgba(165, 165, 165, 0.1);
+  }
+
+  50% {
+    background-color: rgba(165, 165, 165, 0.3);
+  }
+
+  100% {
+    background-color: rgba(165, 165, 165, 0.1);
+  }
+}
+
+@keyframes skeleton-gradient {
+  0% {
+    background-color: rgba(165, 165, 165, 0.1);
+  }
+
+  50% {
+    background-color: rgba(165, 165, 165, 0.3);
+  }
+
+  100% {
+    background-color: rgba(165, 165, 165, 0.1);
+  }
+}
+
+.skeleton {
+  -webkit-animation: skeleton-gradient 1s infinite ease-in-out;
+  animation: skeleton-gradient 1s infinite ease-in-out;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+div[role="dialog"] {
+  background-color: var(--background) !important;
+}
+
+[data-rsbs-header]:before {
+  background-color: #eeeeee48 !important;
+}
+
+.bottom-sheet {
+  padding: 20px;
+}
+
+.bottom-sheet div::-webkit-scrollbar {
+  display: none;
+}
+
+.bottom-sheet button {
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+  border-radius: 15px;
+  background-color: var(--card-border);
+  cursor: pointer;
+  transition: all 0.3s;
+}
