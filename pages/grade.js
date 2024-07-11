@@ -12,6 +12,7 @@ export default function Home() {
   const [grade, setGrade] = useState(null);
   const [synthesisGPAs, setSynthesisGPAs] = useState();
   const [totGrade, setTotGrade] = useState();
+  const [totGradeIncludeEmptyGrade, setTotGradeIncludeEmptyGrade] = useState();
   const [chartDatasets, setChartDatasets] = useState();
   const [prefersDarkMode, setPrefersDarkMode] = useState(false);
   const [subjects, setSubjects] = useState();
@@ -39,6 +40,21 @@ export default function Home() {
       .then((response) => response.json())
       .then((data) => {
         setGrade(data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    fetch("/api/totGrade", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ token }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setTotGradeIncludeEmptyGrade(data);
       })
       .catch((error) => {
         console.error(error);
@@ -123,10 +139,43 @@ export default function Home() {
 
 
       </h2>
+
+      {totGradeIncludeEmptyGrade &&
+        (
+          <div className="profile-card grade-card" style={{ padding: '10px 0', flexDirection: 'row', alignItems: 'space-between' }}>
+            <div style={{ textAlign: 'center', width: '100%' }}>
+              <span style={{ opacity: .8, fontSize: '12px' }}>신청학점</span>
+              <h3 style={{ margin: 0 }}>{totGradeIncludeEmptyGrade.applyHakjum}</h3>
+              <span style={{ opacity: .5, fontSize: '12px' }}>전공 {totGradeIncludeEmptyGrade.majorApplyHakjum}</span>
+            </div>
+            <div style={{ textAlign: 'center', width: '100%' }}>
+              <span style={{ opacity: .8, fontSize: '12px' }}>삭제학점</span>
+              <h3 style={{ margin: 0 }}>{totGradeIncludeEmptyGrade.delHakjum}</h3>
+              <span style={{ opacity: .5, fontSize: '12px' }}>전공 {totGradeIncludeEmptyGrade.majorDelHakjum}</span>
+            </div>
+            <div style={{ textAlign: 'center', width: '100%' }}>
+              <span style={{ opacity: .8, fontSize: '12px' }}>취득학점</span>
+              <h3 style={{ margin: 0 }}>{totGradeIncludeEmptyGrade.chidukHakjum}</h3>
+              <span style={{ opacity: .5, fontSize: '12px' }}>전공 {totGradeIncludeEmptyGrade.majorChidukHakjum}</span>
+            </div>
+            <div style={{ textAlign: 'center', width: '100%' }}>
+              <span style={{ opacity: .8, fontSize: '12px' }}>평량평균</span>
+              <h3 style={{ marginTop: '10px' }}>{totGradeIncludeEmptyGrade.jaechulScoresum}</h3>
+            </div>
+          </div>
+        )
+      }
+
+      <span style={{ opacity: .5, fontSize: '12px', float: 'right', padding: '10px', textAlign: 'right' }}>*위 평량평균은 성적증명서 기준임<br />
+        학적부 기준: {totGradeIncludeEmptyGrade && totGradeIncludeEmptyGrade.hwakinScoresum}</span>
+
+      <br /><br /><br />
+
+      <h4>학기 별 성적</h4>
       {synthesisGPAs && synthesisGPAs.map((value, id) => (
         value.name === '전체 학기' ? (
           <div className="profile-card"
-            style={{ border: '2px solid rgba(165, 165, 165, 0.3)' }}>
+            style={{ border: '2px solid rgba(165, 165, 165, 0.3)', marginTop: '20px' }}>
             <h3>{value.name}</h3>
             <div style={{ display: 'flex', justifyContent: 'center', width: '100%', gap: '20px' }}>
               <div style={{ textAlign: 'center', width: '100%' }}>
@@ -155,7 +204,7 @@ export default function Home() {
         ) : value.name.includes('계절학기') ? (
           <button className="profile-card"
             onClick={() => openDetailModal(id)}
-            style={{ marginBottom: '10px' }}>
+            style={{ marginTop: '10px' }}>
             <h3 style={{ width: '100%', margin: 0 }}>{value.name}
               <IonIcon style={{ float: 'right' }} name="chevron-forward" /></h3>
           </button>
@@ -163,7 +212,7 @@ export default function Home() {
           (
             <button className="profile-card"
               onClick={() => openDetailModal(id)}
-              style={{ marginBottom: '10px' }}>
+              style={{ marginTop: '10px' }}>
               <h3 style={{ width: '100%' }}>{value.name}
                 <IonIcon style={{ float: 'right' }} name="chevron-forward" /></h3>
               <div style={{ display: 'flex', justifyContent: 'center', width: '100%', gap: '20px' }}>
@@ -191,7 +240,7 @@ export default function Home() {
               </div>
             </button>
           )
-      ))}
+      )).reverse()}
 
       <h4 style={{ marginTop: '30px', marginBottom: '10px' }}>성적 추이</h4>
       {synthesisGPAs && synthesisGPAs.length >= 1 && (

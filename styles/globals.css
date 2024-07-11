@@ -39,6 +39,7 @@ body {
   padding: 0;
   margin: 1rem;
   color: var(--text-color);
+  background-color: var(--background);
 }
 
 h1,
