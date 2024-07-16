@@ -106,6 +106,12 @@ export const calculateGPA = (semesters: Semester[]): SynthesisGPA[] => {
   };
 
   for (const semester of semesters) {
+    // 계절 학기의 경우 계산에서 제외
+    if (semester.semester > 2) {
+      averageScoreDatas[0] += semester.lectures.reduce((previous, current) => previous + (checkPass(current.grade) ? current.credit : 0), 0);
+      continue;
+    }
+
     const scoreDatas = semester.lectures.reduce((previous: number[], current) => {
       const classification = current.classification;
       const credit = current.credit;
@@ -133,13 +139,13 @@ export const calculateGPA = (semesters: Semester[]): SynthesisGPA[] => {
       return previous;
     }, Array(13).fill(0));
 
-    if (semester.semester <= 2) { // 계절학기는 전체 평점에 미반영
-      for (let i = 0; i < averageScoreDatas.length; i++) {
-        averageScoreDatas[i] += scoreDatas[i];
-      }
-      for (let i = 1; i < scoreDatas.length; i += 2) {
-        scoreDatas[i] = scoreDatas[i + 1] > 0 ? scoreDatas[i] / scoreDatas[i + 1] : 0;
-      }
+    for (let i = 0; i < averageScoreDatas.length; i++) {
+      averageScoreDatas[i] += scoreDatas[i];
+    }
+
+    // 평점 계산
+    for (let i = 1; i < scoreDatas.length; i += 2) {
+      scoreDatas[i] = scoreDatas[i + 1] > 0 ? scoreDatas[i] / scoreDatas[i + 1] : 0;
     }
 
     pushToSynthesisGPAs(`${semester.year}학년도 ${semester.semester > 2 ? semester.hakgiOrder : semester.semester + '학기'}`, scoreDatas, semester.subjects);
