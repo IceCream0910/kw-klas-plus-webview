@@ -2,6 +2,10 @@ const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
 let sessionId = null;
 import { parse } from 'node-html-parser';
 
+export const config = {
+    runtime: "edge",
+};
+
 export default async function handler(req, res) {
     if (req.method === 'POST') {
         const { conversation, subjList, token } = req.body;
