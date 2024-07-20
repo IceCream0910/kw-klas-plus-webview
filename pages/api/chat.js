@@ -11,11 +11,14 @@ export default async function handler(req) {
         const { conversation, subjList, token } = await req.json();
         sessionId = token;
 
+        const encoder = new TextEncoder(); // Create a new TextEncoder instance
+
         const stream = new ReadableStream({
             async start(controller) {
-                controller.enqueue(`data: ${JSON.stringify({ type: 'connected', message: 'Connected' })}\n\n`);
+                // Encode and enqueue the initial message
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'connected', message: 'Connected' })}\n\n`));
 
-                await processChatRequest(conversation, subjList, controller);
+                await processChatRequest(conversation, subjList, controller, encoder); // Pass the encoder to processChatRequest
 
                 controller.close();
             }
