@@ -11,6 +11,7 @@ export default function Home() {
     const [chat, setChat] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const scrollRef = useRef(null);
+    const abortControllerRef = useRef(null);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -36,21 +37,74 @@ export default function Home() {
         };
 
         //Android.completePageLoad();
-    }, [])
+    }, []);
+
+    useEffect(() => {
+        console.log(chat);
+    }, [chat]);
 
 
     const sendMessage = async (conversation) => {
         try {
+            abortControllerRef.current = new AbortController();
             const response = await fetch("/api/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ conversation, subjList: subjList.current, token }),
+                signal: abortControllerRef.current.signal,
             });
-            const data = await response.json();
-            setChat(prevChat => [...prevChat, { type: 'answer', content: data.message }]);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+
+            // 새 답변 메시지를 추가합니다.
+            setChat(prevChat => [...prevChat, { type: 'answer', content: '' }]);
+
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) break;
+
+                const chunkValue = decoder.decode(value);
+                const lines = chunkValue.split('\n\n');
+
+                for (const line of lines) {
+                    if (line.startsWith('data: ')) {
+                        try {
+                            const data = JSON.parse(line.slice(6));
+                            if (data.type === 'content') {
+                                setChat(prevChat => {
+                                    const newChat = [...prevChat];
+                                    const lastMessage = newChat[newChat.length - 1];
+                                    lastMessage.content += data.message;
+                                    return newChat;
+                                });
+                            }
+                        } catch (error) {
+                            console.error("Error parsing JSON:", error);
+                        }
+                    }
+                }
+            }
         } catch (error) {
-            console.error("Error fetching response:", error);
-            setChat(prevChat => [...prevChat, { type: 'answer', content: "KLAS에서 정보를 가져오는 데 실패했어요. 정확한 과목명과 원하는 항목을 말해보세요." }]);
+            if (error.name === 'AbortError') {
+                console.log('Fetch aborted');
+            } else {
+                console.error("Error fetching response:", error);
+                setChat(prevChat => [...prevChat, { type: 'answer', content: "KLAS에서 정보를 가져오는 데 실패했어요. 정확한 과목명과 원하는 항목을 말해보세요." }]);
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleStopResponse = () => {
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+            setIsLoading(false);
         }
     };
 
@@ -75,13 +129,14 @@ export default function Home() {
                                 <h3>궁금한 것을 물어보세요!</h3>
                                 <span>AI가 KLAS에서 정보를 불러와 답변해줍니다. Beta 기능이므로 작동이 불안정할 수 있습니다.</span>
                                 <br />
-                                <h4>이렇게 말해보세요</h4>
-                                <ul>
-                                    <li>[과목명] 출석 현황 알려줘</li>
-                                    <li>[과목명] 공지사항 요약해줘</li>
-                                    <li>[과목명] 과제 몇 개 남았어?</li>
-                                </ul>
-                                <span style={{ fontSize: '14px', opacity: .5, marginTop: '5px' }}>* KLAS에 있는 학사 정보를 제 3자(OpenAI)에게 전송하는 것에 동의하는 것으로 간주합니다.</span>
+                                <h4>이렇게 보내보세요</h4>
+                                <button onClick={() => setInput('최근에 올라온 학교 공지사항 알려줘')} style={{ background: 'var(--background)', marginTop: '10px' }}>최근에 올라온 학교 공지사항 알려줘</button>
+                                <button onClick={() => setInput('공지사항에서 수강신청자료집 찾아줘')} style={{ background: 'var(--background)', marginTop: '5px' }}>공지사항에서 수강신청 자료집 찾아줘</button>
+                                <button onClick={() => setInput(`${subjList.current && subjList.current[0].name} 출석 현황 알려줘`)} style={{ background: 'var(--background)', marginTop: '5px' }}>{subjList.current && subjList.current[0].name} 출석 현황 알려줘</button>
+                                <button onClick={() => setInput(`${subjList.current && subjList.current[0].name} 최근 공지사항 보여줘`)} style={{ background: 'var(--background)', marginTop: '5px' }}>{subjList.current && subjList.current[0].name} 최근 공지사항 보여줘</button>
+                                <button onClick={() => setInput(`${subjList.current && subjList.current[0].name} 미제출 과제 있어?`)} style={{ background: 'var(--background)', marginTop: '5px' }}>{subjList.current && subjList.current[0].name} 미제출 과제 있어?</button>
+                                <br />
+                                <span style={{ fontSize: '12px', opacity: .5, marginTop: '5px' }}>* KLAS에 있는 학사 정보를 제 3자(OpenAI)에게 전송하는 것에 동의하는 것으로 간주합니다. <a href="/privacy" target='_blank' style={{ color: 'inherit' }}>개인정보 처리방침</a></span>
                             </div>
                         </>
                     )}
@@ -108,9 +163,15 @@ export default function Home() {
                     disabled={isLoading}
                     className='chat-input'
                 />
-                <button type="submit">
-                    <IonIcon name="send" />
-                </button>
+                {isLoading ? (
+                    <button type="button" onClick={handleStopResponse}>
+                        <IonIcon name="stop" />
+                    </button>
+                ) : (
+                    <button type="submit">
+                        <IonIcon name="send" />
+                    </button>
+                )}
                 <span style={{ fontSize: '12px', opacity: .5 }}>AI가 생성한 답변은 정확하지 않을 수 있습니다.</span>
             </form>
         </div>

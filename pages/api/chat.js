@@ -6,15 +6,24 @@ export default async function handler(req, res) {
     if (req.method === 'POST') {
         const { conversation, subjList, token } = req.body;
         sessionId = token;
-        const response = await processChatRequest(conversation, subjList);
-        res.status(200).json({ message: response });
+        res.setHeader('X-Accel-Buffering', 'no');
+        res.writeHead(200, {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive',
+        });
+        res.flushHeaders();
+        res.write(`data: ${JSON.stringify({ type: 'connected', message: 'Connected' })}\n\n`);
+        res.flush();
+        await processChatRequest(conversation, subjList, res);
+        res.end();
     } else {
         res.setHeader('Allow', ['POST']);
         res.status(405).end(`Method ${req.method} Not Allowed`);
     }
 }
 
-const processChatRequest = async (conversation, subjList) => {
+const processChatRequest = async (conversation, subjList, res) => {
     const messages = [
         {
             role: "system",
@@ -53,7 +62,7 @@ const processChatRequest = async (conversation, subjList) => {
         }))
     ];
 
-    let response = await callChatCompletion(messages);
+    let response = await callChatCompletion(messages, res);
     let functionCalls = [];
 
     console.log(response);
@@ -69,20 +78,16 @@ const processChatRequest = async (conversation, subjList) => {
             content: JSON.stringify(functionResponse),
         });
 
-        response = await callChatCompletion(messages);
+        response = await callChatCompletion(messages, res);
     }
 
     if (functionCalls.length > 0) {
-        console.log(messages)
-        response = await callChatCompletion(messages);
+        console.log(messages);
+        response = await callChatCompletion(messages, res);
     }
-
-    return response.choices[0].message.content;
 };
 
-// The rest of the code (callChatCompletion, executeFunctionCall, and mock functions) remains the same
-
-const callChatCompletion = async (messages) => {
+const callChatCompletion = async (messages, res) => {
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -140,9 +145,54 @@ const callChatCompletion = async (messages) => {
                     },
                 },
             ],
+            stream: true,
         }),
     });
-    return response.json();
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let result = { choices: [{ finish_reason: null, message: { content: '' } }] };
+
+    while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop();
+
+        for (const line of lines) {
+            if (line.startsWith('data: ')) {
+                const data = line.slice(6);
+                if (data === '[DONE]') {
+                    res.write(`data: ${JSON.stringify({ type: 'done', message: 'Stream finished' })}\n\n`);
+                    res.flush();
+                    return result;
+                }
+                try {
+                    const parsed = JSON.parse(data);
+                    if (parsed.choices[0].delta.content) {
+                        result.choices[0].message.content += parsed.choices[0].delta.content;
+                        res.write(`data: ${JSON.stringify({ type: 'content', message: parsed.choices[0].delta.content })}\n\n`);
+                        res.flush();
+                    }
+                    if (parsed.choices[0].finish_reason) {
+                        result.choices[0].finish_reason = parsed.choices[0].finish_reason;
+                    }
+                    if (parsed.choices[0].delta.function_call) {
+                        result.choices[0].message.function_call = result.choices[0].message.function_call || { name: '', arguments: '' };
+                        result.choices[0].message.function_call.name += parsed.choices[0].delta.function_call.name || '';
+                        result.choices[0].message.function_call.arguments += parsed.choices[0].delta.function_call.arguments || '';
+                    }
+                } catch (error) {
+                    console.error('Error parsing JSON:', error);
+                }
+            }
+        }
+    }
+
+    return result;
 };
 
 const executeFunctionCall = async (functionCall) => {
@@ -161,7 +211,6 @@ const executeFunctionCall = async (functionCall) => {
             return { error: "Unknown function" };
     }
 };
-
 
 
 // 강의 종합 정보

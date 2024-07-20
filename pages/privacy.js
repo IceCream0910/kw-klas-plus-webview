@@ -1,7 +1,7 @@
 export default function Privacy() {
 
   return (
-    <main>
+    <main className="withBackground">
       <h2 style={{ marginBottom: '20px', marginTop: '20px' }}>개인정보 처리방침</h2>
 
       “개인정보 처리방침”이란 이용자가 안심하고 서비스를 이용할 수 있도록 회사가 준수해야 할 지침을 의미하며, KLAS+는 개인정보처리자가 준수하여야 하는 대한민국의 관계 법령 및 개인정보보호 규정, 가이드라인을 준수하여 개인정보 처리방침을 제공합니다.<br /><br />

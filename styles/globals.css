@@ -39,6 +39,9 @@ body {
   padding: 0;
   margin: 1rem;
   color: var(--text-color);
+}
+
+main.withBackground {
   background-color: var(--background);
 }
 
