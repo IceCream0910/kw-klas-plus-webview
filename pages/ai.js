@@ -36,7 +36,7 @@ export default function Home() {
             console.log(subjList.current);
         };
 
-        Android.completePageLoad();
+        //Android.completePageLoad();
     }, []);
 
     useEffect(() => {

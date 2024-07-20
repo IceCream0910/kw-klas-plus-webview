@@ -6,20 +6,22 @@ export const config = {
     runtime: "edge",
 };
 
-export default async function handler(req, res) {
+export default async function handler(req) {
     if (req.method === 'POST') {
         const { conversation, subjList, token } = await req.json();
         sessionId = token;
 
-        const stream = new TransformStream();
-        const writer = stream.writable.getWriter();
-        const encoder = new TextEncoder();
+        const stream = new ReadableStream({
+            async start(controller) {
+                controller.enqueue(`data: ${JSON.stringify({ type: 'connected', message: 'Connected' })}\n\n`);
 
-        writer.write(encoder.encode(`data: ${JSON.stringify({ type: 'connected', message: 'Connected' })}\n\n`));
+                await processChatRequest(conversation, subjList, controller);
 
-        processChatRequest(conversation, subjList, writer, encoder);
+                controller.close();
+            }
+        });
 
-        return new Response(stream.readable, {
+        return new Response(stream, {
             headers: {
                 'Content-Type': 'text/event-stream',
                 'Cache-Control': 'no-cache',
@@ -31,7 +33,7 @@ export default async function handler(req, res) {
     }
 }
 
-const processChatRequest = async (conversation, subjList, res) => {
+const processChatRequest = async (conversation, subjList, controller) => {
     const messages = [
         {
             role: "system",
@@ -70,7 +72,11 @@ const processChatRequest = async (conversation, subjList, res) => {
         }))
     ];
 
-    let response = await callChatCompletion(messages, res);
+    const sendChunk = (chunk) => {
+        controller.enqueue(`data: ${JSON.stringify(chunk)}\n\n`);
+    };
+
+    let response = await callChatCompletion(messages, sendChunk);
     let functionCalls = [];
 
     console.log(response);
@@ -86,16 +92,16 @@ const processChatRequest = async (conversation, subjList, res) => {
             content: JSON.stringify(functionResponse),
         });
 
-        response = await callChatCompletion(messages, res);
+        response = await callChatCompletion(messages, sendChunk);
     }
 
     if (functionCalls.length > 0) {
         console.log(messages);
-        response = await callChatCompletion(messages, res);
+        response = await callChatCompletion(messages, sendChunk);
     }
 };
 
-const callChatCompletion = async (messages, res) => {
+const callChatCompletion = async (messages, sendChunk) => {
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -174,14 +180,14 @@ const callChatCompletion = async (messages, res) => {
             if (line.startsWith('data: ')) {
                 const data = line.slice(6);
                 if (data === '[DONE]') {
-                    res.write(`data: ${JSON.stringify({ type: 'done', message: 'Stream finished' })}\n\n`);
+                    sendChunk({ type: 'done', message: 'Stream finished' });
                     return result;
                 }
                 try {
                     const parsed = JSON.parse(data);
                     if (parsed.choices[0].delta.content) {
                         result.choices[0].message.content += parsed.choices[0].delta.content;
-                        res.write(`data: ${JSON.stringify({ type: 'content', message: parsed.choices[0].delta.content })}\n\n`);
+                        sendChunk({ type: 'content', message: parsed.choices[0].delta.content });
                     }
                     if (parsed.choices[0].finish_reason) {
                         result.choices[0].finish_reason = parsed.choices[0].finish_reason;
