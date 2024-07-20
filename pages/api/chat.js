@@ -36,7 +36,7 @@ export default async function handler(req) {
     }
 }
 
-const processChatRequest = async (conversation, subjList, controller) => {
+const processChatRequest = async (conversation, subjList, controller, encoder) => {
     const messages = [
         {
             role: "system",
@@ -76,7 +76,7 @@ const processChatRequest = async (conversation, subjList, controller) => {
     ];
 
     const sendChunk = (chunk) => {
-        controller.enqueue(`data: ${JSON.stringify(chunk)}\n\n`);
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`));
     };
 
     let response = await callChatCompletion(messages, sendChunk);
