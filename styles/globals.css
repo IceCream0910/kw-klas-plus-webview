@@ -321,3 +321,7 @@ div[role="dialog"] {
   cursor: pointer;
   transition: all 0.3s;
 }
+
+.message a {
+  color: #6d8cee;
+}
