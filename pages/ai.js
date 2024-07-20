@@ -36,7 +36,7 @@ export default function Home() {
             console.log(subjList.current);
         };
 
-        //Android.completePageLoad();
+        Android.completePageLoad();
     }, []);
 
     useEffect(() => {
@@ -82,6 +82,8 @@ export default function Home() {
                                     lastMessage.content += data.message;
                                     return newChat;
                                 });
+                            } else if (data.type === 'done') {
+                                setIsLoading(false);
                             }
                         } catch (error) {
                             console.error("Error parsing JSON:", error);

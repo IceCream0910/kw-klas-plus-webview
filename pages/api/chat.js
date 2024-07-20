@@ -2,24 +2,32 @@ const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
 let sessionId = null;
 import { parse } from 'node-html-parser';
 
+export const config = {
+    runtime: "edge",
+};
+
 export default async function handler(req, res) {
     if (req.method === 'POST') {
-        const { conversation, subjList, token } = req.body;
+        const { conversation, subjList, token } = await req.json();
         sessionId = token;
-        res.setHeader('X-Accel-Buffering', 'no');
-        res.writeHead(200, {
-            'Content-Type': 'text/event-stream',
-            'Cache-Control': 'no-cache',
-            'Connection': 'keep-alive',
+
+        const stream = new TransformStream();
+        const writer = stream.writable.getWriter();
+        const encoder = new TextEncoder();
+
+        writer.write(encoder.encode(`data: ${JSON.stringify({ type: 'connected', message: 'Connected' })}\n\n`));
+
+        processChatRequest(conversation, subjList, writer, encoder);
+
+        return new Response(stream.readable, {
+            headers: {
+                'Content-Type': 'text/event-stream',
+                'Cache-Control': 'no-cache',
+                'Connection': 'keep-alive',
+            },
         });
-        res.flushHeaders();
-        res.write(`data: ${JSON.stringify({ type: 'connected', message: 'Connected' })}\n\n`);
-        res.flush();
-        await processChatRequest(conversation, subjList, res);
-        res.end();
     } else {
-        res.setHeader('Allow', ['POST']);
-        res.status(405).end(`Method ${req.method} Not Allowed`);
+        return new Response('Method Not Allowed', { status: 405 });
     }
 }
 
@@ -53,7 +61,7 @@ const processChatRequest = async (conversation, subjList, res) => {
       
       파라미터가 불확실한 경우 임의로 가정하지 말고, 사용자에게 재확인해. \
       답변에는 호출하는 function의 이름이나 구체적 내용과 같은 작동 방식 정보를 포함하지 마.
-      user가 사용하는 언어로 답변해. 만약 학교 생활과 무관한 질문의 경우에는 답변을 제공하지 마. 또한, Functions를 사용해 조회한 정보를 모두 답변에 포함하지 말고, 사용자가 질문한 내용만 요약해서 답변해.
+      user가 사용하는 언어로 답변해. 만약 학교 생활과 무관한 질문의 경우에는 답변을 제공하지 마. 또한, Functions를 사용해 조회한 정보를 모두 답변에 포함하지 말고, 사용자가 질문한 내용만 요약해서 답변해. 공지사항 목록은 한 번만 답변에 포함해.
             `,
         },
         ...conversation.map(item => ({
@@ -167,7 +175,6 @@ const callChatCompletion = async (messages, res) => {
                 const data = line.slice(6);
                 if (data === '[DONE]') {
                     res.write(`data: ${JSON.stringify({ type: 'done', message: 'Stream finished' })}\n\n`);
-                    res.flush();
                     return result;
                 }
                 try {
@@ -175,7 +182,6 @@ const callChatCompletion = async (messages, res) => {
                     if (parsed.choices[0].delta.content) {
                         result.choices[0].message.content += parsed.choices[0].delta.content;
                         res.write(`data: ${JSON.stringify({ type: 'content', message: parsed.choices[0].delta.content })}\n\n`);
-                        res.flush();
                     }
                     if (parsed.choices[0].finish_reason) {
                         result.choices[0].finish_reason = parsed.choices[0].finish_reason;
