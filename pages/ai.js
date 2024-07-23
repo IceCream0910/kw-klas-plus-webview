@@ -5,7 +5,7 @@ import IonIcon from '@reacticons/ionicons';
 import LoadingComponent from './components/loader';
 
 export default function Home() {
-    const subjList = useRef(null);
+    const [subjList, setSubjList] = useState(null);
     const [input, setInput] = useState('');
     const [token, setToken] = useState("");
     const [chat, setChat] = useState([]);
@@ -32,11 +32,10 @@ export default function Home() {
         };
         window.receiveSubjList = function (receivedSubjList) {
             if (!receivedSubjList) return;
-            subjList.current = receivedSubjList;
-            console.log(subjList.current);
+            setSubjList(JSON.parse(receivedSubjList)[0].subjList);
         };
 
-        //Android.completePageLoad();
+        Android.completePageLoad();
     }, []);
 
     useEffect(() => {
@@ -50,7 +49,7 @@ export default function Home() {
             const response = await fetch("/api/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ conversation, subjList: subjList.current, token }),
+                body: JSON.stringify({ conversation, subjList: JSON.stringify(subjList), token }),
                 signal: abortControllerRef.current.signal,
             });
 
@@ -96,7 +95,7 @@ export default function Home() {
                 console.log('Fetch aborted');
             } else {
                 console.error("Error fetching response:", error);
-                setChat(prevChat => [...prevChat, { type: 'answer', content: "KLAS에서 정보를 가져오는 데 실패했어요. 정확한 과목명과 원하는 항목을 말해보세요." }]);
+                setChat(prevChat => [...prevChat, { type: 'answer', content: "서버에 오류가 생겼어요. 잠시 후 다시 시도해주세요." }]);
             }
         } finally {
             setIsLoading(false);
@@ -119,7 +118,7 @@ export default function Home() {
     return (
         <div>
             <Head>
-                <title>KLAS Bot</title>
+                <title>KLAS GPT</title>
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
@@ -134,9 +133,9 @@ export default function Home() {
                                 <h4>이렇게 보내보세요</h4>
                                 <button onClick={() => setInput('최근에 올라온 학교 공지사항 알려줘')} style={{ background: 'var(--background)', marginTop: '10px' }}>최근에 올라온 학교 공지사항 알려줘</button>
                                 <button onClick={() => setInput('공지사항에서 수강신청자료집 찾아줘')} style={{ background: 'var(--background)', marginTop: '5px' }}>공지사항에서 수강신청 자료집 찾아줘</button>
-                                <button onClick={() => setInput(`${subjList.current && subjList.current[0].name} 출석 현황 알려줘`)} style={{ background: 'var(--background)', marginTop: '5px' }}>{subjList.current && subjList.current[0].name} 출석 현황 알려줘</button>
-                                <button onClick={() => setInput(`${subjList.current && subjList.current[0].name} 최근 공지사항 보여줘`)} style={{ background: 'var(--background)', marginTop: '5px' }}>{subjList.current && subjList.current[0].name} 최근 공지사항 보여줘</button>
-                                <button onClick={() => setInput(`${subjList.current && subjList.current[0].name} 미제출 과제 있어?`)} style={{ background: 'var(--background)', marginTop: '5px' }}>{subjList.current && subjList.current[0].name} 미제출 과제 있어?</button>
+                                <button onClick={() => setInput(`${subjList && subjList[0].name} 출석 현황 알려줘`)} style={{ background: 'var(--background)', marginTop: '5px' }}>{subjList && subjList[0].name} 출석 현황 알려줘</button>
+                                <button onClick={() => setInput(`${subjList && subjList[0].name} 최근 공지사항 보여줘`)} style={{ background: 'var(--background)', marginTop: '5px' }}>{subjList && subjList[0].name} 최근 공지사항 보여줘</button>
+                                <button onClick={() => setInput(`${subjList && subjList[0].name} 미제출 과제 있어?`)} style={{ background: 'var(--background)', marginTop: '5px' }}>{subjList && subjList[0].name} 미제출 과제 있어?</button>
                                 <br />
                                 <span style={{ fontSize: '12px', opacity: .5, marginTop: '5px' }}>* KLAS에 있는 학사 정보를 제 3자(OpenAI)에게 전송하는 것에 동의하는 것으로 간주합니다. <a href="/privacy" target='_blank' style={{ color: 'inherit' }}>개인정보 처리방침</a></span>
                             </div>

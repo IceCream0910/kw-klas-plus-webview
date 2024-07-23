@@ -228,7 +228,7 @@ export default function Home() {
           </div>
           <br />
           <button onClick={() => Android.openLibraryQR()}
-            style={{ background: 'var(--notice-hover)', borderRadius: '10px' }}>
+            style={{ background: 'var(--background)', borderRadius: '10px' }}>
             <span className="tossface">🪪</span>모바일 학생증
             <IonIcon name="chevron-forward-outline" style={{ position: 'relative', top: '2px' }} />
           </button>

@@ -11,14 +11,13 @@ export default async function handler(req) {
         const { conversation, subjList, token } = await req.json();
         sessionId = token;
 
-        const encoder = new TextEncoder(); // Create a new TextEncoder instance
+        const encoder = new TextEncoder();
 
         const stream = new ReadableStream({
             async start(controller) {
-                // Encode and enqueue the initial message
                 controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'connected', message: 'Connected' })}\n\n`));
 
-                await processChatRequest(conversation, subjList, controller, encoder); // Pass the encoder to processChatRequest
+                await processChatRequest(conversation, subjList, controller, encoder);
 
                 controller.close();
             }
@@ -66,7 +65,7 @@ const processChatRequest = async (conversation, subjList, controller, encoder) =
       
       파라미터가 불확실한 경우 임의로 가정하지 말고, 사용자에게 재확인해. \
       답변에는 호출하는 function의 이름이나 구체적 내용과 같은 작동 방식 정보를 포함하지 마.
-      user가 사용하는 언어로 답변해. 만약 학교 생활과 무관한 질문의 경우에는 답변을 제공하지 마. 또한, Functions를 사용해 조회한 정보를 모두 답변에 포함하지 말고, 사용자가 질문한 내용만 요약해서 답변해. 공지사항 목록은 한 번만 답변에 포함해.
+      user가 사용하는 언어로 답변해. 만약 학교 생활과 무관한 질문의 경우에는 답변을 제공하지 마. 또한, Functions를 사용해 조회한 정보를 모두 답변에 포함하지 말고, 사용자가 질문한 내용만 요약해서 반복(중복) 내용 없이 답변해.
             `,
         },
         ...conversation.map(item => ({
@@ -100,7 +99,6 @@ const processChatRequest = async (conversation, subjList, controller, encoder) =
 
     if (functionCalls.length > 0) {
         console.log(messages);
-        response = await callChatCompletion(messages, sendChunk);
     }
 };
 
