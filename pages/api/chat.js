@@ -40,33 +40,47 @@ const processChatRequest = async (conversation, subjList, controller, encoder) =
         {
             role: "system",
             content: `
-            You are an AI chatbot designed to assist students of 광운대학교 named 'KLAS GPT', a large language model trained by OpenAI, based on the GPT-4 architecture. \
-      You can provide details on course attendance, recent announcements, online lecture lists, assignments, and resources. You can also retrieve detailed information about assignments and announcements.
-      Knowledge cutoff: 2023-10 \ \
+            You are KLAS GPT, an AI chatbot designed to assist students of 광운대학교 (Kwangwoon University). You are based on the GPT-4 architecture and trained by OpenAI. Your primary function is to provide information about courses, assignments, announcements, and university-related matters. Your knowledge is current up to October 2023.\
+            Current Date: ${new Date().toLocaleDateString()}\
+\
+You will receive two inputs:\
+1. A user query(contains history of conversation)\
+2. A list of subjects the user is currently enrolled in\
 
-      Image input capabilities: Disabled \
-      Personality: v2 \ \
+You have access to the following functions:
+1. searchCourseInfo(courseName: string, courseLabel: string, courseCode: string) - 해당 강의의 출석 현황(O:출석, X:결석, L:지각, A:공결), 최근 공지사항(최대 4개), 온라인 강의 리스트, 과제 개수 등 조회. 출석정보(atendSubList, 회차는 pgr1, pgr2..로 표시), 최근 공지사항(noticeList), 온라인 강의 리스트(cntntList), 과제 개수(taskCnt)\
+2. searchTaskList(courseName: string, courseLabel: string, courseCode: string) - 해당 강의의 과제 목록 조회. 각 과제에 대해 제출 상태, 마감 기한, 과제 제목 조회 가능\
+3. getKWNoticeList() - 학교 홈페이지에서 최근 공지사항 목록 조회\
+4. searchKWNoticeList(query: string) - 학교 홈페이지에서 공지사항 검색. 검색어를 입력하면 해당 검색어가 포함된 공지사항 목록을 반환. 답변 시 되도록 많은 공지사항 목록을 포함해.\
+5. getSchedules() - 학교 홈페이지에서 올해 학사일정 조회\
+6. getHaksik() - 이번 주 학식(함지마루 복지관 학생식당) 메뉴 조회\
+7. getUniversityHomepage() - 학교 홈페이지 메인 화면의 콘텐츠를 markdown 형식으로 반환. 사이트맵, 보도자료, 최신연구성과 등 정보 포함. 만약 사용자의 질문이 학교 관련 질문인데, 다른 function을 사용해서라도 답변하기 어렵다고 판단되는 경우 해당 function을 사용하여 관련 정보 혹은 URL을 답변으로 제공해.\
 
-      # Functions \
-      ## searchCourseInfo(courseName: string, courseLabel: string, courseCode: string) \
-      해당 강의의 출석 현황(O:출석, X:결석, L:지각, A:공결), 최근 공지사항(최대 4개), 온라인 강의 리스트, 과제 개수 등 조회. 출석정보(atendSubList, 회차는 pgr1, pgr2..로 표시), 최근 공지사항(noticeList), 온라인 강의 리스트(cntntList), 과제 개수(taskCnt) \ \
+Default function is getUniversityHomepage() when the user's query is not related to university life or courses.\\
 
-      ## searchTaskList(courseName: string, courseLabel: string, courseCode: string) \
-      해당 강의의 과제 목록 조회. 각 과제에 대해 제출 상태, 마감 기한, 과제 제목 조회 가능 \ \
-
-      ## getKWNoticeList() \
-      학교 홈페이지에서 최근 공지사항 목록 조회 \ \
-
-      ## searchKWNoticeList(query: string) \
-      학교 홈페이지에서 공지사항 검색. 검색어를 입력하면 해당 검색어가 포함된 공지사항 목록을 반환. 답변 시 되도록 많은 공지사항 목록을 포함하길 권장. \ \
-
-      Course code are required parameters for all functions. 다음은 현재 사용자가 듣고 있는 과목들이야. courseCode, courseName, courseLabel(e.g. 상상공학과표현 (0000-1-7461-02) - 김형국)은 아래 객체에서 각각 value, name, label의 값을 그대로 사용해서 function을 호출해야 해.  \
-      ${JSON.stringify(subjList)}
-      
-      파라미터가 불확실한 경우 임의로 가정하지 말고, 사용자에게 재확인해. \
-      답변에는 호출하는 function의 이름이나 구체적 내용과 같은 작동 방식 정보를 포함하지 마.
-      user가 사용하는 언어로 답변해. 만약 학교 생활과 무관한 질문의 경우에는 답변을 제공하지 마. 또한, Functions를 사용해 조회한 정보를 모두 답변에 포함하지 말고, 사용자가 질문한 내용만 요약해서 반복(중복) 내용 없이 답변해.
-            `,
+General guidelines:
+- Respond in the same language as the user's query.\
+- Do not answer questions unrelated to university life or courses.\
+- Summarize information from function calls; do not include all details in your response.\
+- Avoid mentioning function names or operational details in your responses.\
+- If parameters are unclear, ask the user for clarification instead of making assumptions.
+\\
+Follow these steps to process and respond to queries:\
+1. Analyze the user's query to determine which function(s) you need to call.\
+2. If the query relates to a specific course:\
+   a. Extract the course information from the subject_list.\
+   b. Use the courseCode, courseName, and courseLabel from the subject_list when calling functions.\
+3. Call the necessary function(s) to gather information.\
+4. If you receive an error or insufficient information, consider calling alternative functions or asking the user for more details.\
+5. Summarize the relevant information from the function results.\
+6. Formulate a concise, informative response that directly addresses the user's query.\
+7. If the query is not related to university life or courses, politely inform the user that you cannot assist with that type of question.
+\\
+Remember:\
+- Do not include function names or technical details in your response.\
+- Avoid repeating information unnecessarily.\
+- Stay within the scope of university-related matters.\
+- If you need clarification, ask the user before proceeding.`,
         },
         ...conversation.map(item => ({
             role: item.type === 'question' ? 'user' : 'assistant',
@@ -81,8 +95,6 @@ const processChatRequest = async (conversation, subjList, controller, encoder) =
     let response = await callChatCompletion(messages, sendChunk);
     let functionCalls = [];
 
-    console.log(response);
-
     while (response.choices[0].finish_reason === "function_call") {
         const functionCall = response.choices[0].message.function_call;
         functionCalls.push(functionCall);
@@ -95,10 +107,6 @@ const processChatRequest = async (conversation, subjList, controller, encoder) =
         });
 
         response = await callChatCompletion(messages, sendChunk);
-    }
-
-    if (functionCalls.length > 0) {
-        console.log(messages);
     }
 };
 
@@ -157,6 +165,33 @@ const callChatCompletion = async (messages, sendChunk) => {
                             query: { type: 'string' },
                         },
                         required: ['query'],
+                    },
+                },
+                {
+                    name: 'getSchedules',
+                    description: '학교 홈페이지에서 올해 학사일정 조회',
+                    parameters: {
+                        type: 'object',
+                        properties: {},
+                        required: [],
+                    },
+                },
+                {
+                    name: 'getHaksik',
+                    description: '이번 주 학식 메뉴 조회',
+                    parameters: {
+                        type: 'object',
+                        properties: {},
+                        required: [],
+                    },
+                },
+                {
+                    name: 'getUniversityHomepage',
+                    description: '학교 홈페이지 메인 화면의 콘텐츠를 markdown 형식으로 반환. 학교에 대한 다양한 정보를 확인할 수 있는 URL이 포함된 사이트맵, 보도자료, 최신연구성과 등 정보 포함.',
+                    parameters: {
+                        type: 'object',
+                        properties: {},
+                        required: [],
                     },
                 },
             ],
@@ -220,13 +255,18 @@ const executeFunctionCall = async (functionCall) => {
             return await getKWNoticeList();
         case 'searchKWNoticeList':
             return await searchKWNoticeList(args);
+        case 'getSchedules':
+            return await getSchedules();
+        case 'getHaksik':
+            return await getHaksik();
+        case 'getUniversityHomepage':
+            return await getUniversityHomepage();
         default:
             return { error: "Unknown function" };
     }
 };
 
 
-// 강의 종합 정보
 async function searchCourseInfo({ courseName, courseLabel, courseCode }) {
     const options = {
         method: 'POST',
@@ -246,8 +286,6 @@ async function searchCourseInfo({ courseName, courseLabel, courseCode }) {
   }
 }`
     };
-
-    console.log(options.body)
 
     try {
         const response = await fetch('https://klas.kw.ac.kr/std/lis/evltn/LctrumHomeStdInfo.do', options);
@@ -365,6 +403,107 @@ async function searchKWNoticeList({ query }) {
     }
 }
 
+async function getSchedules() {
+    try {
+        const response = await fetch('https://www.kw.ac.kr/KWBoard/list5_detail.jsp');
+        const html = await response.text();
+
+        const root = parse(html);
+        const scheduleListBox = root.querySelector('.schedule-this-yearlist');
+
+        if (scheduleListBox) {
+            const monthBoxes = scheduleListBox.querySelectorAll('.month_box');
+            const calendarEvents = [];
+
+            monthBoxes.forEach(monthBox => {
+                const events = monthBox.querySelectorAll('.list ul li');
+
+                events.forEach(event => {
+                    const date = event.querySelector('strong')?.text.trim();
+                    const description = event.querySelector('p')?.text.trim();
+
+                    calendarEvents.push({
+                        date,
+                        description
+                    });
+                });
+            });
+
+            return calendarEvents;
+        } else {
+            console.log('schedule-list-box를 찾을 수 없습니다.');
+            return [];
+        }
+    } catch (error) {
+        console.error('에러 발생:', error.message);
+        return [];
+    }
+}
+
+async function getHaksik() {
+    try {
+        const response = await fetch('https://www.kw.ac.kr/ko/life/facility11.jsp');
+        const html = await response.text();
+
+        const root = parse(html);
+        const table = root.querySelector('table.tbl-list');
+
+        if (table) {
+            const headers = table.querySelectorAll('thead th');
+            const menuRow = table.querySelector('tbody tr');
+
+            const weeklyMenu = [];
+
+            headers.forEach((header, index) => {
+                if (index === 0) return; // 첫 번째 열은 "구분"이므로 건너뜁니다.
+
+                const day = header.querySelector('.nowDay')?.text.trim();
+                const date = header.querySelector('.nowDate')?.text.trim();
+                const menu = menuRow.querySelectorAll('td')[index].querySelector('pre')?.text.trim();
+
+                weeklyMenu.push({
+                    day,
+                    date,
+                    menu
+                });
+            });
+
+            // 식당 정보 추출
+            const restaurantInfo = menuRow.querySelector('td');
+            const restaurantName = restaurantInfo.querySelector('.dietTitle')?.text.trim();
+            const price = restaurantInfo.querySelector('.dietPrice')?.text.trim();
+            const time = restaurantInfo.querySelector('.dietTime')?.text.trim();
+
+            return {
+                restaurantInfo: {
+                    name: restaurantName,
+                    price,
+                    time
+                },
+                weeklyMenu
+            };
+        } else {
+            console.log('식단표를 찾을 수 없습니다.');
+            return null;
+        }
+    } catch (error) {
+        console.error('에러 발생:', error.message);
+        return null;
+    }
+}
+
+async function getUniversityHomepage() {
+    try {
+        const response = await fetch('http://localhost:3000/api/crawling?url=https://www.kw.ac.kr/ko/index.jsp');
+        const json = await response.json();
+        const data = json.markdown;
+        console.log(data);
+        return data;
+    } catch (error) {
+        console.error('에러 발생:', error.message);
+        return [];
+    }
+}
 
 
 function getCurrentYear() {

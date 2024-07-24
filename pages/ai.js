@@ -21,7 +21,6 @@ export default function Home() {
             setInput('');
             setIsLoading(true);
             await sendMessage([...chat, newQuestion]);
-            setIsLoading(false);
         }
     };
 
@@ -35,12 +34,8 @@ export default function Home() {
             setSubjList(JSON.parse(receivedSubjList)[0].subjList);
         };
 
-        Android.completePageLoad();
+        //Android.completePageLoad();
     }, []);
-
-    useEffect(() => {
-        console.log(chat);
-    }, [chat]);
 
 
     const sendMessage = async (conversation) => {
@@ -81,8 +76,6 @@ export default function Home() {
                                     lastMessage.content += data.message;
                                     return newChat;
                                 });
-                            } else if (data.type === 'done') {
-                                setIsLoading(false);
                             }
                         } catch (error) {
                             console.error("Error parsing JSON:", error);
@@ -131,11 +124,12 @@ export default function Home() {
                                 <span>AI가 KLAS에서 정보를 불러와 답변해줍니다. Beta 기능이므로 작동이 불안정할 수 있습니다.</span>
                                 <br />
                                 <h4>이렇게 보내보세요</h4>
-                                <button onClick={() => setInput('최근에 올라온 학교 공지사항 알려줘')} style={{ background: 'var(--background)', marginTop: '10px' }}>최근에 올라온 학교 공지사항 알려줘</button>
                                 <button onClick={() => setInput('공지사항에서 수강신청자료집 찾아줘')} style={{ background: 'var(--background)', marginTop: '5px' }}>공지사항에서 수강신청 자료집 찾아줘</button>
-                                <button onClick={() => setInput(`${subjList && subjList[0].name} 출석 현황 알려줘`)} style={{ background: 'var(--background)', marginTop: '5px' }}>{subjList && subjList[0].name} 출석 현황 알려줘</button>
-                                <button onClick={() => setInput(`${subjList && subjList[0].name} 최근 공지사항 보여줘`)} style={{ background: 'var(--background)', marginTop: '5px' }}>{subjList && subjList[0].name} 최근 공지사항 보여줘</button>
-                                <button onClick={() => setInput(`${subjList && subjList[0].name} 미제출 과제 있어?`)} style={{ background: 'var(--background)', marginTop: '5px' }}>{subjList && subjList[0].name} 미제출 과제 있어?</button>
+                                <button onClick={() => setInput(`${subjList && subjList[Math.floor(Math.random() * subjList.length)].name} 출석 현황 알려줘`)} style={{ background: 'var(--background)', marginTop: '5px' }}>{subjList && subjList[Math.floor(Math.random() * subjList.length)].name} 출석 현황 알려줘</button>
+                                <button onClick={() => setInput(`${subjList && subjList[Math.floor(Math.random() * subjList.length)].name} 최근 공지사항 보여줘`)} style={{ background: 'var(--background)', marginTop: '5px' }}>{subjList && subjList[Math.floor(Math.random() * subjList.length)].name} 최근 공지사항 보여줘</button>
+                                <button onClick={() => setInput(`${subjList && subjList[Math.floor(Math.random() * subjList.length)].name} 미제출 과제 있어?`)} style={{ background: 'var(--background)', marginTop: '5px' }}>{subjList && subjList[Math.floor(Math.random() * subjList.length)].name} 미제출 과제 있어?</button>
+                                <button onClick={() => setInput('오늘의 학식 메뉴')} style={{ background: 'var(--background)', marginTop: '5px' }}>오늘 학식 메뉴 알려줘</button>
+                                <button onClick={() => setInput('이번 달 학사일정')} style={{ background: 'var(--background)', marginTop: '5px' }}>이번 달 학사일정 알려줘</button>
                                 <br />
                                 <span style={{ fontSize: '12px', opacity: .5, marginTop: '5px' }}>* KLAS에 있는 학사 정보를 제 3자(OpenAI)에게 전송하는 것에 동의하는 것으로 간주합니다. <a href="/privacy" target='_blank' style={{ color: 'inherit' }}>개인정보 처리방침</a></span>
                             </div>
