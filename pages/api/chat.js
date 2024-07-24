@@ -494,7 +494,7 @@ async function getHaksik() {
 
 async function getUniversityHomepage() {
     try {
-        const response = await fetch('http://localhost:3000/api/crawling?url=https://www.kw.ac.kr/ko/index.jsp');
+        const response = await fetch('https://klasplus.yuntae.in/api/crawling?url=https://www.kw.ac.kr/ko/index.jsp');
         const json = await response.json();
         const data = json.markdown;
         console.log(data);
