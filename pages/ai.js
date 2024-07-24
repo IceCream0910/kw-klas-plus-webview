@@ -125,9 +125,9 @@ export default function Home() {
                                 <br />
                                 <h4>이렇게 보내보세요</h4>
                                 <button onClick={() => setInput('공지사항에서 수강신청자료집 찾아줘')} style={{ background: 'var(--background)', marginTop: '5px' }}>공지사항에서 수강신청 자료집 찾아줘</button>
-                                <button onClick={() => setInput(`${subjList && subjList[Math.floor(Math.random() * subjList.length)].name} 출석 현황 알려줘`)} style={{ background: 'var(--background)', marginTop: '5px' }}>{subjList && subjList[Math.floor(Math.random() * subjList.length)].name} 출석 현황 알려줘</button>
-                                <button onClick={() => setInput(`${subjList && subjList[Math.floor(Math.random() * subjList.length)].name} 최근 공지사항 보여줘`)} style={{ background: 'var(--background)', marginTop: '5px' }}>{subjList && subjList[Math.floor(Math.random() * subjList.length)].name} 최근 공지사항 보여줘</button>
-                                <button onClick={() => setInput(`${subjList && subjList[Math.floor(Math.random() * subjList.length)].name} 미제출 과제 있어?`)} style={{ background: 'var(--background)', marginTop: '5px' }}>{subjList && subjList[Math.floor(Math.random() * subjList.length)].name} 미제출 과제 있어?</button>
+                                <button onClick={() => setInput(`${subjList && subjList[0].name} 출석 현황 알려줘`)} style={{ background: 'var(--background)', marginTop: '5px' }}>{subjList && subjList[0].name} 출석 현황 알려줘</button>
+                                <button onClick={() => setInput(`${subjList && subjList[0].name} 최근 공지사항 보여줘`)} style={{ background: 'var(--background)', marginTop: '5px' }}>{subjList && subjList[Math.floor(Math.random() * subjList.length)].name} 최근 공지사항 보여줘</button>
+                                <button onClick={() => setInput(`${subjList && subjList[0].name} 미제출 과제 있어?`)} style={{ background: 'var(--background)', marginTop: '5px' }}>{subjList && subjList[0].name} 미제출 과제 있어?</button>
                                 <button onClick={() => setInput('오늘의 학식 메뉴')} style={{ background: 'var(--background)', marginTop: '5px' }}>오늘 학식 메뉴 알려줘</button>
                                 <button onClick={() => setInput('이번 달 학사일정')} style={{ background: 'var(--background)', marginTop: '5px' }}>이번 달 학사일정 알려줘</button>
                                 <br />
