@@ -45,7 +45,7 @@ const processChatRequest = async (conversation, subjList, controller, encoder) =
 \
 You will receive two inputs:\
 1. A user query(contains history of conversation)\
-2. A list of subjects the user is currently enrolled in\
+2. A list of subjects the user is currently enrolled in : ${subjList}\
 
 You have access to the following functions:
 1. searchCourseInfo(courseName: string, courseLabel: string, courseCode: string) - 해당 강의의 출석 현황(O:출석, X:결석, L:지각, A:공결), 최근 공지사항(최대 4개), 온라인 강의 리스트, 과제 개수 등 조회. 출석정보(atendSubList, 회차는 pgr1, pgr2..로 표시), 최근 공지사항(noticeList), 온라인 강의 리스트(cntntList), 과제 개수(taskCnt)\
