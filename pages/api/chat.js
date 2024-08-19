@@ -269,6 +269,7 @@ const executeFunctionCall = async (functionCall) => {
 
 
 async function searchCourseInfo({ courseName, courseLabel, courseCode }) {
+    const yearHakgi = await getYearHakgi();
     const options = {
         method: 'POST',
         headers: {
@@ -276,7 +277,7 @@ async function searchCourseInfo({ courseName, courseLabel, courseCode }) {
             'Content-Type': 'application/json'
         },
         body: `{
-  "selectYearhakgi": "${getCurrentYear()},${getCurrentSemester()}",
+  "selectYearhakgi": "${yearHakgi}",
   "selectSubj": "${courseCode}",
   "selectChangeYn": "Y",
   "subjNm": "${courseLabel}",
@@ -299,6 +300,7 @@ async function searchCourseInfo({ courseName, courseLabel, courseCode }) {
 }
 
 async function searchTaskList({ courseName, courseLabel, courseCode }) {
+    const yearHakgi = await getYearHakgi();
     const options = {
         method: 'POST',
         headers: {
@@ -306,7 +308,7 @@ async function searchTaskList({ courseName, courseLabel, courseCode }) {
             'Content-Type': 'application/json'
         },
         body: `{
-  "selectYearhakgi": "${getCurrentYear()},${getCurrentSemester()}",
+  "selectYearhakgi": "${yearHakgi}",
   "selectSubj": "${courseCode}",
   "selectChangeYn": "Y",
   "subjNm": "${courseLabel}",
@@ -506,13 +508,26 @@ async function getUniversityHomepage() {
     }
 }
 
+async function getYearHakgi() {
+    if (sessionId) {
+        await fetch("/api/stdList", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ sessionId }),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                return data[0].value;
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
 
-function getCurrentYear() {
-    const currentYear = new Date().getFullYear();
-    return currentYear.toString();
-}
-
-function getCurrentSemester() {
+    const year = new Date().getFullYear().toString();
     const currentMonth = new Date().getMonth();
-    return currentMonth < 7 ? "1" : "2";
+    const hakgi = currentMonth < 7 ? "1" : "2";
+    return year + "," + hakgi;
 }
