@@ -1,5 +1,6 @@
 const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
 let sessionId = null;
+let currentYearHakgi = null;
 import { parse } from 'node-html-parser';
 
 export const config = {
@@ -8,8 +9,9 @@ export const config = {
 
 export default async function handler(req) {
     if (req.method === 'POST') {
-        const { conversation, subjList, token } = await req.json();
+        const { conversation, subjList, token, yearHakgi } = await req.json();
         sessionId = token;
+        currentYearHakgi = yearHakgi || new Date().getFullYear() + ',' + (new Date().getMonth() < 2 ? 1 : 0);
 
         const encoder = new TextEncoder();
 
@@ -269,7 +271,6 @@ const executeFunctionCall = async (functionCall) => {
 
 
 async function searchCourseInfo({ courseName, courseLabel, courseCode }) {
-    const yearHakgi = await getYearHakgi();
     const options = {
         method: 'POST',
         headers: {
@@ -277,7 +278,7 @@ async function searchCourseInfo({ courseName, courseLabel, courseCode }) {
             'Content-Type': 'application/json'
         },
         body: `{
-  "selectYearhakgi": "${yearHakgi}",
+  "selectYearhakgi": "${currentYearHakgi}",
   "selectSubj": "${courseCode}",
   "selectChangeYn": "Y",
   "subjNm": "${courseLabel}",
@@ -300,7 +301,6 @@ async function searchCourseInfo({ courseName, courseLabel, courseCode }) {
 }
 
 async function searchTaskList({ courseName, courseLabel, courseCode }) {
-    const yearHakgi = await getYearHakgi();
     const options = {
         method: 'POST',
         headers: {
@@ -308,7 +308,7 @@ async function searchTaskList({ courseName, courseLabel, courseCode }) {
             'Content-Type': 'application/json'
         },
         body: `{
-  "selectYearhakgi": "${yearHakgi}",
+  "selectYearhakgi": "${currentYearHakgi}",
   "selectSubj": "${courseCode}",
   "selectChangeYn": "Y",
   "subjNm": "${courseLabel}",
@@ -506,28 +506,4 @@ async function getUniversityHomepage() {
         console.error('에러 발생:', error.message);
         return [];
     }
-}
-
-async function getYearHakgi() {
-    if (sessionId) {
-        await fetch("/api/stdList", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ sessionId }),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                return data[0].value;
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    }
-
-    const year = new Date().getFullYear().toString();
-    const currentMonth = new Date().getMonth();
-    const hakgi = currentMonth < 7 ? "1" : "2";
-    return year + "," + hakgi;
 }

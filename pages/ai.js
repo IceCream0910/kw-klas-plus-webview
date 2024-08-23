@@ -13,6 +13,7 @@ export default function Home() {
     const scrollRef = useRef(null);
     const abortControllerRef = useRef(null);
     const [randomSubjName, setRandomSubjName] = useState(null);
+    const [yearHakgi, setYearHakgi] = useState(null);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -29,6 +30,9 @@ export default function Home() {
         window.receiveToken = function (receivedToken) {
             if (!receivedToken) return;
             setToken(receivedToken);
+            //get url params 'yearHakgi'
+            const urlParams = new URLSearchParams(window.location.search);
+            setYearHakgi(urlParams.get('yearHakgi'));
         };
         window.receiveSubjList = function (receivedSubjList) {
             if (!receivedSubjList) return;
@@ -47,7 +51,7 @@ export default function Home() {
             const response = await fetch("/api/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ conversation, subjList: JSON.stringify(subjList), token }),
+                body: JSON.stringify({ conversation, subjList: JSON.stringify(subjList), token, yearHakgi }),
                 signal: abortControllerRef.current.signal,
             });
 
@@ -58,7 +62,6 @@ export default function Home() {
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
 
-            // 새 답변 메시지를 추가합니다.
             setChat(prevChat => [...prevChat, { type: 'answer', content: '' }]);
 
             while (true) {
