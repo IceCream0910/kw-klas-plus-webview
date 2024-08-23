@@ -12,6 +12,7 @@ export default async function handler(req) {
         const { conversation, subjList, token, yearHakgi } = await req.json();
         sessionId = token;
         currentYearHakgi = yearHakgi || new Date().getFullYear() + ',' + (new Date().getMonth() < 2 ? 1 : 0);
+        console.log("yearHakgi:", currentYearHakgi);
 
         const encoder = new TextEncoder();
 
