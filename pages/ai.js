@@ -30,9 +30,6 @@ export default function Home() {
         window.receiveToken = function (receivedToken) {
             if (!receivedToken) return;
             setToken(receivedToken);
-            //get url params 'yearHakgi'
-            const urlParams = new URLSearchParams(window.location.search);
-            setYearHakgi(urlParams.get('yearHakgi'));
         };
         window.receiveSubjList = function (receivedSubjList) {
             if (!receivedSubjList) return;
@@ -41,7 +38,10 @@ export default function Home() {
             setRandomSubjName(data[Math.floor(Math.random() * data.length)].name)
         };
 
-        Android.completePageLoad();
+        //Android.completePageLoad();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        setYearHakgi(urlParams.get('yearHakgi'));
     }, []);
 
 
