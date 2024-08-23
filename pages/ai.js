@@ -38,7 +38,7 @@ export default function Home() {
             setRandomSubjName(data[Math.floor(Math.random() * data.length)].name)
         };
 
-        //Android.completePageLoad();
+        Android.completePageLoad();
 
         const urlParams = new URLSearchParams(window.location.search);
         setYearHakgi(urlParams.get('yearHakgi'));
