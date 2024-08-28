@@ -328,3 +328,108 @@ div[role="dialog"] {
 .message a {
   color: var(--text-color);
 }
+
+#remaining-deadline {
+  display: grid;
+  grid-gap: 10px;
+  flex-wrap: wrap;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+h4,
+h3,
+h6 {
+  color: var(--text-color);
+}
+
+h4 {
+  margin: 0;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+h6 {
+  margin: 0;
+  font-size: 1rem;
+  margin-bottom: 5px;
+}
+
+.card {
+  position: relative;
+  background-color: var(--card-background);
+  border-radius: 20px;
+  padding: 20px;
+  font-size: 1.2rem;
+  grid-row-end: span 1;
+  grid-column-end: span 1;
+  transition: transform .5s ease;
+  -o-transition: transform .5s ease;
+  width: 100%;
+  border-radius: 20px;
+  padding: 20px 15px;
+  box-sizing: border-box;
+}
+
+.card:active {
+  transform: scale(0.98);
+  -o-transform: scale(0.98);
+}
+
+.card.non-anim {
+  transform: none;
+  -o-transform: none;
+}
+
+.notice-item {
+  transition: transform .5s ease;
+  -o-transition: transform .5s ease;
+  border-radius: 5px;
+}
+
+.notice-item:active {
+  transform: scale(0.97);
+  -o-transform: scale(0.97);
+  background-color: var(--notice-hover);
+}
+
+.card span {
+  font-size: 0.9rem;
+}
+
+.card.green {
+  border: 1px solid rgb(0, 190, 102);
+}
+
+.card.blue {
+  border: 1px solid rgb(46, 118, 252);
+}
+
+.card.red {
+  border: 1px solid rgb(255, 122, 122);
+}
+
+.card.yellow {
+  border: 1px solid #ffae00;
+}
+
+.card div {
+  margin: 0;
+  padding: 0;
+  line-height: 0.9;
+}
+
+#qr_btn {
+  background-color: var(--card-background);
+  color: var(--text-color);
+  border: 1px solid var(--card-border);
+}
+
+@media (max-width: 768px) {
+  #remaining-deadline {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+
+  .card {
+    padding-bottom: 10%;
+  }
+}
