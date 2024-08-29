@@ -11,6 +11,7 @@ export default function Home() {
   const [selectedSubjName, setSelectedSubjName] = useState(null);
   const [statusText, setStatusText] = useState("");
   const [showButtons, setShowButtons] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -55,6 +56,7 @@ export default function Home() {
       .then((response) => response.json())
       .then((data) => {
         setNotices(data.list);
+        setLoading(false);
       })
       .catch((error) => {
         console.error(error);
@@ -210,8 +212,13 @@ export default function Home() {
       <h3>최근 과목별 공지사항</h3>
       <br />
       {notices &&
-        <div className="card non-anim" id="notices">
-          {notices.length === 0 ? (
+        <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
+          {loading && <>
+            <div className="skeleton" style={{ height: '50px', width: '100%', marginBottom: '15px' }} />
+            <div className="skeleton" style={{ height: '50px', width: '100%', marginBottom: '15px' }} />
+            <div className="skeleton" style={{ height: '50px', width: '100%' }} />
+          </>}
+          {!loading && notices.length === 0 ? (
             <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', justifyContent: 'center', marginTop: '10px', opacity: '.3' }}>
               <svg width="64" height="41" viewBox="0 0 64 41" xmlns="http://www.w3.org/2000/svg">
                 <g transform="translate(0 1)" fill="none" fillRule="evenodd">
@@ -229,7 +236,7 @@ export default function Home() {
                 <div key={index} className="notice-item" onClick={() => typeof Android !== 'undefined' && Android.openPage(`https://klas.kw.ac.kr/?redirectUrl=/mst/cmn/login/PushLinkForm.do?pushSeq=${notice.pushSeq}`)}>
                   <span>{notice.title} · <span><b>{notice.body}</b></span></span><br />
                   <span style={{ opacity: 0.6, fontSize: '12px' }}>{notice.registDt}</span>
-                  <hr style={{ opacity: 0.3 }} />
+                  {index != notices.length - 1 && <hr style={{ opacity: 0.3 }} />}
                 </div>
               );
             })
