@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
+import TodaysCafeteriaMenu from './components/TodaysCafeteria';
+import IonIcon from '@reacticons/ionicons';
 
 export default function Home() {
   const [yearHakgi, setYearHakgi] = useState(null);
@@ -12,6 +14,8 @@ export default function Home() {
   const [statusText, setStatusText] = useState("");
   const [showButtons, setShowButtons] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [cafeteria, setCafeteria] = useState(null);
+  const [kwNotice, setKWNotice] = useState(null);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -37,6 +41,34 @@ export default function Home() {
 
     Android.completePageLoad();
 
+    fetch("/api/cafeteria", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setCafeteria(data.weeklyMenu);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    fetch("/api/kwNotice", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setKWNotice(data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
     return () => {
       delete window.receiveDeadlineData;
       delete window.receiveNoticeData;
@@ -46,7 +78,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!token) return;
-    fetch("/api/notice", {
+    fetch("/api/lectureNotice", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -209,7 +241,7 @@ export default function Home() {
         ))}
       </div>
       <div style={{ height: '30px' }}></div>
-      <h3>최근 과목별 공지사항</h3>
+      <h3>강의 알림</h3>
       <br />
       {notices &&
         <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
@@ -243,7 +275,51 @@ export default function Home() {
           )}
         </div>
       }
+      <br /> <br />
+
+
+      <h3>오늘의 학식<button onClick={() => window.open('https://www.kw.ac.kr/ko/life/facility11.jsp')} style={{ float: "right", width: 'fit-content', marginTop: '-5px' }}><IonIcon name='add-outline' /></button></h3>
       <br />
+      <div className="card non-anim" style={{ paddingTop: '1.5em', paddingBottom: '0.1em' }}>
+        {!cafeteria && <>
+          <div className="skeleton" style={{ height: '20px', width: '30%', marginBottom: '10px', marginTop: '-10px' }} />
+          <div className="skeleton" style={{ height: '20px', width: '50%', marginBottom: '10px' }} />
+          <div className="skeleton" style={{ height: '20px', width: '40%', marginBottom: '10px' }} />
+          <div className="skeleton" style={{ height: '20px', width: '70%', marginBottom: '20px' }} />
+        </>}
+
+        {cafeteria && <TodaysCafeteriaMenu weeklyMenu={cafeteria} />}
+      </div>
+      <br /> <br />
+
+      <h3>학사 공지사항<button onClick={() => window.open('https://www.kw.ac.kr/ko/life/notice.jsp?srCategoryId=1')} style={{ float: "right", width: 'fit-content', marginTop: '-5px' }}><IonIcon name='add-outline' /></button></h3>
+      <br />
+      {kwNotice &&
+        <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
+          {!kwNotice && <>
+            <div className="skeleton" style={{ height: '50px', width: '100%', marginBottom: '15px' }} />
+            <div className="skeleton" style={{ height: '50px', width: '100%', marginBottom: '15px' }} />
+            <div className="skeleton" style={{ height: '50px', width: '100%' }} />
+          </>}
+          {kwNotice && kwNotice.length === 0 ? (
+            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', justifyContent: 'center', opacity: '.5' }}>
+              <span>최근 공지사항이 없습니다!</span>
+            </div>
+          ) : (
+            kwNotice.slice(0, 6).map((notice, index) => {
+              return (
+                <div key={index} className="notice-item" onClick={() => window.open(`${notice.link}`)}>
+                  <span><b>{notice.title}</b></span><br />
+                  <span style={{ opacity: 0.6, fontSize: '12px' }}>{notice.createdDate} · {notice.author}</span>
+                  {index != 5 && <hr style={{ opacity: 0.3 }} />}
+                </div>
+              );
+            })
+          )}
+        </div>
+      }
+
     </div>
+
   );
 }
