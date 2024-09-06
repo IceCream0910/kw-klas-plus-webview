@@ -278,7 +278,7 @@ export default function Home() {
       <br /> <br />
 
 
-      <h3>오늘의 학식<button onClick={() => window.open('https://www.kw.ac.kr/ko/life/facility11.jsp')} style={{ float: "right", width: 'fit-content', marginTop: '-5px' }}><IonIcon name='add-outline' /></button></h3>
+      <h3>오늘의 학식<button onClick={() => Android.openPage('https://www.kw.ac.kr/ko/life/facility11.jsp')} style={{ float: "right", width: 'fit-content', marginTop: '-5px' }}><IonIcon name='add-outline' /></button></h3>
       <br />
       <div className="card non-anim" style={{ paddingTop: '1.5em', paddingBottom: '0.1em' }}>
         {!cafeteria && <>
@@ -292,7 +292,7 @@ export default function Home() {
       </div>
       <br /> <br />
 
-      <h3>학사 공지사항<button onClick={() => window.open('https://www.kw.ac.kr/ko/life/notice.jsp?srCategoryId=1')} style={{ float: "right", width: 'fit-content', marginTop: '-5px' }}><IonIcon name='add-outline' /></button></h3>
+      <h3>학사 공지사항<button onClick={() => Android.openPage('https://www.kw.ac.kr/ko/life/notice.jsp?srCategoryId=1')} style={{ float: "right", width: 'fit-content', marginTop: '-5px' }}><IonIcon name='add-outline' /></button></h3>
       <br />
       {kwNotice &&
         <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
@@ -308,7 +308,7 @@ export default function Home() {
           ) : (
             kwNotice.slice(0, 6).map((notice, index) => {
               return (
-                <div key={index} className="notice-item" onClick={() => window.open(`${notice.link}`)}>
+                <div key={index} className="notice-item" onClick={() => Android.openPage(`${notice.link}`)}>
                   <span><b>{notice.title}</b></span><br />
                   <span style={{ opacity: 0.6, fontSize: '12px' }}>{notice.createdDate} · {notice.author}</span>
                   {index != 5 && <hr style={{ opacity: 0.3 }} />}
