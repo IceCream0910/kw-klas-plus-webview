@@ -14,7 +14,7 @@ const AppVersion = () => {
     }, []);
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%', fontSize: '13px', opacity: .5 }} onClick={() => location.href = 'https://play.google.com/store/apps/details?id=com.icecream.kwklasplus'} >
+        <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%', fontSize: '13px', opacity: .5 }} >
             {
                 version == process.env.NEXT_PUBLIC_ANDROID_LATEST_VERSION ?
                     "앱이 최신 버전입니다. " : "앱이 최신 버전이 아닙니다. "

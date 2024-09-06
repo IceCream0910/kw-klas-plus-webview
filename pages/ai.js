@@ -130,7 +130,7 @@ export default function Home() {
                                 <span>AI가 KLAS에서 정보를 불러와 답변해줍니다. Beta 기능이므로 작동이 불안정할 수 있습니다.</span>
                                 <br />
                                 <h4>이렇게 보내보세요</h4>
-                                <button onClick={() => setInput('공지사항에서 수강신청자료집 찾아줘')} style={{ background: 'var(--background)', marginTop: '5px' }}>공지사항에서 수강신청 자료집 찾아줘</button>
+                                <button onClick={() => setInput('최근 학교 공지사항 알려줘')} style={{ background: 'var(--background)', marginTop: '5px' }}>최근 학사 공지사항 알려줘</button>
                                 {randomSubjName && (
                                     <>
                                         <button onClick={() => setInput(`${randomSubjName} 출석 현황 알려줘`)} style={{ background: 'var(--background)', marginTop: '5px' }}>{randomSubjName} 출석 현황 알려줘</button>
@@ -139,7 +139,7 @@ export default function Home() {
                                     </>
                                 )}
                                 <button onClick={() => setInput('오늘의 학식 메뉴')} style={{ background: 'var(--background)', marginTop: '5px' }}>오늘 학식 메뉴 알려줘</button>
-                                <button onClick={() => setInput('이번 달 학사일정')} style={{ background: 'var(--background)', marginTop: '5px' }}>이번 달 학사일정 알려줘</button>
+                                <button onClick={() => setInput(`${new Date().getMonth + 1}월 학사일정`)} style={{ background: 'var(--background)', marginTop: '5px' }}>이번 달 학사일정 알려줘</button>
                                 <br />
                                 <span style={{ fontSize: '12px', opacity: .5, marginTop: '5px' }}>* KLAS에 있는 학사 정보를 제 3자(OpenAI)에게 전송하는 것에 동의하는 것으로 간주합니다. <a href="/privacy" target='_blank' style={{ color: 'inherit' }}>개인정보 처리방침</a></span>
                             </div>
