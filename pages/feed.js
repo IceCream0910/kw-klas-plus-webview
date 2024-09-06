@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import Head from 'next/head';
 import TodaysCafeteriaMenu from './components/TodaysCafeteria';
 import IonIcon from '@reacticons/ionicons';
+import AppVersion from './components/appVersion';
 
 export default function Home() {
   const [yearHakgi, setYearHakgi] = useState(null);
@@ -39,7 +39,7 @@ export default function Home() {
       setToken(receivedToken);
     };
 
-    Android.completePageLoad();
+    //Android.completePageLoad();
 
     fetch("/api/cafeteria", {
       method: "GET",
@@ -309,7 +309,7 @@ export default function Home() {
             kwNotice.slice(0, 6).map((notice, index) => {
               return (
                 <div key={index} className="notice-item" onClick={() => Android.openPage(`${notice.link}`)}>
-                  <span><b>{notice.title}</b></span><br />
+                  <span><b>{notice.title.replace("신규게시글", "").replace("Attachment", "")}</b></span><br />
                   <span style={{ opacity: 0.6, fontSize: '12px' }}>{notice.createdDate} · {notice.author}</span>
                   {index != 5 && <hr style={{ opacity: 0.3 }} />}
                 </div>
@@ -318,7 +318,9 @@ export default function Home() {
           )}
         </div>
       }
-
+      <br /> <br />
+      <AppVersion />
+      <br />
     </div>
 
   );
