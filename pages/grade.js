@@ -82,7 +82,7 @@ export default function Home() {
 
   const drawChart = (data) => {
     if (!data) return;
-    const chartData = data.slice(0, -1);
+    const chartData = data.slice(0, -1).filter((value) => !value.name.includes('계절학기'));
     setChartDatasets({
       labels: chartData.map((value) => value.name),
       datasets: [
