@@ -1,6 +1,8 @@
 import React from 'react';
 
 const TodaysCafeteriaMenu = ({ weeklyMenu }) => {
+  if (!weeklyMenu) return null;
+
   const today = new Date().toISOString().split('T')[0];
   const todayMenu = weeklyMenu.find(item => item.date === today);
 
