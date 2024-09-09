@@ -39,7 +39,7 @@ export default function Home() {
       setToken(receivedToken);
     };
 
-    Android.completePageLoad();
+    //Android.completePageLoad();
 
     fetch("/api/cafeteria", {
       method: "GET",
