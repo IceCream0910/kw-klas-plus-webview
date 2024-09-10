@@ -14,7 +14,6 @@ const TodaysCafeteriaMenu = ({ weeklyMenu }) => {
   }
 
   const parseMenu = (menuString) => {
-    console.log(menuString)
     const sections = menuString.split('<').slice(1);
     return sections.reduce((acc, section) => {
       const [title, ...items] = section.split('\r\n');

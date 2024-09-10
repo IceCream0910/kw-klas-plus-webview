@@ -23,7 +23,16 @@ export default function Home() {
     setYearHakgi(yearHakgi);
 
     window.receiveDeadlineData = function (json) {
-      const data = JSON.parse(json);
+      let data = JSON.parse(json);
+      // 미완료 항목이 없는 강의 제외
+      data = data.filter(item => (item.onlineLecture.length > 0 || item.task.length > 0 || item.teamTask.length > 0))
+      // 마감 기한 빠른 순으로 정렬
+      data = data.map(course => ({
+        ...course,
+        onlineLecture: [...course.onlineLecture].sort((a, b) => a.hourGap - b.hourGap),
+        task: [...course.task].sort((a, b) => a.hourGap - b.hourGap),
+        teamTask: [...course.teamTask].sort((a, b) => a.hourGap - b.hourGap)
+      }));
       setDeadlines(data);
       console.log(JSON.stringify(data));
     };
@@ -39,7 +48,7 @@ export default function Home() {
       setToken(receivedToken);
     };
 
-    //Android.completePageLoad();
+    Android.completePageLoad();
 
     fetch("/api/cafeteria", {
       method: "GET",
@@ -94,11 +103,6 @@ export default function Home() {
         console.error(error);
       });
   }, [token]);
-
-  useEffect(() => {
-    if (deadlines.length === 0) return;
-    setDeadlines(deadlines.filter(item => (item.onlineLecture.length > 0 || item.task.length > 0 || item.teamTask.length > 0)));
-  }, [deadlines]);
 
   useEffect(() => {
     const interval = setInterval(() => {
