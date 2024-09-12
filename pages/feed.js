@@ -221,7 +221,7 @@ export default function Home() {
         <h4 id="status_txt" dangerouslySetInnerHTML={{ __html: statusText }}></h4>
         {showButtons && (
           <div id="status_btns">
-            <button onClick={openLecturePage} style={{ backgroundColor: 'var(--button-background)', color: 'var(--text-color)', width: 'fit-content', padding: '10px 15px', fontSize: '15px' }}>강의 홈</button>
+            <button onClick={openLecturePage} style={{ backgroundColor: 'var(--button-background)', color: '#eee', width: 'fit-content', padding: '10px 15px', fontSize: '15px' }}>강의 홈</button>
             <button id="qr_btn" onClick={openQRScan} style={{ backgroundColor: 'var(--card-background)', color: 'var(--text-color)', marginLeft: '10px', width: 'fit-content', padding: '10px 15px', fontSize: '15px' }}>
               QR 출석
             </button>
