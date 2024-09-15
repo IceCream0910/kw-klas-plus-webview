@@ -14,6 +14,12 @@ const TodaysCafeteriaMenu = ({ weeklyMenu }) => {
   }
 
   const parseMenu = (menuString) => {
+    if (!(menuString.includes('천원의 아침') || menuString.includes('중식')))
+      return {
+        '메뉴 정보 없음': [menuString]
+      };
+
+
     const sections = menuString.split('<').slice(1);
     return sections.reduce((acc, section) => {
       const [title, ...items] = section.split('\r\n');
