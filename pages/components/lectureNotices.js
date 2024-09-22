@@ -12,13 +12,6 @@ const LectureNotices = ({ notices, loading }) => {
         setShowAll(false);
     };
 
-    useEffect(() => {
-        if (!showAll) {
-            document.getElementById('notices').scrollIntoView({ behavior: 'smooth' });
-        }
-    }, [showAll]);
-
-
     if (loading) {
         return (
             <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
