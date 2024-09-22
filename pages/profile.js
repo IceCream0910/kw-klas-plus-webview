@@ -17,7 +17,7 @@ export default function Home() {
       setToken(receivedToken);
     };
 
-    Android.completePageLoad();
+    //Android.completePageLoad();
   }, [])
 
   useEffect(() => {
@@ -193,7 +193,8 @@ export default function Home() {
         { name: "장소사용", icon: "🏢", url: "https://klas.kw.ac.kr/std/sys/optrn/e4c863dfd8c7410d92bc4abc9542bccd/BoardListStdPage.do" },
         { name: "Office 365", icon: "💻", url: "https://www.kw.ac.kr/ko/life/notice.jsp?BoardMode=view&DUID=21819" },
         { name: "학번QR코드", icon: "📱", url: "https://klas.kw.ac.kr/std/sys/optrn/MyNumberQrStdPage.do" },
-        { name: "K-MOOC", icon: "🎓", url: "http://www.kmooc.kr/courses?search_query=%EA%B4%91%EC%9A%B4%EB%8C%80%ED%95%99%EA%B5%90" }
+        { name: "K-MOOC", icon: "🎓", url: "http://www.kmooc.kr/courses?search_query=%EA%B4%91%EC%9A%B4%EB%8C%80%ED%95%99%EA%B5%90" },
+        { name: "무선인터넷 장애신고 게시판", icon: "🛜", url: "https://klas.kw.ac.kr/std/sys/optrn/180aff26e3c742108290a0e58c93e091/BoardListStdPage.do" },
       ]
     }
   ];
