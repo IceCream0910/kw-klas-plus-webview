@@ -80,8 +80,8 @@ export default function Home() {
     {
       title: "KLAS+",
       items: [
-        { name: "서비스 공지사항", icon: "🔔", url: "https://taein-workspace.notion.site/109fc9b93eca8043a191d53f4d767d6c" },
-        { name: "자주 묻는 질문(FAQ)", icon: "❓", url: "https://taein-workspace.notion.site/" },
+        { name: "서비스 공지사항", icon: "🔔", url: "https://blog.yuntae.in/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD-3e1124b78f224c36b0bb9cb87a7e55de" },
+        { name: "자주 묻는 질문(FAQ)", icon: "❓", url: "https://blog.yuntae.in/%EC%9E%90%EC%A3%BC-%EB%AC%BB%EB%8A%94-%EC%A7%88%EB%AC%B8faq-23363fe4f23d46778f717f33e502b13a" },
       ]
     },
     {
