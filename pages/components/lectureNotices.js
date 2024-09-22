@@ -25,7 +25,7 @@ const LectureNotices = ({ notices, loading }) => {
                     <div className="skeleton" style={{ height: '50px', width: '100%' }} />
                 </>
             )}
-            {!loading && notices.length === 0 ? (
+            {!loading && (notices === null || notices.length === 0) ? (
                 <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', justifyContent: 'center', marginTop: '10px', opacity: '.3' }}>
                     <svg width="64" height="41" viewBox="0 0 64 41" xmlns="http://www.w3.org/2000/svg">
                         <g transform="translate(0 1)" fill="none" fillRule="evenodd">

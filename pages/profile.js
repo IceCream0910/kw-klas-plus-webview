@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import IonIcon from '@reacticons/ionicons';
 import handleCalculateGPA, { calculateGPA } from "./utils/calculateGPA";
+import AppVersion from "./components/appVersion";
+import Spacer from "./components/spacer";
 
 export default function Home() {
   const [data, setData] = useState(null);
@@ -17,7 +19,7 @@ export default function Home() {
       setToken(receivedToken);
     };
 
-    //Android.completePageLoad();
+    Android.completePageLoad();
   }, [])
 
   useEffect(() => {
@@ -75,6 +77,13 @@ export default function Home() {
 
 
   const menuItems = [
+    {
+      title: "KLAS+",
+      items: [
+        { name: "서비스 공지사항", icon: "🔔", url: "https://taein-workspace.notion.site/109fc9b93eca8043a191d53f4d767d6c" },
+        { name: "자주 묻는 질문(FAQ)", icon: "❓", url: "https://taein-workspace.notion.site/" },
+      ]
+    },
     {
       title: "수강관리",
       items: [
@@ -283,7 +292,7 @@ export default function Home() {
 
       {filteredMenuItems.map((category, index) => (
         <div key={index}>
-          <h5 style={{ marginLeft: '10px', marginTop: '30px', marginBottom: '10px' }}>{category.title}</h5>
+          {category.title ? <h5 style={{ marginLeft: '10px', marginTop: '30px', marginBottom: '10px' }}>{category.title}</h5> : <Spacer y={15} />}
           {category.items.map((item, itemIndex) => (
             <button key={itemIndex} onClick={() => Android.openPage(item.url)}>
               <span className="tossface">{item.icon}</span>
@@ -292,6 +301,9 @@ export default function Home() {
           ))}
         </div>
       ))}
+      <br />
+      <AppVersion />
+      <br />
     </main>
   );
 }
