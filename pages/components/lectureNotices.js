@@ -1,8 +1,9 @@
 import IonIcon from '@reacticons/ionicons';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 const LectureNotices = ({ notices, loading }) => {
     const [showAll, setShowAll] = useState(false);
+    const initialRender = useRef(true);
 
     const handleShowMore = () => {
         setShowAll(!showAll);
@@ -11,6 +12,13 @@ const LectureNotices = ({ notices, loading }) => {
     const handleCollapse = () => {
         setShowAll(false);
     };
+
+    useEffect(() => {
+        if (!initialRender.current && !showAll) {
+            document.getElementById('notices').scrollIntoView({ behavior: 'smooth' });
+        }
+        initialRender.current = false;
+    }, [showAll]);
 
     if (loading) {
         return (

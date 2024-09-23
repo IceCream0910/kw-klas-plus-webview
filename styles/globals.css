@@ -6,7 +6,8 @@
   --text-color: #000000;
   --card-background: #f5e8e8;
   --card-border: #e0e0e0;
-  --button-background: #781e10;
+  --button-background: #ffd2d2;
+  --button-text: #c70000;
   --button-hover: #5f170d;
   --notice-hover: #e6e6e6;
   --green: green;
@@ -19,6 +20,7 @@
     --card-background: #3a3434;
     --card-border: #464646;
     --button-background: #72333c;
+    --button-text: #eee;
     --button-hover: #5f170d;
     --notice-hover: #2c2c2c;
     --green: #98ff98;
@@ -141,7 +143,7 @@ input {
   height: 40px;
   border-radius: 50%;
   background-color: var(--button-background);
-  color: white;
+  color: var(--button-text);
 }
 
 .chat-input-container input {
@@ -428,4 +430,10 @@ h6 {
   .card {
     padding-bottom: 10%;
   }
+}
+
+.will-remain {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }

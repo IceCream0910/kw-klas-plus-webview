@@ -3,6 +3,7 @@ import TodaysCafeteriaMenu from './components/TodaysCafeteria';
 import IonIcon from '@reacticons/ionicons';
 import AppVersion from './components/appVersion';
 import LectureNotices from './components/lectureNotices';
+import Spacer from './components/spacer';
 
 export default function Home() {
   const [yearHakgi, setYearHakgi] = useState(null);
@@ -132,14 +133,22 @@ export default function Home() {
 
     if (remainingDay === 0) {
       if (remainingHour === 0) {
-        return `<span class="will-remain">곧 마감되는 ${name}가 있어요(남은 ${name} : ${info.totalCount}개)</span>`;
+        return `<span class="will-remain"><b style="font-size: 20px">D-DAY</b> ${name} 총 ${info.totalCount}개
+        <svg style="width:15px;margin-left:-7px" xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="48" d="M184 112l144 144-144 144"/></svg>
+        </span>`;
       } else {
-        return `<span class="will-remain"><strong>${remainingHour}시간 후</strong> 마감되는 ${name}가 있어요(남은 ${name} : ${info.totalCount}개)</span>`;
+        return `<span class="will-remain"><b style="font-size: 20px">D-DAY</b> ${name} 총 ${info.totalCount}개
+        <svg style="width:15px;margin-left:-7px" xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="48" d="M184 112l144 144-144 144"/></svg>
+        </span>`;
       }
     } else if (remainingDay === 1) {
-      return `<span class="will-remain"><strong>1일 후</strong> 마감되는 ${name}가 있어요(남은 ${name} : ${info.totalCount}개)</span>`;
+      return `<span class="will-remain"><b style="font-size: 20px">D-1</b> ${name} 총 ${info.totalCount}개
+      <svg style="width:15px;margin-left:-7px" xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="48" d="M184 112l144 144-144 144"/></svg>
+      </span>`;
     } else {
-      return `<span class="will-remain"><strong>${remainingDay}일 후</strong> 마감되는 ${name}가 있어요(남은 ${name} : ${info.totalCount}개)</span>`;
+      return `<span class="will-remain"><b style="font-size: 20px">D-${remainingDay}</b> ${name} 총 ${info.totalCount}개
+      <svg style="width:15px;margin-left:-7px" xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="48" d="M184 112l144 144-144 144"/></svg>
+      </span>`;
     }
   };
 
@@ -222,7 +231,7 @@ export default function Home() {
         <h4 id="status_txt" dangerouslySetInnerHTML={{ __html: statusText }}></h4>
         {showButtons && (
           <div id="status_btns">
-            <button onClick={openLecturePage} style={{ backgroundColor: 'var(--button-background)', color: '#eee', width: 'fit-content', padding: '10px 15px', fontSize: '15px' }}>강의 홈</button>
+            <button id="qr_btn" onClick={openLecturePage} style={{ backgroundColor: 'var(--button-background)', color: 'var(--button-text)', width: 'fit-content', padding: '10px 15px', fontSize: '15px' }}>강의 홈</button>
             <button id="qr_btn" onClick={openQRScan} style={{ backgroundColor: 'var(--card-background)', color: 'var(--text-color)', marginLeft: '10px', width: 'fit-content', padding: '10px 15px', fontSize: '15px' }}>
               QR 출석
             </button>
@@ -230,15 +239,25 @@ export default function Home() {
         )}
       </div>
       <br /><br />
-      <h3>미수강 강의 및 미제출 과제</h3>
-      <br />
+      <h3><span className='tossface'>✅</span> 잊지 말고 챙겨볼까요?</h3>
+      <span style={{ opacity: .5, fontSize: '14px' }}>미제출 과제와 미수강 강의를 모아봤어요.</span>
+      <Spacer y={15} />
       <div id="remaining-deadline">
         {deadlines.length === 0 ? (<span style={{ opacity: .5 }}>남아있는 강의 및 과제가 없습니다!</span>) : ''}
         {deadlines.map((item, index) => (
           <div key={index} className={`card ${item.onlineLecture.length > 0 ? (item.onlineLecture[0].hourGap <= 24 ? 'red' : item.onlineLecture[0].hourGap <= 72 ? 'yellow' : 'green') :
             item.task.length > 0 ? (item.task[0].hourGap <= 24 ? 'red' : item.task[0].hourGap <= 72 ? 'yellow' : 'green') :
               item.teamTask.length > 0 ? (item.teamTask[0].hourGap <= 24 ? 'red' : item.teamTask[0].hourGap <= 72 ? 'yellow' : 'green') : ''}`}>
-            <h4 onClick={() => typeof Android !== 'undefined' && Android.openLectureActivity(item.subj, item.name)}>{item.name}</h4>
+
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignContent: 'center' }}>
+              <b style={{ fontSize: '15px' }}>{item.name}</b>
+              <div style={{ position: 'relative', top: '-8px', right: '-5px' }}>
+                <button style={{ width: 'fit-content', background: 'var(--background)', fontSize: '12px', padding: '8px 10px' }}
+                  onClick={() => typeof Android !== 'undefined' && Android.openLectureActivity(item.subj, item.name)}>강의 홈</button>
+              </div>
+            </div>
+
+            <Spacer y={5} />
             <div onClick={() => typeof Android !== 'undefined' && Android.evaluate('/std/lis/evltn/OnlineCntntsStdPage.do', yearHakgi, item.subj)} dangerouslySetInnerHTML={{ __html: createContent('온라인 강의', item.onlineLecture) }}></div>
             <div onClick={() => typeof Android !== 'undefined' && Android.evaluate('/std/lis/evltn/TaskStdPage.do', yearHakgi, item.subj)} dangerouslySetInnerHTML={{ __html: createContent('과제', item.task) }}></div>
             <div onClick={() => typeof Android !== 'undefined' && Android.evaluate('/std/lis/evltn/PrjctStdPage.do', yearHakgi, item.subj)} dangerouslySetInnerHTML={{ __html: createContent('팀 프로젝트', item.teamTask) }}></div>
