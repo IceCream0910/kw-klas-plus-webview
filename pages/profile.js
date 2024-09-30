@@ -101,7 +101,7 @@ export default function Home() {
       title: "학습결과",
       items: [
         { name: "수업평가 결과 확인", icon: "📊", url: "https://klas.kw.ac.kr/std/cps/inqire/LctreEvlResultStdPage.do" },
-        { name: "수강/성적 조회", icon: "🔍", url: "https://klas.kw.ac.kr/std/cps/inqire/AtnlcScreStdPage.do" },
+        { name: "수강/성적 조회", icon: "🔍", url: "https://klasplus.yuntae.in/grade", badge: "KLAS+" },
         { name: "교양(필수, 균형) 이수현황 조회", icon: "📘", url: "https://klas.kw.ac.kr/std/cps/inqire/GyoyangIsuStdPage.do" },
         { name: "석차 조회", icon: "🏆", url: "https://klas.kw.ac.kr/std/cps/inqire/StandStdPage.do" },
         { name: "어학성적 조회", icon: "🌐", url: "https://klas.kw.ac.kr/std/cps/inqire/ToeicStdPage.do" },
@@ -297,6 +297,7 @@ export default function Home() {
             <button key={itemIndex} onClick={() => Android.openPage(item.url)}>
               <span className="tossface">{item.icon}</span>
               <span>{item.name}</span>
+              {item.badge && <span style={{ background: 'var(--button-background)', padding: '3px 5px', borderRadius: '10px', fontSize: '12px', position: 'relative', left: '5px', top: '-1px', opacity: .8 }}>{item.badge}</span>}
             </button>
           ))}
         </div>
