@@ -24,7 +24,7 @@ export default function Home() {
       setToken(receivedToken);
     };
 
-    //Android.completePageLoad();
+    Android.completePageLoad();
     setPrefersDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
   }, [])
 
