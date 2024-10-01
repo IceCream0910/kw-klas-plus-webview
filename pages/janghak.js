@@ -29,12 +29,13 @@ const ScholarshipCard = ({ scholarship, isFocused }) => {
         backgroundColor: `${cardColor}33`,
         border: `1px solid ${cardColor}`,
         backgroundImage: `url('https://www.transparenttextures.com/patterns/${pattern}.png'), linear-gradient(to top left, ${cardColor}, #ffffff23)`,
-        width: 'calc(50vw - 40px)',
-        height: '70vw',
+        width: 'calc(60vw - 40px)',
+        height: '80vw',
         margin: '0 20px',
-        color: `#fff`,
         position: 'relative',
         scale: isFocused ? 1.05 : 1,
+        transition: 'all 0.5s ease',
+        msTransition: 'all 0.5s ease',
       }}
       whileHover={{ scale: 1.05 }}
     >
@@ -142,40 +143,15 @@ export default function Home() {
 
       {janghak.length <= 0 ?
         <>
-          <h3 style={{ textAlign: 'center', position: 'absolute', left: 0, right: 0, top: '30%', width: '100dvw' }}>지금까지 수여받은<br />장학금이 아직 없어요!</h3>
-          <div
-            ref={containerRef}
-            style={{
-              display: 'flex',
-              overflowX: 'auto',
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none',
-              scrollSnapType: 'x mandatory',
-              alignItems: 'center',
-              height: 'fit-content',
-              position: 'absolute',
-              padding: '15px 0',
-              left: 0,
-              right: 0,
-              top: '40%',
-            }}
-          >
-            <div style={{ width: 'calc(30vw - 40px)', height: '70vw' }}>
-              <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}></div>
-            </div>
-
-            <div onClick={() => window.open("https://www.kw.ac.kr/ko/life/summary.jsp")}>
-              <ScholarshipCard scholarship={{ janghakAmt: '???', janghakName: '광운대학교 장학 제도 살펴보기', yearHakgi: 'ㅇㅇ-ㅇ', grade: "ㅇ" }} isFocused={false} />
-            </div>
-            <div style={{ width: 'calc(30vw - 40px)', height: '70vw' }}>
-              <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}></div>
-            </div>
-          </div>
-        </>
-        :
-        <>
-          {janghak && <h3 style={{ textAlign: 'center', position: 'absolute', left: 0, right: 0, top: '30%', width: '100dvw' }}>지금까지 총 {janghak.length - 2}건의<br />장학금을 수여받았어요!</h3>}
-          {janghak.length > 0 && (
+          <div style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: '50%',
+            transform: 'translateY(-40%)'
+          }}>
+            <h3 style={{ textAlign: 'center' }}>지금까지 수여받은<br />장학금이 아직 없어요!</h3>
+            <Spacer y={20} />
             <div
               ref={containerRef}
               style={{
@@ -186,26 +162,62 @@ export default function Home() {
                 scrollSnapType: 'x mandatory',
                 alignItems: 'center',
                 height: 'fit-content',
-                position: 'absolute',
                 padding: '15px 0',
-                left: 0,
-                right: 0,
-                top: '40%',
               }}
             >
-              {janghak.map((scholarship, index) => (
-                <div key={index} style={{ scrollSnapAlign: 'center' }}>
-                  {scholarship ? (
-                    <ScholarshipCard scholarship={scholarship} isFocused={index === focusedIndex} />
-                  ) : (
-                    <div style={{ width: 'calc(30vw - 40px)', height: '70vw' }}>
-                      <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}></div>
-                    </div>
-                  )}
-                </div>
-              ))}
+              <div style={{ width: 'calc(25vw - 40px)', height: '70vw' }}>
+                <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}></div>
+              </div>
+
+              <div onClick={() => window.open("https://www.kw.ac.kr/ko/life/summary.jsp")}>
+                <ScholarshipCard scholarship={{ janghakAmt: '???', janghakName: '광운대학교 장학 제도 살펴보기', yearHakgi: 'ㅇㅇ-ㅇ', grade: "ㅇ" }} isFocused={false} />
+              </div>
+              <div style={{ width: 'calc(25vw - 40px)', height: '70vw' }}>
+                <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}></div>
+              </div>
             </div>
-          )}
+          </div>
+
+        </>
+        :
+        <>
+          <div style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: '50%',
+            transform: 'translateY(-40%)'
+          }}>
+            {janghak && <h3 style={{ textAlign: 'center' }}>지금까지 총 {janghak.length - 2}건의<br />장학금을 수여받았어요!</h3>}
+            <Spacer y={20} />
+            {janghak.length > 0 && (
+              <div
+                ref={containerRef}
+                style={{
+                  display: 'flex',
+                  overflowX: 'auto',
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none',
+                  scrollSnapType: 'x mandatory',
+                  alignItems: 'center',
+                  height: 'fit-content',
+                  padding: '15px 0',
+                }}
+              >
+                {janghak.map((scholarship, index) => (
+                  <div key={index} style={{ scrollSnapAlign: 'center' }}>
+                    {scholarship ? (
+                      <ScholarshipCard scholarship={scholarship} isFocused={index === focusedIndex} />
+                    ) : (
+                      <div style={{ width: 'calc(25vw - 40px)', height: '70vw' }}>
+                        <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}></div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </>
 
       }
