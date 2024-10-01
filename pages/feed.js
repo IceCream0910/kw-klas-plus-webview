@@ -18,25 +18,40 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [cafeteria, setCafeteria] = useState(null);
   const [kwNotice, setKWNotice] = useState(null);
+  const [excludeNotStarted, setExcludeNotStarted] = useState(false);
+  const [showToggle, setShowToggle] = useState(false);
+  const [filteredDeadlines, setFilteredDeadlines] = useState([]);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const yearHakgi = urlParams.get('yearHakgi');
     setYearHakgi(yearHakgi);
 
+    let excludeNotStartedTemp = false;
+    try {
+      const savedValue = localStorage.getItem('excludeNotStarted');
+      if (savedValue !== null) {
+        setExcludeNotStarted(JSON.parse(savedValue));
+        excludeNotStartedTemp = JSON.parse(savedValue);
+      }
+    } catch (error) {
+      console.warn('Localstorage is not available.');
+    }
+
     window.receiveDeadlineData = function (json) {
       let data = JSON.parse(json);
-      // 미완료 항목이 없는 강의 제외
-      data = data.filter(item => (item.onlineLecture.length > 0 || item.task.length > 0 || item.teamTask.length > 0))
-      // 마감 기한 빠른 순으로 정렬
-      data = data.map(course => ({
-        ...course,
-        onlineLecture: [...course.onlineLecture].sort((a, b) => a.hourGap - b.hourGap),
-        task: [...course.task].sort((a, b) => a.hourGap - b.hourGap),
-        teamTask: [...course.teamTask].sort((a, b) => a.hourGap - b.hourGap)
-      }));
+      // 미완료 항목이 없는 항목 제외
+      data = data.filter(item => (item.onlineLecture.length > 0 || item.task.length > 0 || item.teamTask.length > 0));
+
+      const hasStartDate = data.some(item =>
+        item.onlineLecture.some(lecture => lecture.startDate) ||
+        item.task.some(task => task.startDate) ||
+        item.teamTask.some(teamTask => teamTask.startDate)
+      );
+      setShowToggle(hasStartDate);
+
       setDeadlines(data);
-      console.log(JSON.stringify(data));
+      filterDeadlines(data, excludeNotStartedTemp);
     };
 
     window.receiveTimetableData = function (json) {
@@ -115,6 +130,51 @@ export default function Home() {
 
     return () => clearInterval(interval);
   }, [timetable]);
+
+  const filterDeadlines = (data, excludeUnstarted) => {
+    if (excludeUnstarted) {
+      const now = new Date();
+      data = data.map(course => ({
+        ...course,
+        onlineLecture: course.onlineLecture.filter(lecture => {
+          if (!lecture.startDate) return true;
+          const startDate = new Date(lecture.startDate);
+          return startDate <= now;
+        }),
+        task: course.task.filter(task => {
+          if (!task.startDate) return true;
+          const startDate = new Date(task.startDate);
+          return startDate <= now;
+        }),
+        teamTask: course.teamTask.filter(teamTask => {
+          if (!teamTask.startDate) return true;
+          const startDate = new Date(teamTask.startDate);
+          return startDate <= now;
+        })
+      }));
+    }
+
+    // 마감 기한 빠른 순으로 정렬
+    data = data.map(course => ({
+      ...course,
+      onlineLecture: [...course.onlineLecture].sort((a, b) => a.hourGap - b.hourGap),
+      task: [...course.task].sort((a, b) => a.hourGap - b.hourGap),
+      teamTask: [...course.teamTask].sort((a, b) => a.hourGap - b.hourGap)
+    }));
+
+    setFilteredDeadlines(data);
+  };
+
+  const handleToggleChange = () => {
+    const checked = !excludeNotStarted;
+    try {
+      localStorage.setItem('excludeNotStarted', JSON.stringify(checked));
+    } catch (error) {
+      console.warn('Localstorage is not available.');
+    }
+    setExcludeNotStarted(checked);
+    filterDeadlines(deadlines, checked);
+  };
 
   const createContent = (name, data) => {
     if (data.length === 0) return '';
@@ -239,12 +299,22 @@ export default function Home() {
         )}
       </div>
       <br /><br />
-      <h3><span className='tossface'>✅</span> 잊지 말고 챙겨볼까요?</h3>
-      <span style={{ opacity: .5, fontSize: '14px' }}>미제출 과제와 미수강 강의를 모아봤어요.</span>
+
+      <h3><span className='tossface'>⏰</span> 잊지 말고 챙겨볼까요?</h3>
+
+      {showToggle && (
+        <>
+          <Spacer y={10} />
+          <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '5px', fontSize: '14px', opacity: .6 }}>
+            <input type="checkbox" id="toggle" checked={excludeNotStarted} onChange={handleToggleChange} style={{ width: 'fit-content' }} />
+            <label htmlFor="toggle" style={{ width: 'fit-content' }}>아직 시작하지 않은 항목 제외</label>
+          </div>
+        </>
+      )}
       <Spacer y={15} />
       <div id="remaining-deadline">
-        {deadlines.length === 0 ? (<span style={{ opacity: .5 }}>남아있는 강의 및 과제가 없습니다!</span>) : ''}
-        {deadlines.map((item, index) => (
+        {filteredDeadlines.length === 0 ? (<span style={{ opacity: .5 }}>남아있는 강의 및 과제가 없습니다!</span>) : ''}
+        {filteredDeadlines.map((item, index) => (
           <div key={index} className={`card ${item.onlineLecture.length > 0 ? (item.onlineLecture[0].hourGap <= 24 ? 'red' : item.onlineLecture[0].hourGap <= 72 ? 'yellow' : 'green') :
             item.task.length > 0 ? (item.task[0].hourGap <= 24 ? 'red' : item.task[0].hourGap <= 72 ? 'yellow' : 'green') :
               item.teamTask.length > 0 ? (item.teamTask[0].hourGap <= 24 ? 'red' : item.teamTask[0].hourGap <= 72 ? 'yellow' : 'green') : ''}`}>
