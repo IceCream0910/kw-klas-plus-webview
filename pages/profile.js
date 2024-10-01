@@ -105,7 +105,7 @@ export default function Home() {
         { name: "교양(필수, 균형) 이수현황 조회", icon: "📘", url: "https://klas.kw.ac.kr/std/cps/inqire/GyoyangIsuStdPage.do" },
         { name: "석차 조회", icon: "🏆", url: "https://klas.kw.ac.kr/std/cps/inqire/StandStdPage.do" },
         { name: "어학성적 조회", icon: "🌐", url: "https://klas.kw.ac.kr/std/cps/inqire/ToeicStdPage.do" },
-        { name: "장학 조회", icon: "💰", url: "https://klas.kw.ac.kr/std/cps/inqire/JanghakStdPage.do" },
+        { name: "장학 조회", icon: "💰", url: "https://klasplus.yuntae.in/janghak", badge: "KLAS+" },
         { name: "학생 개인별 포트폴리오 관리", icon: "📁", url: "https://klas.kw.ac.kr/std/cps/inqire/IndividualPortfolio.do" }
       ]
     },
@@ -194,15 +194,13 @@ export default function Home() {
       items: [
         { name: "예비군 전입신고", icon: "🎖️", url: "https://klas.kw.ac.kr/std/ads/admst/RsvTrnsfrnStdPage.do" },
         { name: "중앙 도서관", icon: "📚", url: "http://kupis.kw.ac.kr" },
-        { name: "대학평의회 자료실", icon: "📂", url: "https://klas.kw.ac.kr/std/sys/optrn/58459c5b27b6409aaf24359ae24f5213/BoardListStdPage.do" },
         { name: "조교게시판", icon: "📢", url: "https://klas.kw.ac.kr/std/sys/optrn/c9925e2c1341487ebc7595ba8b64376e/BoardListStdPage.do" },
         { name: "조교등록과목조회 및 채점조교 활동보고서", icon: "📝", url: "https://klas.kw.ac.kr/std/ads/admst/AstntRptStdPage.do" },
         { name: "교직적성인성검사", icon: "✍️", url: "https://klas.kw.ac.kr/std/ads/admst/SklstfAptdExamStdPage.do" },
         { name: "일정관리", icon: "📅", url: "https://klas.kw.ac.kr/std/ads/admst/MySchdulPage.do" },
-        { name: "장소사용", icon: "🏢", url: "https://klas.kw.ac.kr/std/sys/optrn/e4c863dfd8c7410d92bc4abc9542bccd/BoardListStdPage.do" },
         { name: "Office 365", icon: "💻", url: "https://www.kw.ac.kr/ko/life/notice.jsp?BoardMode=view&DUID=21819" },
         { name: "학번QR코드", icon: "📱", url: "https://klas.kw.ac.kr/std/sys/optrn/MyNumberQrStdPage.do" },
-        { name: "K-MOOC", icon: "🎓", url: "http://www.kmooc.kr/courses?search_query=%EA%B4%91%EC%9A%B4%EB%8C%80%ED%95%99%EA%B5%90" },
+        { name: "K-MOOC", icon: "🎓", url: "https://www.kmooc.kr/view/search/%EA%B4%91%EC%9A%B4%EB%8C%80%ED%95%99%EA%B5%90" },
         { name: "무선인터넷 장애신고 게시판", icon: "🛜", url: "https://klas.kw.ac.kr/std/sys/optrn/180aff26e3c742108290a0e58c93e091/BoardListStdPage.do" },
       ]
     }
