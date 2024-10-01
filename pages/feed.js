@@ -287,6 +287,9 @@ export default function Home() {
 
   return (
     <div style={{ padding: '5px' }}>
+
+      <AppVersion updater={true} />
+
       <div id="current_status">
         <h4 id="status_txt" dangerouslySetInnerHTML={{ __html: statusText }}></h4>
         {showButtons && (
@@ -382,7 +385,6 @@ export default function Home() {
         </div>
       }
       <br /> <br />
-      <AppVersion />
       <br />
     </div>
 
