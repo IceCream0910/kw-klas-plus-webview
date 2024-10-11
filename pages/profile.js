@@ -78,13 +78,6 @@ export default function Home() {
 
   const menuItems = [
     {
-      title: "KLAS+",
-      items: [
-        { name: "서비스 공지사항", icon: "🔔", url: "https://blog.yuntae.in/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD-3e1124b78f224c36b0bb9cb87a7e55de" },
-        { name: "자주 묻는 질문(FAQ)", icon: "❓", url: "https://blog.yuntae.in/%EC%9E%90%EC%A3%BC-%EB%AC%BB%EB%8A%94-%EC%A7%88%EB%AC%B8faq-23363fe4f23d46778f717f33e502b13a" },
-      ]
-    },
-    {
       title: "수강관리",
       items: [
         { name: "수업시간표", icon: "📅", url: "https://klas.kw.ac.kr/std/cps/atnlc/TimetableStdPage.do" },
@@ -202,6 +195,15 @@ export default function Home() {
         { name: "학번QR코드", icon: "📱", url: "https://klas.kw.ac.kr/std/sys/optrn/MyNumberQrStdPage.do" },
         { name: "K-MOOC", icon: "🎓", url: "https://www.kmooc.kr/view/search/%EA%B4%91%EC%9A%B4%EB%8C%80%ED%95%99%EA%B5%90" },
         { name: "무선인터넷 장애신고 게시판", icon: "🛜", url: "https://klas.kw.ac.kr/std/sys/optrn/180aff26e3c742108290a0e58c93e091/BoardListStdPage.do" },
+      ]
+    },
+    {
+      title: "KLAS+",
+      items: [
+        { name: "서비스 공지사항", icon: "🔔", url: "https://blog.yuntae.in/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD-3e1124b78f224c36b0bb9cb87a7e55de" },
+        { name: "자주 묻는 질문(FAQ)", icon: "❓", url: "https://blog.yuntae.in/%EC%9E%90%EC%A3%BC-%EB%AC%BB%EB%8A%94-%EC%A7%88%EB%AC%B8faq-23363fe4f23d46778f717f33e502b13a" },
+        { name: "개인정보 처리방침", icon: "🔓", url: "https://klasplus.yuntae.in/privacy" },
+        { name: "오픈소스 라이선스", icon: "🔧", url: "https://blog.yuntae.in/%EC%98%A4%ED%94%88%EC%86%8C%EC%8A%A4-%EB%9D%BC%EC%9D%B4%EC%84%A0%EC%8A%A4-11cfc9b93eca802c8c10ebbccc3b2811" },
       ]
     }
   ];
