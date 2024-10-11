@@ -10,7 +10,9 @@
   --button-text: #c70000;
   --button-hover: #5f170d;
   --notice-hover: #e6e6e6;
-  --green: green;
+  --green: rgb(10, 169, 10);
+  --red: rgb(233, 93, 93);
+  --orange: rgb(232, 138, 30);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,7 +25,9 @@
     --button-text: #eee;
     --button-hover: #5f170d;
     --notice-hover: #2c2c2c;
-    --green: #98ff98;
+    --green: #9bd69b;
+    --red: rgb(255, 161, 161);
+    --orange: rgb(255, 205, 111);
   }
 }
 
