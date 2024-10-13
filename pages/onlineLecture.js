@@ -91,7 +91,6 @@ export default function Home() {
       ptime: item.ptime
     };
 
-    console.log("Sending lecture data:", lectureData);
     window.Android.requestOnlineLecture(JSON.stringify(lectureData));
   };
 

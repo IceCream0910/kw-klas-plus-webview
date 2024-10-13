@@ -207,7 +207,6 @@
 
     function receiveDeadlineData(json) {
         data = JSON.parse(json);
-        console.log(data);
         const container = document.getElementById('remaining-deadline');
 
         for (var i = 0; i < data.length; i++) {

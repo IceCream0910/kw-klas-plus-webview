@@ -248,7 +248,6 @@ const callChatCompletion = async (messages, sendChunk) => {
 
 const executeFunctionCall = async (functionCall) => {
     const args = JSON.parse(functionCall.arguments);
-    console.log(args);
     switch (functionCall.name) {
         case "searchCourseInfo":
             return await searchCourseInfo(args);

@@ -103,8 +103,6 @@ export const calculateGPA = (semesters: Semester[]): SynthesisGPA[] => {
       },
       subjects: subjects
     });
-
-    console.log(synthesisGPAs);
   };
 
   for (const semester of semesters) {

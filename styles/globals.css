@@ -13,6 +13,7 @@
   --green: rgb(10, 169, 10);
   --red: rgb(233, 93, 93);
   --orange: rgb(232, 138, 30);
+  --blue: rgb(86, 136, 255);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -28,6 +29,7 @@
     --green: #9bd69b;
     --red: rgb(255, 161, 161);
     --orange: rgb(255, 205, 111);
+    --blue: rgb(34, 83, 172);
   }
 }
 
@@ -302,7 +304,16 @@ input {
 }
 
 div[role="dialog"] {
+  z-index: 9999;
   background-color: var(--background) !important;
+}
+
+[data-rsbs-backdrop] {
+  z-index: 99999;
+}
+
+.rbc-row-content {
+  z-index: unset !important;
 }
 
 [data-rsbs-header]:before {
@@ -440,4 +451,90 @@ h6 {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.bottom-sheet-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.bottom-sheet-footer button {
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+  border-radius: 10px;
+  background-color: var(--card-background);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+
+/* Calendar */
+input[type="datetime-local"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.rbc-month-view {
+  border: none !important;
+}
+
+.rbc-header {
+  border: none !important;
+  margin-bottom: 10px;
+}
+
+.rbc-day-bg {
+  border-radius: 10px;
+  border: none !important;
+}
+
+.rbc-day-bg.rbc-off-range-bg {
+  background: none;
+}
+
+.rbc-date-cell.rbc-off-range {
+  opacity: .5;
+}
+
+.rbc-day-bg.rbc-today {
+  background-color: var(--card-background);
+}
+
+.rbc-date-cell.rbc-now button {
+  font-weight: bold !important;
+}
+
+.rbc-month-row {
+  border: none !important;
+}
+
+.rbc-date-cell {
+  padding-right: 0 !important;
+}
+
+.rbc-button-link {
+  text-align: center !important;
+}
+
+.rbc-show-more {
+  background: none !important;
+  color: var(--text-color) !important;
+  opacity: .6;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 3em;
+}
+
+.rbc-event {
+  font-size: 12px;
 }

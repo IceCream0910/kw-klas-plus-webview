@@ -125,7 +125,6 @@ export default function Home() {
     if (!data) return;
     setSubjects(data);
     setIsModalOpen(true);
-    console.log(data)
   }
 
   return (
