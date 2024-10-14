@@ -137,7 +137,7 @@ export default function Home() {
                     </span><br />
                     <span style={{ fontSize: '15px' }}>
                       <IonIcon style={{ fontSize: '13px', position: 'relative', top: '2px', opacity: .5 }} name='time-outline' />
-                      <span style={{ fontSize: '13px', marginLeft: '5px', opacity: .5 }}>{item.prog}% ({item.achivTime}분/{item.rcognTime}분)</span>
+                      <span style={{ fontSize: '13px', marginLeft: '5px', opacity: .5 }}>{item.prog}% ({item.learnTime}분)</span>
                     </span>
                   </div>
 

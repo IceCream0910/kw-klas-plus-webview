@@ -290,9 +290,16 @@ export default function Home() {
       {showToggle && (
         <>
           <Spacer y={5} />
-          <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '5px', fontSize: '14px', opacity: .6 }}>
-            <input type="checkbox" id="toggle" checked={excludeNotStarted} onChange={handleToggleChange} style={{ width: 'fit-content' }} />
-            <label htmlFor="toggle" style={{ width: 'fit-content' }}>아직 시작하지 않은 항목 제외</label>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ opacity: .7, fontSize: '14px' }}>아직 시작일이 되지 않은 항목 숨기기</span>
+            <label className="switch" style={{ transform: 'scale(0.8)' }}>
+              <input
+                type="checkbox"
+                checked={excludeNotStarted}
+                onChange={handleToggleChange}
+              />
+              <span className="slider"></span>
+            </label>
           </div>
         </>
       )}

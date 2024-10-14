@@ -3,6 +3,9 @@ import IonIcon from '@reacticons/ionicons';
 import handleCalculateGPA, { calculateGPA } from "./utils/calculateGPA";
 import AppVersion from "./components/appVersion";
 import Spacer from "./components/spacer";
+import { BottomSheet } from 'react-spring-bottom-sheet';
+import 'react-spring-bottom-sheet/dist/style.css';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 export default function Home() {
   const [data, setData] = useState(null);
@@ -11,7 +14,10 @@ export default function Home() {
   const [synthesisGPAs, setSynthesisGPAs] = useState();
   const [totGrade, setTotGrade] = useState();
   const [searchTerm, setSearchTerm] = useState("");
-
+  const [isOpenSettingsModal, setIsOpenSettingsModal] = useState(false);
+  const [hideGrades, setHideGrades] = useState(false);
+  const [showGrades, setShowGrades] = useState(true);
+  const [menuOrder, setMenuOrder] = useState([]);
 
   useEffect(() => {
     window.receiveToken = function (receivedToken) {
@@ -19,7 +25,22 @@ export default function Home() {
       setToken(receivedToken);
     };
 
-    Android.completePageLoad();
+    window.receiveToken('OWVmMjZmNjMtYTgzMi00OGJlLWJiZjYtMzRjNDg4ZmE5ODc4')
+    //Android.completePageLoad();
+
+    const savedHideGrades = localStorage.getItem('hideGrades');
+    if (savedHideGrades !== null) {
+      const parsedHideGrades = savedHideGrades === 'true';
+      setHideGrades(parsedHideGrades);
+      setShowGrades(!parsedHideGrades);
+    }
+
+    const savedMenuOrder = localStorage.getItem('menuOrder');
+    if (savedMenuOrder) {
+      setMenuOrder(JSON.parse(savedMenuOrder));
+    } else {
+      setMenuOrder(menuItems.map(item => item.title));
+    }
   }, [])
 
   useEffect(() => {
@@ -75,6 +96,22 @@ export default function Home() {
     setTotGrade(tot)
   }, [synthesisGPAs]);
 
+  useEffect(() => {
+    localStorage.setItem('hideGrades', hideGrades.toString());
+  }, [hideGrades]);
+
+
+  const handleHideGradesChange = (e) => {
+    const checked = e.target.checked;
+    setHideGrades(checked);
+    setShowGrades(!checked);
+  };
+
+  const handleGradeClick = () => {
+    if (hideGrades) {
+      setShowGrades(true);
+    }
+  };
 
   const menuItems = [
     {
@@ -208,6 +245,26 @@ export default function Home() {
     }
   ];
 
+  const handleMenuReorder = (result) => {
+    if (!result.destination) return;
+
+    const items = Array.from(menuOrder);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    setMenuOrder(items);
+    localStorage.setItem('menuOrder', JSON.stringify(items));
+  };
+
+  const sortedMenuItems = menuOrder.map(title =>
+    menuItems.find(item => item.title === title)
+  ).filter(Boolean);
+
+  const handleResetMenuOrder = () => {
+    const defaultOrder = menuItems.map(item => item.title);
+    setMenuOrder(defaultOrder);
+    localStorage.setItem('menuOrder', JSON.stringify(defaultOrder));
+  };
 
   const filteredMenuItems = menuItems.map(category => ({
     ...category,
@@ -221,10 +278,16 @@ export default function Home() {
 
       <div className="profile-card">
         {data ? <>
-          <div className="profile-card" style={{ padding: 0 }}>
-            <h3>{data.kname}</h3>
-            <span style={{ opacity: .8, fontSize: '14px' }}>{data.hakgwa} | {data.hakbun}</span>
-            <span style={{ opacity: .5, fontSize: '12px' }}>{data.hakjukStatu}</span>
+          <div className="profile-card" style={{ padding: 0, display: 'flex', flexDirection: 'row', justifyContent: "space-between", alignItems: 'center', width: '100%' }}>
+            <div>
+              <h3>{data.kname}</h3>
+              <span style={{ opacity: .8, fontSize: '14px' }}>{data.hakgwa} | {data.hakbun}</span><br />
+              <span style={{ opacity: .5, fontSize: '12px' }}>{data.hakjukStatu}</span>
+            </div>
+
+            <button onClick={() => setIsOpenSettingsModal(!isOpenSettingsModal)} style={{ background: 'var(--background)', width: '40px', height: '40px', fontSize: '20px', borderRadius: '50%' }}>
+              <IonIcon name='settings-outline' />
+            </button>
           </div>
           <br />
           <button onClick={() => Android.openLibraryQR()}
@@ -234,18 +297,18 @@ export default function Home() {
           </button>
           <br />
           {totGrade &&
-            <div className="profile-card grade-card" style={{ padding: 0, flexDirection: 'row', alignItems: 'space-between', width: '100%' }} onClick={() => Android.openPage('https://kw-klas-plus-webview.vercel.app/grade')}>
-              <div style={{ textAlign: 'center', width: '100%' }}>
+            <div className="profile-card grade-card" style={{ padding: 0, flexDirection: 'row', alignItems: 'space-between', width: '100%' }} onClick={() => showGrades && Android.openPage('https://kw-klas-plus-webview.vercel.app/grade')}>
+              <div style={{ textAlign: 'center', width: '100%' }} onClick={handleGradeClick}>
                 <span style={{ opacity: .8, fontSize: '12px' }}>취득학점</span>
-                <h3>{totGrade.credit}</h3>
+                <h3>{hideGrades && !showGrades ? '??' : totGrade.credit}</h3>
               </div>
-              <div style={{ textAlign: 'center', width: '100%' }}>
+              <div style={{ textAlign: 'center', width: '100%' }} onClick={handleGradeClick}>
                 <span style={{ opacity: .8, fontSize: '12px' }}>평균평점</span>
-                <h3>{totGrade.averageGPA.includeF}</h3>
+                <h3>{hideGrades && !showGrades ? '??' : totGrade.averageGPA.includeF}</h3>
               </div>
-              <div style={{ textAlign: 'center', width: '100%' }}>
+              <div style={{ textAlign: 'center', width: '100%' }} onClick={handleGradeClick}>
                 <span style={{ opacity: .8, fontSize: '12px' }}>전공평점</span>
-                <h3>{totGrade.majorGPA.includeF}</h3>
+                <h3>{hideGrades && !showGrades ? '??' : totGrade.majorGPA.includeF}</h3>
               </div>
             </div>}
         </>
@@ -290,7 +353,7 @@ export default function Home() {
       </div>
 
 
-      {filteredMenuItems.map((category, index) => (
+      {sortedMenuItems.map((category, index) => (
         <div key={index}>
           {category.title ? <h5 style={{ marginLeft: '10px', marginTop: '30px', marginBottom: '10px' }}>{category.title}</h5> : <Spacer y={15} />}
           {category.items.map((item, itemIndex) => (
@@ -305,6 +368,72 @@ export default function Home() {
       <br />
       <AppVersion />
       <br />
+
+      <BottomSheet
+        open={isOpenSettingsModal}
+        onDismiss={() => { setIsOpenSettingsModal(false); }}
+        draggable={false}
+      >
+        <div style={{ padding: '20px', marginBottom: '60px' }}>
+          <h2>옵션</h2>
+          <Spacer y={20} />
+
+          <div style={{ maxHeight: '80dvh', overflowY: 'auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>전체 메뉴에서 학점 숨기기</span>
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={hideGrades}
+                  onChange={handleHideGradesChange}
+                />
+                <span className="slider"></span>
+              </label>
+            </div>
+            <Spacer y={20} />
+            <h3>메뉴 순서 설정</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>메뉴 순서를 드래그하여 변경하세요</span>
+              <button onClick={handleResetMenuOrder} style={{ background: 'var(--card-background)', padding: '0', width: '30px', height: '30px', fontSize: '16px', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <IonIcon name='refresh-outline' />
+              </button>
+            </div>
+            <DragDropContext onDragEnd={handleMenuReorder}>
+              <Droppable droppableId="menu-list">
+                {(provided) => (
+                  <ul style={{ padding: 0 }} {...provided.droppableProps} ref={provided.innerRef}>
+                    {menuOrder.map((title, index) => (
+                      <Draggable key={title} draggableId={title} index={index}>
+                        {(provided) => (
+                          <li
+                            className="menu-item-draggable"
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            style={{
+                              ...provided.draggableProps.style
+                            }}
+                          >
+                            {title}
+                          </li>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </ul>
+                )}
+              </Droppable>
+            </DragDropContext>
+
+          </div>
+
+        </div>
+
+
+        <div className='bottom-sheet-footer'>
+          <button onClick={() => setIsOpenSettingsModal(false)}>확인</button>
+        </div>
+      </BottomSheet>
     </main>
   );
 }
