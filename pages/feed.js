@@ -285,7 +285,7 @@ export default function Home() {
 
       <AppVersion updater={true} />
 
-      <h3><span className='tossface'>⏰</span> 잊지 말고 챙겨볼까요?</h3>
+      <h3><span className='tossface' style={{ position: 'relative', top: '2px' }}>⏰</span> 잊지 말고 챙겨볼까요?</h3>
 
       {showToggle && (
         <>
