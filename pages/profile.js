@@ -25,7 +25,6 @@ export default function Home() {
       setToken(receivedToken);
     };
 
-    window.receiveToken('OWVmMjZmNjMtYTgzMi00OGJlLWJiZjYtMzRjNDg4ZmE5ODc4')
     Android.completePageLoad();
 
     const savedHideGrades = localStorage.getItem('hideGrades');
