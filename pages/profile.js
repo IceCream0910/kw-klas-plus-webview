@@ -26,7 +26,7 @@ export default function Home() {
     };
 
     window.receiveToken('OWVmMjZmNjMtYTgzMi00OGJlLWJiZjYtMzRjNDg4ZmE5ODc4')
-    //Android.completePageLoad();
+    Android.completePageLoad();
 
     const savedHideGrades = localStorage.getItem('hideGrades');
     if (savedHideGrades !== null) {
