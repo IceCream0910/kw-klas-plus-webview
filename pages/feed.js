@@ -281,7 +281,7 @@ export default function Home() {
           </div>
         )}
       </div>
-      <br />
+      <br /><br />
 
       <AppVersion updater={true} />
 
