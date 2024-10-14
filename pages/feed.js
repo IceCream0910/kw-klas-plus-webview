@@ -168,63 +168,63 @@ export default function Home() {
   };
 
   const updateTimetableStatus = (data) => {
-    const currentDay = new Date().getDay() - 1;
+    let currentDay = new Date().getDay() - 1;
+    if (currentDay === -1) currentDay = 6;
+
     if (currentDay === 5 || currentDay === 6) {
       setStatusText("오늘 수업이 없어요 😊");
       setShowButtons(false);
       return;
     }
 
-    const currentTime = new Date().getHours() + new Date().getMinutes() / 60;
-    const today = Object.values(data).flatMap(classes =>
-      classes.filter(c => c.day === currentDay)
-    );
+    const currentHour = new Date().getHours();
+    const currentMinute = new Date().getMinutes();
+    const currentTime = currentHour + currentMinute / 60;
 
-    const ongoingClass = today.find(c => {
-      const [startHour, startMinute] = c.startTime.split(":").map(Number);
-      const [endHour, endMinute] = c.endTime.split(":").map(Number);
-      const startTime = startHour + startMinute / 60;
-      const endTime = endHour + endMinute / 60;
-      return startTime <= currentTime && currentTime < endTime;
-    });
+    let isOngoingClass = false;
+    let closestClass = null;
+    const today = Object.values(data).flatMap(classes => classes.filter(c => c.day === currentDay));
 
-    if (ongoingClass) {
-      updateOngoingClassStatus(ongoingClass);
-    } else {
-      updateUpcomingClassStatus(today, currentTime);
+    for (const c of today) {
+      const startTime = parseInt(c.startTime.split(":")[0]) + parseInt(c.startTime.split(":")[1]) / 60;
+      const endTime = parseInt(c.endTime.split(":")[0]) + parseInt(c.endTime.split(":")[1]) / 60;
+
+      if (startTime <= currentTime && currentTime < endTime) {
+        const endHour = Math.floor(endTime);
+        const endMinute = Math.floor((endTime - endHour) * 60);
+        setStatusText(`<span style="opacity: 0.6">지금은</span><br/>${c.title} <span style="opacity: 0.6">수업 중</span>
+        <br/>
+        <span style="opacity: 0.6; font-size:14px;">${endHour}:${endMinute.toString().padStart(2, '0')}에 종료</span>`);
+        setSelectedSubj(c.subj);
+        setSelectedSubjName(c.title);
+        setShowButtons(true);
+        isOngoingClass = true;
+        break;
+      } else if (currentTime < startTime) {
+        if (!closestClass || startTime < closestClass.startTime) {
+          closestClass = { ...c, startTime };
+        }
+      }
     }
-  };
 
-  const updateOngoingClassStatus = (ongoingClass) => {
-    const [endHour, endMinute] = ongoingClass.endTime.split(":").map(Number);
-    setStatusText(`<span style="opacity: 0.6">지금은</span><br/>${ongoingClass.title} <span style="opacity: 0.6">수업 중</span>
-    <br/>
-    <span style="opacity: 0.6; font-size:14px;">${endHour}:${endMinute.toString().padStart(2, '0')}에 종료</span>`);
-    setSelectedSubj(ongoingClass.subj);
-    setSelectedSubjName(ongoingClass.title);
-    setShowButtons(true);
-  };
-
-  const updateUpcomingClassStatus = (today, currentTime) => {
-    const upcomingClass = today.find(c => {
-      const [startHour, startMinute] = c.startTime.split(":").map(Number);
-      return startHour + startMinute / 60 > currentTime;
-    });
-
-    if (upcomingClass) {
-      const [startHour, startMinute] = upcomingClass.startTime.split(":").map(Number);
-      setStatusText(`${startHour}:${startMinute.toString().padStart(2, '0')}<span style="opacity: 0.6">에</span><br/> ${upcomingClass.title} <span style="opacity: 0.6">수업이 있어요.</span>
-      <br/>
-      <span style="opacity: 0.6; font-size:14px;">${upcomingClass.info} 교수</span>`);
-      setSelectedSubj(upcomingClass.subj);
-      setSelectedSubjName(upcomingClass.title);
-      setShowButtons(true);
-    } else if (today.length > 0) {
-      setStatusText("오늘 수업이 더 이상 없어요 😎");
-      setShowButtons(false);
-    } else {
-      setStatusText("오늘 수업이 없어요 😊");
-      setShowButtons(false);
+    if (!isOngoingClass) {
+      if (closestClass) {
+        const { title, subj, info, startTime } = closestClass;
+        const startHour = Math.floor(startTime);
+        const startMinute = Math.floor((startTime - startHour) * 60);
+        setStatusText(`${startHour}:${startMinute.toString().padStart(2, '0')}<span style="opacity: 0.6">에</span><br/> ${title} <span style="opacity: 0.6">수업이 있어요.</span>
+        <br/>
+        <span style="opacity: 0.6; font-size:14px;">${info} 교수</span>`);
+        setSelectedSubj(subj);
+        setSelectedSubjName(title);
+        setShowButtons(true);
+      } else if (today.length > 0) {
+        setStatusText("오늘 수업이 더 이상 없어요 😎");
+        setShowButtons(false);
+      } else {
+        setStatusText("오늘 수업이 없어요 😊");
+        setShowButtons(false);
+      }
     }
   };
 
