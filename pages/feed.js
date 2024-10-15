@@ -20,7 +20,7 @@ export default function Home() {
   const [kwNotice, setKWNotice] = useState(null);
   const [excludeNotStarted, setExcludeNotStarted] = useState(false);
   const [showToggle, setShowToggle] = useState(false);
-  const [filteredDeadlines, setFilteredDeadlines] = useState([]);
+  const [filteredDeadlines, setFilteredDeadlines] = useState(null);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -270,18 +270,27 @@ export default function Home() {
 
   return (
     <div style={{ padding: '5px' }}>
-      <div id="current_status">
-        <h4 id="status_txt" dangerouslySetInnerHTML={{ __html: statusText }}></h4>
-        {showButtons && (
-          <div id="status_btns">
-            <button id="qr_btn" onClick={openLecturePage} style={{ backgroundColor: 'var(--button-background)', color: 'var(--button-text)', width: 'fit-content', padding: '10px 15px', fontSize: '15px' }}>강의 홈</button>
-            <button id="qr_btn" onClick={openQRScan} style={{ backgroundColor: 'var(--card-background)', color: 'var(--text-color)', marginLeft: '10px', width: 'fit-content', padding: '10px 15px', fontSize: '15px' }}>
-              QR 출석
-            </button>
-          </div>
-        )}
-      </div>
-      <br /><br />
+      {statusText ? (
+        <div id="current_status">
+
+          <h4 id="status_txt" dangerouslySetInnerHTML={{ __html: statusText }}></h4>
+          {showButtons && (
+            <div id="status_btns">
+              <button id="qr_btn" onClick={openLecturePage} style={{ backgroundColor: 'var(--button-background)', color: 'var(--button-text)', width: 'fit-content', padding: '10px 15px', fontSize: '15px' }}>강의 홈</button>
+              <button id="qr_btn" onClick={openQRScan} style={{ backgroundColor: 'var(--card-background)', color: 'var(--text-color)', marginLeft: '10px', width: 'fit-content', padding: '10px 15px', fontSize: '15px' }}>
+                QR 출석
+              </button>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div id="current_status">
+          <div className="skeleton" style={{ height: '30px', width: '30%', marginBottom: '10px' }} />
+          <div className="skeleton" style={{ height: '20px', width: '60%' }} />
+        </div>
+      )}
+
+      <Spacer y={40} />
 
       <AppVersion updater={true} />
 
@@ -305,36 +314,45 @@ export default function Home() {
       )}
       <Spacer y={15} />
       <div id="remaining-deadline">
-        {filteredDeadlines.length === 0 ? (<span style={{ opacity: .5 }}>남아있는 강의 및 과제가 없습니다!</span>) : (
-          filteredDeadlines.map((item, index) => (
-            <div key={index} className="card" style={{ paddingBottom: '15px' }}>
-              <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignContent: 'center' }}>
-                <b style={{ fontSize: '15px' }}>{item.name}</b>
-                <div style={{ position: 'relative', top: '-8px', right: '-5px' }}>
-                  <button style={{ width: 'fit-content', background: 'var(--background)', fontSize: '12px', padding: '8px 10px' }}
-                    onClick={() => typeof Android !== 'undefined' && Android.openLectureActivity(item.subj, item.name)}>강의 홈</button>
+        {filteredDeadlines ? (
+          filteredDeadlines.length === 0 ? (<span style={{ opacity: .5 }}>남아있는 강의 및 과제가 없습니다!</span>) : (
+            filteredDeadlines.map((item, index) => (
+              <div key={index} className="card" style={{ paddingBottom: '15px' }}>
+                <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignContent: 'center' }}>
+                  <b style={{ fontSize: '15px' }}>{item.name}</b>
+                  <div style={{ position: 'relative', top: '-8px', right: '-5px' }}>
+                    <button style={{ width: 'fit-content', background: 'var(--background)', fontSize: '12px', padding: '8px 10px' }}
+                      onClick={() => typeof Android !== 'undefined' && Android.openLectureActivity(item.subj, item.name)}>강의 홈</button>
+                  </div>
+                </div>
+
+                <div onClick={() => typeof Android !== 'undefined' && Android.evaluate('/std/lis/evltn/OnlineCntntsStdPage.do', yearHakgi, item.subj)}>
+                  {renderDeadlineContent('온라인 강의', item.onlineLecture)}
+                </div>
+                <div onClick={() => typeof Android !== 'undefined' && Android.evaluate('/std/lis/evltn/TaskStdPage.do', yearHakgi, item.subj)}>
+                  {renderDeadlineContent('과제', item.task)}
+                </div>
+                <div onClick={() => typeof Android !== 'undefined' && Android.evaluate('/std/lis/evltn/PrjctStdPage.do', yearHakgi, item.subj)}>
+                  {renderDeadlineContent('팀 프로젝트', item.teamTask)}
                 </div>
               </div>
+            ))
+          )
+        ) : (
+          <div>
+            <div className="skeleton" style={{ height: '80px', width: '100%', marginBottom: '10px' }} />
+            <div className="skeleton" style={{ height: '80px', width: '100%', marginBottom: '10px' }} />
+            <div className="skeleton" style={{ height: '80px', width: '100%', marginBottom: '10px' }} />
 
-              <div onClick={() => typeof Android !== 'undefined' && Android.evaluate('/std/lis/evltn/OnlineCntntsStdPage.do', yearHakgi, item.subj)}>
-                {renderDeadlineContent('온라인 강의', item.onlineLecture)}
-              </div>
-              <div onClick={() => typeof Android !== 'undefined' && Android.evaluate('/std/lis/evltn/TaskStdPage.do', yearHakgi, item.subj)}>
-                {renderDeadlineContent('과제', item.task)}
-              </div>
-              <div onClick={() => typeof Android !== 'undefined' && Android.evaluate('/std/lis/evltn/PrjctStdPage.do', yearHakgi, item.subj)}>
-                {renderDeadlineContent('팀 프로젝트', item.teamTask)}
-              </div>
-            </div>
-          ))
+          </div>
         )}
       </div>
 
-      <Spacer y={30} />
+      <Spacer y={40} />
       <h3>강의 알림</h3>
-      <br />
+      <Spacer y={15} />
       <LectureNotices notices={notices} loading={loading} />
-      <br /> <br />
+      <Spacer y={40} />
 
       <h3>
         오늘의 학식
@@ -342,7 +360,7 @@ export default function Home() {
           <IonIcon name='add-outline' />
         </button>
       </h3>
-      <br />
+      <Spacer y={15} />
       <div className="card non-anim" style={{ paddingTop: '1.5em', paddingBottom: '0.1em' }}>
         {!cafeteria ? (
           <>
@@ -355,7 +373,7 @@ export default function Home() {
           <TodaysCafeteriaMenu weeklyMenu={cafeteria} />
         )}
       </div>
-      <br /> <br />
+      <Spacer y={40} />
 
       <h3>
         학사 공지사항
@@ -363,7 +381,7 @@ export default function Home() {
           <IonIcon name='add-outline' />
         </button>
       </h3>
-      <br />
+      <Spacer y={15} />
       <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
         {!kwNotice ? (
           <>

@@ -265,12 +265,14 @@ export default function Home() {
     localStorage.setItem('menuOrder', JSON.stringify(defaultOrder));
   };
 
-  const filteredMenuItems = menuItems.map(category => ({
-    ...category,
-    items: category.items.filter(item =>
-      item.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  })).filter(category => category.items.length > 0);
+  const filteredMenuItems = sortedMenuItems
+    .map(category => ({
+      ...category,
+      items: category.items.filter(item =>
+        item.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    }))
+    .filter(category => category.items.length > 0);
 
   return (
     <main>
@@ -352,7 +354,7 @@ export default function Home() {
       </div>
 
 
-      {sortedMenuItems.map((category, index) => (
+      {filteredMenuItems.map((category, index) => (
         <div key={index}>
           {category.title ? <h5 style={{ marginLeft: '10px', marginTop: '30px', marginBottom: '10px' }}>{category.title}</h5> : <Spacer y={15} />}
           {category.items.map((item, itemIndex) => (
@@ -373,13 +375,13 @@ export default function Home() {
         onDismiss={() => { setIsOpenSettingsModal(false); }}
         draggable={false}
       >
-        <div style={{ padding: '20px', marginBottom: '60px' }}>
+        <div style={{ maxHeight: '90dvh', padding: '20px', overflow: 'hidden' }}>
           <h2>옵션</h2>
           <Spacer y={20} />
 
-          <div style={{ maxHeight: '80dvh', overflowY: 'auto' }}>
+          <div style={{ maxHeight: '90dvh', overflowY: 'auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span>전체 메뉴에서 학점 숨기기</span>
+              <span><b>메뉴 탭에서 학점 숨기기</b></span>
               <label className="switch">
                 <input
                   type="checkbox"
@@ -392,8 +394,8 @@ export default function Home() {
             <Spacer y={20} />
             <h3>메뉴 순서 설정</h3>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span>메뉴 순서를 드래그하여 변경하세요</span>
-              <button onClick={handleResetMenuOrder} style={{ background: 'var(--card-background)', padding: '0', width: '30px', height: '30px', fontSize: '16px', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <span style={{ opacity: .6, fontSize: '15px' }}>메뉴 순서를 드래그하여 변경하세요</span>
+              <button onClick={handleResetMenuOrder} style={{ background: 'var(--card-background)', padding: '0', width: '30px', height: '30px', fontSize: '16px', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '-5px' }}>
                 <IonIcon name='refresh-outline' />
               </button>
             </div>
@@ -413,6 +415,7 @@ export default function Home() {
                               ...provided.draggableProps.style
                             }}
                           >
+                            <IonIcon name='menu-outline' style={{ marginRight: '10px', opacity: .7 }} />
                             {title}
                           </li>
                         )}
@@ -423,6 +426,7 @@ export default function Home() {
                 )}
               </Droppable>
             </DragDropContext>
+            <Spacer y={90} />
 
           </div>
 

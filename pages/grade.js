@@ -139,7 +139,8 @@ export default function Home() {
 
       </h2>
 
-      {totGradeIncludeEmptyGrade &&
+
+      {totGradeIncludeEmptyGrade ?
         (
           <div className="profile-card grade-card" style={{ padding: '10px 0', flexDirection: 'row', alignItems: 'space-between' }}>
             <div style={{ textAlign: 'center', width: '100%' }}>
@@ -162,6 +163,10 @@ export default function Home() {
               <h3 style={{ marginTop: '10px' }}>{totGradeIncludeEmptyGrade.jaechulScoresum}</h3>
             </div>
           </div>
+        ) : (
+          <div>
+            <div className="skeleton" style={{ height: '70px', width: '100%' }} />
+          </div>
         )
       }
 
@@ -171,49 +176,12 @@ export default function Home() {
       <br /><br /><br />
 
       <h4>학기 별 성적</h4>
-      {synthesisGPAs && synthesisGPAs.map((value, id) => (
-        value.name === '전체 학기' ? (
-          <div className="profile-card"
-            style={{ border: '2px solid rgba(165, 165, 165, 0.3)', marginTop: '20px' }}>
-            <h3>{value.name}</h3>
-            <div style={{ display: 'flex', justifyContent: 'center', width: '100%', gap: '20px' }}>
-              <div style={{ textAlign: 'center', width: '100%' }}>
-                <span style={{ opacity: .8, fontSize: '12px' }}>취득학점</span>
-                <h3 style={{ margin: 0 }}>{value.credit}</h3>
-                <span style={{ opacity: .5, fontSize: '12px' }}>F 미포함 :</span>
-
-              </div>
-              <div style={{ textAlign: 'center', width: '100%' }}>
-                <span style={{ opacity: .8, fontSize: '12px' }}>전공</span>
-                <h3 style={{ margin: 0 }}>{value.majorGPA.includeF}</h3>
-                <span style={{ opacity: .5, fontSize: '12px' }}>{value.majorGPA.excludeF}</span>
-              </div>
-              <div style={{ textAlign: 'center', width: '100%' }}>
-                <span style={{ opacity: .8, fontSize: '12px' }}>전공 외</span>
-                <h3 style={{ margin: 0 }}>{value.nonMajorGPA.includeF}</h3>
-                <span style={{ opacity: .5, fontSize: '12px' }}>{value.nonMajorGPA.excludeF}</span>
-              </div>
-              <div style={{ textAlign: 'center', width: '100%' }}>
-                <span style={{ opacity: .8, fontSize: '12px' }}>평균</span>
-                <h3 style={{ margin: 0 }}>{value.averageGPA.includeF}</h3>
-                <span style={{ opacity: .5, fontSize: '12px' }}>{value.averageGPA.excludeF}</span>
-              </div>
-            </div>
-          </div>
-        ) : value.name.includes('계절학기') ? (
-          <button className="profile-card"
-            onClick={() => openDetailModal(id)}
-            style={{ marginTop: '10px' }}>
-            <h3 style={{ width: '100%', margin: 0 }}>{value.name}
-              <IonIcon style={{ float: 'right' }} name="chevron-forward" /></h3>
-          </button>
-        ) :
-          (
-            <button className="profile-card"
-              onClick={() => openDetailModal(id)}
-              style={{ marginTop: '10px' }}>
-              <h3 style={{ width: '100%' }}>{value.name}
-                <IonIcon style={{ float: 'right' }} name="chevron-forward" /></h3>
+      {synthesisGPAs ? (
+        synthesisGPAs.map((value, id) => (
+          value.name === '전체 학기' ? (
+            <div className="profile-card"
+              style={{ border: '2px solid rgba(165, 165, 165, 0.3)', marginTop: '20px' }}>
+              <h3>{value.name}</h3>
               <div style={{ display: 'flex', justifyContent: 'center', width: '100%', gap: '20px' }}>
                 <div style={{ textAlign: 'center', width: '100%' }}>
                   <span style={{ opacity: .8, fontSize: '12px' }}>취득학점</span>
@@ -237,44 +205,95 @@ export default function Home() {
                   <span style={{ opacity: .5, fontSize: '12px' }}>{value.averageGPA.excludeF}</span>
                 </div>
               </div>
+            </div>
+          ) : value.name.includes('계절학기') ? (
+            <button className="profile-card"
+              onClick={() => openDetailModal(id)}
+              style={{ marginTop: '10px' }}>
+              <h3 style={{ width: '100%', margin: 0 }}>{value.name}
+                <IonIcon style={{ float: 'right' }} name="chevron-forward" /></h3>
             </button>
-          )
-      )).reverse()}
+          ) :
+            (
+              <button className="profile-card"
+                onClick={() => openDetailModal(id)}
+                style={{ marginTop: '10px' }}>
+                <h3 style={{ width: '100%' }}>{value.name}
+                  <IonIcon style={{ float: 'right' }} name="chevron-forward" /></h3>
+                <div style={{ display: 'flex', justifyContent: 'center', width: '100%', gap: '20px' }}>
+                  <div style={{ textAlign: 'center', width: '100%' }}>
+                    <span style={{ opacity: .8, fontSize: '12px' }}>취득학점</span>
+                    <h3 style={{ margin: 0 }}>{value.credit}</h3>
+                    <span style={{ opacity: .5, fontSize: '12px' }}>F 미포함 :</span>
+
+                  </div>
+                  <div style={{ textAlign: 'center', width: '100%' }}>
+                    <span style={{ opacity: .8, fontSize: '12px' }}>전공</span>
+                    <h3 style={{ margin: 0 }}>{value.majorGPA.includeF}</h3>
+                    <span style={{ opacity: .5, fontSize: '12px' }}>{value.majorGPA.excludeF}</span>
+                  </div>
+                  <div style={{ textAlign: 'center', width: '100%' }}>
+                    <span style={{ opacity: .8, fontSize: '12px' }}>전공 외</span>
+                    <h3 style={{ margin: 0 }}>{value.nonMajorGPA.includeF}</h3>
+                    <span style={{ opacity: .5, fontSize: '12px' }}>{value.nonMajorGPA.excludeF}</span>
+                  </div>
+                  <div style={{ textAlign: 'center', width: '100%' }}>
+                    <span style={{ opacity: .8, fontSize: '12px' }}>평균</span>
+                    <h3 style={{ margin: 0 }}>{value.averageGPA.includeF}</h3>
+                    <span style={{ opacity: .5, fontSize: '12px' }}>{value.averageGPA.excludeF}</span>
+                  </div>
+                </div>
+              </button>
+            )
+        )).reverse()
+      ) : (
+        <div>
+          <div className="skeleton" style={{ height: '120px', width: '100%' }} />
+          <div className="skeleton" style={{ height: '120px', width: '100%' }} />
+          <div className="skeleton" style={{ height: '120px', width: '100%' }} />
+        </div>
+      )}
 
       <h4 style={{ marginTop: '30px', marginBottom: '10px' }}>성적 추이</h4>
-      {synthesisGPAs && synthesisGPAs.length >= 1 && (
-        <div style={{ margin: '25px 0' }}>
-          <Line data={chartDatasets} options={{
-            scales: {
-              y: {
-                beginAtZero: false,
-                suggestedMin: 2,
-                suggestedMax: 4.5,
-                ticks: {
-                  color: prefersDarkMode ? 'white' : 'black',
+      {synthesisGPAs ? (
+        synthesisGPAs.length >= 1 && (
+          <div style={{ margin: '25px 0' }}>
+            <Line data={chartDatasets} options={{
+              scales: {
+                y: {
+                  beginAtZero: false,
+                  suggestedMin: 2,
+                  suggestedMax: 4.5,
+                  ticks: {
+                    color: prefersDarkMode ? 'white' : 'black',
+                  },
+                  grid: {
+                    color: prefersDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                  },
                 },
-                grid: {
-                  color: prefersDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
-                },
-              },
-              x: {
-                ticks: {
-                  color: prefersDarkMode ? 'white' : 'black',
-                },
-                grid: {
-                  color: prefersDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
-                },
-              },
-            },
-            plugins: {
-              legend: {
-                position: 'bottom',
-                labels: {
-                  color: prefersDarkMode ? 'white' : 'black',
+                x: {
+                  ticks: {
+                    color: prefersDarkMode ? 'white' : 'black',
+                  },
+                  grid: {
+                    color: prefersDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                  },
                 },
               },
-            },
-          }} />
+              plugins: {
+                legend: {
+                  position: 'bottom',
+                  labels: {
+                    color: prefersDarkMode ? 'white' : 'black',
+                  },
+                },
+              },
+            }} />
+          </div>
+        )
+      ) : (
+        <div>
+          <div className="skeleton" style={{ height: '200px', width: '100%' }} />
         </div>
       )}
 

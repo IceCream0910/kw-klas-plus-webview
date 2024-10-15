@@ -58,6 +58,7 @@ h6 {
 
 .tossface {
   font-family: Tossface;
+  font-display: swap;
 }
 
 button {
@@ -528,11 +529,12 @@ li {
   border-radius: 10px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
 }
 
 .menu-item-draggable:active {
   background-color: var(--card-background);
+  font-weight: bold;
 }
 
 /* Calendar */
