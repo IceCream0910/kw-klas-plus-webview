@@ -515,11 +515,17 @@ h6 {
 }
 
 input:checked+.slider {
-  background-color: var(--button-background);
+  background-color: var(--red);
 }
 
 input:checked+.slider:before {
   transform: translateX(20px);
+}
+
+@media (prefers-color-scheme: dark) {
+  input:checked+.slider {
+    background-color: var(--button-background);
+  }
 }
 
 li {
