@@ -11,6 +11,7 @@
   "dependencies": {
     "@ai-sdk/openai": "^0.0.33",
     "@reacticons/ionicons": "^7.1.0",
+    "@sentry/nextjs": "8",
     "ai": "^3.2.32",
     "axios": "^1.7.5",
     "chart.js": "^4.4.3",
