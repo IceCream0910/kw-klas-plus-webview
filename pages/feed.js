@@ -9,7 +9,7 @@ export default function Home() {
   const [yearHakgi, setYearHakgi] = useState(null);
   const [token, setToken] = useState(null);
   const [deadlines, setDeadlines] = useState([]);
-  const [notices, setNotices] = useState([]);
+
   const [timetable, setTimetable] = useState(null);
   const [selectedSubj, setSelectedSubj] = useState(null);
   const [selectedSubjName, setSelectedSubjName] = useState(null);
@@ -41,12 +41,6 @@ export default function Home() {
       delete window.receiveTimetableData;
     }
   }, []);
-
-  useEffect(() => {
-    if (token) {
-      fetchLectureNotices();
-    }
-  }, [token]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -87,21 +81,6 @@ export default function Home() {
       setKWNotice(kwNoticeData);
     } catch (error) {
       console.error('Error fetching data:', error);
-    }
-  };
-
-  const fetchLectureNotices = async () => {
-    try {
-      const response = await fetch("/api/lectureNotice", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token }),
-      });
-      const data = await response.json();
-      setNotices(data.notices);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching lecture notices:', error);
     }
   };
 
@@ -348,10 +327,7 @@ export default function Home() {
         )}
       </div>
 
-      <Spacer y={40} />
-      <h3>강의 알림</h3>
-      <Spacer y={15} />
-      <LectureNotices notices={notices} loading={loading} />
+      <LectureNotices token={token} />
       <Spacer y={40} />
 
       <h3>

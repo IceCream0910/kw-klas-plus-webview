@@ -1,36 +1,45 @@
+import { useState, useEffect } from 'react';
 import IonIcon from '@reacticons/ionicons';
-import React, { useEffect, useState, useRef } from 'react';
+import Spacer from './spacer';
 
-const LectureNotices = ({ notices, loading }) => {
-    const [showAll, setShowAll] = useState(false);
-    const initialRender = useRef(true);
 
-    const handleShowMore = () => {
-        setShowAll(!showAll);
-    };
+const LectureNotices = ({ token }) => {
+    const [notices, setNotices] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [expanded, setExpanded] = useState(false);
 
-    const handleCollapse = () => {
-        setShowAll(false);
+    const fetchNotices = async (fetchAll = false) => {
+        setLoading(true);
+        try {
+            const response = await fetch("/api/lectureNotice", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ token, all: fetchAll }),
+            });
+            const data = await response.json();
+            setNotices(data.notices);
+        } catch (error) {
+            console.error('Error fetching lecture notices:', error);
+        }
+        setLoading(false);
     };
 
     useEffect(() => {
-        if (!initialRender.current && !showAll) {
-            document.getElementById('notices').scrollIntoView({ behavior: 'smooth' });
+        if (!token) return;
+        fetchNotices(false);
+    }, [token]);
+
+    const handleShowMore = async () => {
+        if (expanded) {
+            setExpanded(false);
+            document.getElementById('notices-section').scrollIntoView({ behavior: 'smooth' });
+        } else {
+            await fetchNotices(true);
+            setExpanded(true);
         }
-        initialRender.current = false;
-    }, [showAll]);
+    };
 
-    if (loading) {
-        return (
-            <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
-                <div className="skeleton" style={{ height: '50px', width: '100%', marginBottom: '15px' }} />
-                <div className="skeleton" style={{ height: '50px', width: '100%', marginBottom: '15px' }} />
-                <div className="skeleton" style={{ height: '50px', width: '100%' }} />
-            </div>
-        );
-    }
-
-    if (!notices || notices.length === 0) {
+    if (!loading && (!notices || notices.length === 0)) {
         return (
             <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
                 <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', justifyContent: 'center', marginTop: '10px', opacity: '.3' }}>
@@ -49,31 +58,59 @@ const LectureNotices = ({ notices, loading }) => {
     }
 
     return (
-        <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
-            {notices.slice(0, showAll ? notices.length : 5).map((notice, index) => (
-                <div key={index} className="notice-item" onClick={() => typeof Android !== 'undefined' && Android.openPage(`https://klas.kw.ac.kr/?redirectUrl=/mst/cmn/login/PushLinkForm.do?pushSeq=${notice.pushSeq}`)}>
-                    <span>{notice.title} · <span><b>{notice.body}</b></span></span><br />
-                    <span style={{ opacity: 0.6, fontSize: '12px' }}>{notice.registDt}</span>
-                    {index !== (showAll ? notices.length : 5) - 1 && index !== notices.length - 1 && <hr style={{ opacity: 0.3 }} />}
-                </div>
-            ))}
-            {notices.length > 5 && (
-                <button
-                    onClick={showAll ? handleCollapse : handleShowMore}
-                    style={{ width: '100%', padding: '10px 0 0 0', textAlign: 'center', opacity: '.7', border: 'none', cursor: 'pointer', fontSize: '13px' }}
-                >
-                    {showAll ? (
-                        <>
-                            <IonIcon name='chevron-up-outline' style={{ position: 'relative', top: '2px' }} /><br />접기
-                        </>
-                    ) : (
-                        <>
-                            <IonIcon name='chevron-down-outline' style={{ position: 'relative', top: '2px' }} /><br />더보기
-                        </>
-                    )}
-                </button>
-            )}
-        </div>
+        <>
+            <div id="notices-section" />
+            <Spacer y={40} />
+            <h3>강의 알림</h3>
+            <Spacer y={15} />
+            <div className="card non-anim" style={{ paddingBottom: '20px' }}>
+                {notices && expanded ? (
+                    notices.map((notice, index) => (
+                        <div key={index} className="notice-item" onClick={() => typeof Android !== 'undefined' && Android.openPage(`https://klas.kw.ac.kr/?redirectUrl=/mst/cmn/login/PushLinkForm.do?pushSeq=${notice.pushSeq}`)}>
+                            <span>{notice.title} · <span><b>{notice.body}</b></span></span><br />
+                            <span style={{ opacity: 0.6, fontSize: '12px' }}>{notice.registDt}</span>
+                            {index !== (expanded ? notices.length : 5) - 1 && index !== notices.length - 1 && <hr style={{ opacity: 0.3 }} />}
+
+                        </div>
+                    ))
+                )
+                    : (
+                        notices.slice(0, Math.min(5, notices.length)).map((notice, index) => (
+                            <div key={index} className="notice-item" onClick={() => typeof Android !== 'undefined' && Android.openPage(`https://klas.kw.ac.kr/?redirectUrl=/mst/cmn/login/PushLinkForm.do?pushSeq=${notice.pushSeq}`)}>
+                                <span>{notice.title} · <span><b>{notice.body}</b></span></span><br />
+                                <span style={{ opacity: 0.6, fontSize: '12px' }}>{notice.registDt}</span>
+                                {index !== (expanded ? notices.length : 5) - 1 && index !== notices.length - 1 && <hr style={{ opacity: 0.3 }} />}
+                            </div>
+                        ))
+                    )
+                }
+
+
+                {loading && (
+                    <div className="card non-anim" id="notices" style={{ paddingTop: '20px', paddingBottom: '20px' }}>
+                        <div className="skeleton" style={{ height: '50px', width: '100%', marginBottom: '15px' }} />
+                        <div className="skeleton" style={{ height: '50px', width: '100%', marginBottom: '15px' }} />
+                        <div className="skeleton" style={{ height: '50px', width: '100%' }} />
+                    </div>
+                )}
+
+                {
+                    <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                        <button
+                            onClick={handleShowMore}
+                            disabled={loading}
+                            style={{ width: '100%', padding: '10px 0 0 0', textAlign: 'center', opacity: '.7', border: 'none', cursor: 'pointer', fontSize: '13px' }}
+                        >
+                            {loading ? '로딩 중...' : expanded ? <>
+                                <IonIcon name='chevron-up-outline' style={{ position: 'relative', top: '2px' }} /><br />접기
+                            </> : <>
+                                <IonIcon name='chevron-down-outline' style={{ position: 'relative', top: '2px' }} /><br />더보기
+                            </>}
+                        </button>
+                    </div>
+                }
+            </div>
+        </>
     );
 };
 
