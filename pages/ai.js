@@ -3,6 +3,7 @@ import Head from 'next/head';
 import ReactMarkdown from 'react-markdown';
 import IonIcon from '@reacticons/ionicons';
 import LoadingComponent from './components/loader';
+import Spacer from './components/spacer';
 
 export default function Home() {
     const [subjList, setSubjList] = useState(null);
@@ -14,6 +15,8 @@ export default function Home() {
     const abortControllerRef = useRef(null);
     const [randomSubjName, setRandomSubjName] = useState(null);
     const [yearHakgi, setYearHakgi] = useState(null);
+    const [isInputFocused, setIsInputFocused] = useState(false);
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -22,6 +25,7 @@ export default function Home() {
             setChat(prevChat => [...prevChat, newQuestion]);
             setInput('');
             setIsLoading(true);
+            setIsInputFocused(false);
             await sendMessage([...chat, newQuestion]);
         }
     };
@@ -125,23 +129,40 @@ export default function Home() {
                 <div className='messages-container' ref={scrollRef}>
                     {chat.length === 0 && (
                         <>
-                            <div className='profile-card'>
-                                <h3>궁금한 것을 물어보세요!</h3>
-                                <span>AI가 KLAS에서 정보를 불러와 답변해줍니다. Beta 기능이므로 작동이 불안정할 수 있습니다.</span>
-                                <br />
-                                <h4>이렇게 보내보세요</h4>
-                                <button onClick={() => setInput('최근 학교 공지사항 알려줘')} style={{ background: 'var(--background)', marginTop: '5px' }}>최근 학사 공지사항 알려줘</button>
+                            <div>
+                                <Spacer y={50} />
+                                <h2>궁금한 것을 물어보세요!</h2>
+                                <span style={{ opacity: .7 }}>KLAS와 학교 홈페이지에 있는 정보를 기반으로 답변해줄게요.</span>
+                                <Spacer y={20} />
                                 {randomSubjName && (
                                     <>
-                                        <button onClick={() => setInput(`${randomSubjName} 출석 현황 알려줘`)} style={{ background: 'var(--background)', marginTop: '5px' }}>{randomSubjName} 출석 현황 알려줘</button>
-                                        <button onClick={() => setInput(`${randomSubjName} 강의 공지사항 알려줘`)} style={{ background: 'var(--background)', marginTop: '5px' }}>{randomSubjName} 최근 공지사항 보여줘</button>
-                                        <button onClick={() => setInput(`${randomSubjName} 미제출 과제 있어?`)} style={{ background: 'var(--background)', marginTop: '5px' }}>{randomSubjName} 미제출 과제 있어?</button>
+                                        <button onClick={() => setInput(`${randomSubjName} 출석 현황 알려줘`)} style={{ background: 'var(--card-background)', marginTop: '5px', display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                            <span style={{ width: '30px', height: '30px', background: 'var(--background)', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '50%' }}><IonIcon name="checkmark-outline" /></span>
+                                            <span style={{ width: 'calc(100% - 60px)' }}>{randomSubjName} 출석 현황 알려줘</span>
+                                        </button>
+                                        <button onClick={() => setInput(`${randomSubjName} 강의 공지사항 알려줘`)} style={{ background: 'var(--card-background)', marginTop: '5px', display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                            <span style={{ width: '30px', height: '30px', background: 'var(--background)', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '50%' }}><IonIcon name="notifications-outline" /></span>
+                                            <span style={{ width: 'calc(100% - 60px)' }}>{randomSubjName} 최근 공지사항 보여줘</span>
+                                        </button>
+                                        <button onClick={() => setInput(`${randomSubjName} 미제출 과제 있어?`)} style={{ background: 'var(--card-background)', marginTop: '5px', display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                            <span style={{ width: '30px', height: '30px', background: 'var(--background)', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '50%' }}><IonIcon name="documents-outline" /></span>
+                                            <span style={{ width: 'calc(100% - 60px)' }}>{randomSubjName} 미제출 과제 있어?</span>
+                                        </button>
                                     </>
                                 )}
-                                <button onClick={() => setInput('오늘의 학식 메뉴')} style={{ background: 'var(--background)', marginTop: '5px' }}>오늘 학식 메뉴 알려줘</button>
-                                <button onClick={() => setInput(`${new Date().getMonth() + 1}월 학사일정`)} style={{ background: 'var(--background)', marginTop: '5px' }}>이번 달 학사일정 알려줘</button>
+                                <button onClick={() => setInput('최근 학교 공지사항 알려줘')} style={{ background: 'var(--card-background)', marginTop: '5px', display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                    <span style={{ width: '30px', height: '30px', background: 'var(--background)', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '50%' }}><IonIcon name="list-outline" /></span>
+                                    <span style={{ width: 'calc(100% - 60px)' }}>최근 학교 공지사항 알려줘</span>
+                                </button>
+                                <button onClick={() => setInput('오늘의 학식 메뉴')} style={{ background: 'var(--card-background)', marginTop: '5px', display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                    <span style={{ width: '30px', height: '30px', background: 'var(--background)', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '50%' }}><IonIcon name="fast-food-outline" /></span>
+                                    <span style={{ width: 'calc(100% - 60px)' }}>오늘 학식 메뉴 알려줘</span>
+                                </button>
+                                <button onClick={() => setInput(`${new Date().getMonth() + 1}월 학사일정`)} style={{ background: 'var(--card-background)', marginTop: '5px', display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                    <span style={{ width: '30px', height: '30px', background: 'var(--background)', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '50%' }}><IonIcon name="calendar-outline" /></span>
+                                    <span style={{ width: 'calc(100% - 60px)' }}>이번 달 학사일정 알려줘</span>
+                                </button>
                                 <br />
-                                <span style={{ fontSize: '12px', opacity: .5, marginTop: '5px' }}>* KLAS에 있는 학사 정보를 제 3자(OpenAI)에게 전송하는 것에 동의하는 것으로 간주합니다. <a href="https://blog.yuntae.in/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4-%EC%B2%98%EB%A6%AC%EB%B0%A9%EC%B9%A8-11cfc9b93eca807896a0c41c4ca9cb8f" target='_blank' style={{ color: 'inherit' }}>개인정보 처리방침</a></span>
                             </div>
                         </>
                     )}
@@ -160,6 +181,11 @@ export default function Home() {
             </main>
 
             <form onSubmit={handleSubmit} className='chat-input-container'>
+                {!isInputFocused && (
+                    <button type="button" disabled={isLoading} onClick={() => [setChat([]), setInput('')]} style={{ background: 'var(--background)', left: '20px' }}>
+                        <IonIcon name="refresh" />
+                    </button>
+                )}
                 <input
                     type="text"
                     value={input}
@@ -167,6 +193,9 @@ export default function Home() {
                     placeholder="메시지를 입력하세요"
                     disabled={isLoading}
                     className='chat-input'
+                    onFocus={() => setIsInputFocused(true)}
+                    onBlur={() => setIsInputFocused(false)}
+                    style={{ paddingLeft: isInputFocused ? '20px' : '50px' }}
                 />
                 {isLoading ? (
                     <button type="button" onClick={handleStopResponse}>
@@ -177,8 +206,9 @@ export default function Home() {
                         <IonIcon name="send" />
                     </button>
                 )}
-                <span style={{ fontSize: '12px', opacity: .5 }}>AI가 생성한 답변은 정확하지 않을 수 있습니다.</span>
+                <span style={{ fontSize: '12px', opacity: .4 }}>AI는 틀린 답변을 제공할 수 있습니다. <span style={{ fontSize: '12px', opacity: .5, marginTop: '5px' }}><a href="https://blog.yuntae.in/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4-%EC%B2%98%EB%A6%AC%EB%B0%A9%EC%B9%A8-11cfc9b93eca807896a0c41c4ca9cb8f" target='_blank' style={{ color: 'inherit' }}>개인정보 처리방침</a></span>
+                </span>
             </form>
-        </div>
+        </div >
     );
 }
