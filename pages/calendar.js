@@ -22,6 +22,8 @@ const TouchCellWrapper = ({ children, value, onSelectSlot }) =>
             });
         },
     });
+
+
 export default function CalendarPage() {
     const [token, setToken] = useState(null);
     const [events, setEvents] = useState([]);
@@ -332,6 +334,8 @@ export default function CalendarPage() {
     );
 }
 
+
+
 function EventForm({ event, date, onSave, onDelete, onClose }) {
     const [title, setTitle] = useState('');
     const [start, setStart] = useState(new Date());
@@ -342,6 +346,13 @@ function EventForm({ event, date, onSave, onDelete, onClose }) {
     const [isEditingStart, setIsEditingStart] = useState(false);
     const [isEditingEnd, setIsEditingEnd] = useState(false);
     const [isEditingTitle, setIsEditingTitle] = useState(false);
+
+    useEffect(() => {
+        window.setDateTime = (dateTimeStr, isStart) => {
+            const newDateTime = new Date(dateTimeStr);
+            handleDateTimeChange(isStart, newDateTime);
+        };
+    }, []);
 
     useEffect(() => {
         if (event) {
@@ -355,6 +366,7 @@ function EventForm({ event, date, onSave, onDelete, onClose }) {
             setEnd(date);
         }
     }, [event, date]);
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -370,7 +382,27 @@ function EventForm({ event, date, onSave, onDelete, onClose }) {
             schdulColor: color,
             place,
         };
+
+        if (eventData.title === "") {
+            alert('제목을 입력해주세요.');
+            return;
+        }
+
+        if (moment(start).isAfter(end)) {
+            alert('종료 일시가 종료 일시보다 빠를 수 없습니다.');
+            return;
+        }
+
         onSave(eventData);
+    };
+
+
+    const handleNativeDateTimePicker = (isStart) => {
+        const currentDateTime = isStart ?
+            moment(start).format('YYYY-MM-DDTHH:mm') :
+            moment(end).format('YYYY-MM-DDTHH:mm');
+
+        Android.openDateTimePicker(currentDateTime, isStart);
     };
 
     const formatDate = (date) => {
@@ -454,7 +486,15 @@ function EventForm({ event, date, onSave, onDelete, onClose }) {
                             </label>
                         </div>)}
                     <div style={styles.dateTimeInputs}>
-                        <div style={styles.dateTimeInput} onClick={() => (event && event.typeNm == "개인일정") && setIsEditingStart(true)}>
+                        <div style={styles.dateTimeInput} onClick={() => {
+                            if (event && event.typeNm === "개인일정") {
+                                try {
+                                    handleNativeDateTimePicker(true);
+                                } catch (e) {
+                                    setIsEditingStart(true);
+                                }
+                            }
+                        }}>
                             {isEditingStart ? (
                                 <input
                                     type={isAllDay ? 'date' : 'datetime-local'}
@@ -472,7 +512,15 @@ function EventForm({ event, date, onSave, onDelete, onClose }) {
                             )}
                         </div>
                         <span style={styles.dateTimeSeparator}>{'>'}</span>
-                        <div style={styles.dateTimeInput} onClick={() => (event && event.typeNm == "개인일정") && setIsEditingEnd(true)}>
+                        <div style={styles.dateTimeInput} onClick={() => {
+                            if (event && event.typeNm === "개인일정") {
+                                try {
+                                    handleNativeDateTimePicker(false);
+                                } catch (e) {
+                                    setIsEditingEnd(true);
+                                }
+                            }
+                        }}>
                             {isEditingEnd ? (
                                 <input
                                     type={isAllDay ? 'date' : 'datetime-local'}
