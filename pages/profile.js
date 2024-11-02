@@ -118,7 +118,7 @@ export default function Home() {
       items: [
         { name: "수업시간표", icon: "📅", url: "https://klas.kw.ac.kr/std/cps/atnlc/TimetableStdPage.do" },
         { name: "출석관리(KW출첵)", icon: "✅", url: "https://klas.kw.ac.kr/std/ads/admst/KwAttendStdPage.do" },
-        { name: "강의계획서 조회", icon: "📚", url: "https://klas.kw.ac.kr/std/cps/atnlc/LectrePlanStdPage.do" },
+        { name: "강의계획서 조회", icon: "📚", url: "https://klasplus.yuntae.in/searchLecturePlan", badge: "KLAS+" },
         { name: "수강신청 프로그램", icon: "🖥️", url: "https://klas.kw.ac.kr/std/cps/atnlc/LctreReqstNewProgPage.do" },
         { name: "수강포기 신청", icon: "🚫", url: "https://klas.kw.ac.kr/std/cps/atnlc/GiveupStdPage.do" },
         { name: "교류 학점 신청", icon: "🔄", url: "https://klas.kw.ac.kr/std/cps/atnlc/ExchgHakjumStdPage.do" },
