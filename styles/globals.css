@@ -155,7 +155,6 @@ input {
 .chat-input-container input {
   width: 100%;
   border-radius: 1.5rem;
-  padding-left: 50px;
   padding-right: 50px;
   height: 50px;
   border: 2px solid var(--card-border);
