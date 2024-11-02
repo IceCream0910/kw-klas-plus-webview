@@ -7,10 +7,12 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, BarElement, Title, To
 
 export default function LectureHome() {
     const [data, setData] = useState(null);
+    const [subjId, setSubjId] = useState(null);
 
     useEffect(() => {
         window.receivedData = function (token, subj) {
             if (!token || !subj) return;
+            setSubjId(subj);
             fetch("/api/lecturePlan", {
                 method: "POST",
                 headers: {
@@ -27,7 +29,9 @@ export default function LectureHome() {
                 });
         };
 
-        Android.completePageLoad();
+        window.receivedData('ODVmODJjNjgtY2YxMC00ZDYyLWFlZDUtMGVjNjNhODVhNjY5', 'U2024256740000021')
+
+        //Android.completePageLoad();
     }, [])
 
 
@@ -58,6 +62,11 @@ export default function LectureHome() {
     return (
         <main>
             <Spacer y={10} />
+            <button onClick={() => Android.openPage('https://klas.kw.ac.kr/std/cps/atnlc/popup/LectrePlanStdView.do?selectSubj=' + subjId)}
+                style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-5px', borderRadius: '20px', padding: '10px 15px' }}>
+                KLAS에서 열기
+            </button>
+
             {data.lecturePlan[0].codeName1 && (
                 <>
                     <span style={{ background: '#ff766160', color: 'var(--text-color)', padding: '5px', borderRadius: '10px', fontSize: '13px' }}>{data.lecturePlan[0].codeName1}</span>
@@ -87,10 +96,11 @@ export default function LectureHome() {
                 <IonIcon style={{ position: 'relative', top: '2px', color: '#ff7661' }} name='layers-outline' />
                 <span style={{ marginLeft: '5px', opacity: .7 }}>{lecturePlan.hakjumNum}학점/{lecturePlan.sisuNum}시간</span>
             </span><br />
-            <span style={{ fontSize: '15px' }}>
-                <IonIcon style={{ position: 'relative', top: '2px', color: '#ff7661' }} name='apps-outline' />
-                <span style={{ marginLeft: '5px', opacity: .7 }}>이론학점({lecturePlan.getScore1 || 0}), 실험학점({lecturePlan.getScore2 || 0}), 설계학점({lecturePlan.getScore3 || 0})</span>
-            </span><br />
+            {(!lecturePlan.getScore1 && !lecturePlan.getScore2 && !lecturePlan.getScore3) ? null : (
+                <span style={{ fontSize: '15px' }}>
+                    <IonIcon style={{ position: 'relative', top: '2px', color: '#ff7661' }} name='apps-outline' />
+                    <span style={{ marginLeft: '5px', opacity: .7 }}>이론학점({lecturePlan.getScore1 || 0}), 실험학점({lecturePlan.getScore2 || 0}), 설계학점({lecturePlan.getScore3 || 0})</span>
+                    <br /></span>)}
             <span style={{ fontSize: '15px' }}>
                 <IonIcon style={{ position: 'relative', top: '2px', color: '#ff7661' }} name='desktop-outline' />
                 <span style={{ marginLeft: '5px', opacity: .7 }}>
