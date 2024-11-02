@@ -23,7 +23,7 @@ export default function LectureHome() {
     const [isMy, setIsMy] = useState(false);
 
     useEffect(() => {
-        window.receivedToken = function (receivedToken) {
+        window.receiveToken = function (receivedToken) {
             if (!receivedToken) return;
             setToken(receivedToken);
 
