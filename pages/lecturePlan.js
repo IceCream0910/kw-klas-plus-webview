@@ -29,7 +29,6 @@ export default function LectureHome() {
                 });
         };
 
-
         Android.completePageLoad();
     }, [])
 
@@ -39,6 +38,7 @@ export default function LectureHome() {
             <main>
                 <Spacer y={10} />
                 <div className="skeleton" style={{ height: '20px', width: '60px' }} />
+
                 <div className="skeleton" style={{ height: '30px', width: '30%', marginBottom: '10px' }} />
                 <div className="skeleton" style={{ height: '10px', width: '40%' }} />
                 <Spacer y={20} />
@@ -60,11 +60,12 @@ export default function LectureHome() {
 
     return (
         <main>
-            <Spacer y={10} />
             <button onClick={() => Android.openPage('https://klas.kw.ac.kr/std/cps/atnlc/popup/LectrePlanStdView.do?selectSubj=' + subjId)}
-                style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-5px', borderRadius: '20px', padding: '10px 15px' }}>
+                style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-16px', borderRadius: '20px', padding: '10px 15px' }}>
                 KLAS에서 열기
             </button>
+
+            <Spacer y={10} />
 
             {data.lecturePlan[0].codeName1 && (
                 <>
@@ -562,37 +563,37 @@ export default function LectureHome() {
                                 },
                                 {
                                     data: [lecturePlan.middleBiyul || 0],
-                                    backgroundColor: '#4DABF7', // 부드러운 파랑
+                                    backgroundColor: '#4DABF7',
                                     label: '중간고사',
                                     barThickness: 15
                                 },
                                 {
                                     data: [lecturePlan.lastBiyul || 0],
-                                    backgroundColor: '#FFA94D', // 부드러운 주황
+                                    backgroundColor: '#FFA94D',
                                     label: '기말고사',
                                     barThickness: 15
                                 },
                                 {
                                     data: [lecturePlan.reportBiyul || 0],
-                                    backgroundColor: '#69DB7C', // 부드러운 초록
+                                    backgroundColor: '#69DB7C',
                                     label: '과제보고서',
                                     barThickness: 15
                                 },
                                 {
                                     data: [lecturePlan.learnBiyul || 0],
-                                    backgroundColor: '#9775FA', // 부드러운 보라
+                                    backgroundColor: '#9775FA',
                                     label: '수업태도',
                                     barThickness: 15
                                 },
                                 {
                                     data: [lecturePlan.quizBiyul || 0],
-                                    backgroundColor: '#F783AC', // 부드러운 분홍
+                                    backgroundColor: '#F783AC',
                                     label: '퀴즈',
                                     barThickness: 15
                                 },
                                 {
                                     data: [lecturePlan.gitaBiyul || 0],
-                                    backgroundColor: '#3BC9DB', // 부드러운 청록
+                                    backgroundColor: '#3BC9DB',
                                     label: '기타',
                                     barThickness: 15
                                 }
@@ -630,24 +631,24 @@ export default function LectureHome() {
                         }}
                     />
                 </div>
-                <div style={{ fontSize: '14px', opacity: 0.7 }}>
-                    {lecturePlan.attendBiyul > 0 && <>출석: {lecturePlan.attendBiyul}%{' '}</>}
-                    {lecturePlan.middleBiyul > 0 && <>· 중간고사: {lecturePlan.middleBiyul}%{' '}</>}
-                    {lecturePlan.lastBiyul > 0 && <>· 기말고사: {lecturePlan.lastBiyul}%{' '}</>}
-                    {lecturePlan.reportBiyul > 0 && <>· 과제보고서: {lecturePlan.reportBiyul}%{' '}</>}
-                    {lecturePlan.learnBiyul > 0 && <>· 수업태도: {lecturePlan.learnBiyul}%{' '}</>}
-                    {lecturePlan.quizBiyul > 0 && <>· 퀴즈: {lecturePlan.quizBiyul}%{' '}</>}
-                    {lecturePlan.gitaBiyul > 0 && <>· 기타: {lecturePlan.gitaBiyul}%</>}
+                <div style={{ fontSize: '14px', lineHeight: '1.2' }}>
+                    {lecturePlan.attendBiyul > 0 && <span style={{ color: "#FF6B6B" }}>출석: {lecturePlan.attendBiyul}%{' '}</span>}
+                    {lecturePlan.middleBiyul > 0 && <span style={{ color: "#4DABF7" }}>· 중간고사: {lecturePlan.middleBiyul}%{' '}</span>}
+                    {lecturePlan.lastBiyul > 0 && <span style={{ color: "#FFA94D" }}>· 기말고사: {lecturePlan.lastBiyul}%{' '}</span>}
+                    {lecturePlan.reportBiyul > 0 && <span style={{ color: "#69DB7C" }}>· 과제보고서: {lecturePlan.reportBiyul}%{' '}</span>}
+                    {lecturePlan.learnBiyul > 0 && <span style={{ color: "#9775FA" }}>· 수업태도: {lecturePlan.learnBiyul}%{' '}</span>}
+                    {lecturePlan.quizBiyul > 0 && <span style={{ color: "#F783AC" }}>· 퀴즈: {lecturePlan.quizBiyul}%{' '}</span>}
+                    {lecturePlan.gitaBiyul > 0 && <span style={{ color: "#3BC9DB" }}>· 기타: {lecturePlan.gitaBiyul}%</span>}
                 </div>
                 <Spacer y={10} />
                 <span style={{ opacity: 0.6, fontSize: '14px' }}><b>세부설명: </b>
                     <span>
-                        {lecturePlan.gitaDetail?.split('\r\n').map((line, i) => (
+                        {lecturePlan.gitaDetail ? lecturePlan.gitaDetail?.split('\r\n').map((line, i) => (
                             <span key={i}>
                                 {line}
                                 {i < lecturePlan.gitaDetail.split('\r\n').length - 1 && <br />}
                             </span>
-                        ))}
+                        )) : "내용 없음"}
                     </span>
                 </span>
 
@@ -731,7 +732,7 @@ export default function LectureHome() {
                                 }}
                             />
                         </div>
-                        <div style={{ fontSize: '14px', opacity: 0.7 }}>
+                        <div style={{ fontSize: '14px', opacity: 0.7, lineHeight: '1.2' }}>
                             {lecturePlan.pa1 > 0 && <>지적탐구: {lecturePlan.pa1}%{' '}</>}
                             {lecturePlan.pa2 > 0 && <>· 글로벌리더십: {lecturePlan.pa2}%{' '}</>}
                             {lecturePlan.pa3 > 0 && <>· 자기관리 및 개발: {lecturePlan.pa3}%{' '}</>}

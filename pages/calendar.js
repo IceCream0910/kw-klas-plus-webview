@@ -96,7 +96,6 @@ export default function CalendarPage() {
     };
 
     const handleSelectSlot = (slotInfo) => {
-        console.log(slotInfo)
         setSelectedDate(slotInfo.start);
         setSelectedEvent(null);
         updateSelectedDayEvents(slotInfo.start);
@@ -226,7 +225,6 @@ export default function CalendarPage() {
     };
 
     const onSelectSlot = ({ action, slots /*, ...props */ }) => {
-        console.log(action, slots);
         return false;
     };
 

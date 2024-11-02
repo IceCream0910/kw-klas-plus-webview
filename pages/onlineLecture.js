@@ -15,9 +15,21 @@ export default function Home() {
   useEffect(() => {
     window.receivedData = function (token, subj, yearHakgi) {
       if (!token || !subj || !yearHakgi) return;
-      setToken(token);
-      setSubj(subj);
-      setYearHakgi(yearHakgi);
+
+      fetch("/api/onlineLectureList", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token, subj, yearHakgi }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setList(data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     };
 
     const savedExcludeFinished = JSON.parse(localStorage.getItem('excludeFinished') || 'false');
@@ -26,24 +38,6 @@ export default function Home() {
     Android.completePageLoad();
   }, [])
 
-  useEffect(() => {
-    if (!token) return;
-
-    fetch("/api/onlineLectureList", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ token, subj, yearHakgi }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setList(data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, [token]);
 
   useEffect(() => {
     if (list) {
