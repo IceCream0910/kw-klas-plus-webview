@@ -56,13 +56,34 @@ const ScholarshipCard = ({ scholarship, isFocused }) => {
   );
 };
 
+const ScholarshipListItem = ({ scholarship }) => {
+  return (
+    <div style={{
+      padding: '16px',
+      borderRadius: '12px',
+      backgroundColor: 'var(--card-background)',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center'
+    }}>
+      <div>
+        <h3>{scholarship.janghakName}</h3>
+        <p style={{ fontSize: '13px', opacity: .8 }}>
+          {scholarship.yearHakgi?.split('-')[0]}년도 {scholarship.grade}학년 {scholarship.yearHakgi?.split('-')[1]}학기
+        </p>
+      </div>
+      <h3>₩{scholarship.janghakAmt?.toLocaleString()}</h3>
+    </div>
+  );
+};
+
 export default function Home() {
   const [token, setToken] = useState("");
   const [janghak, setJanghak] = useState([]);
   const containerRef = useRef(null);
   const [focusedIndex, setFocusedIndex] = useState(1);
   const observerRef = useRef(null);
-
+  const [viewType, setViewType] = useState('card');
 
   useEffect(() => {
     window.receiveToken = (receivedToken) => {
@@ -133,7 +154,7 @@ export default function Home() {
   }, [janghak]);
 
   return (
-    <main>
+    <main style={{ paddingBottom: '60px' }}>
       <Spacer y={5} />
       <h2>장학 조회
         <button onClick={() => Android.openPage('https://klas.kw.ac.kr/std/cps/inqire/JanghakStdPage.do')} style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-5px', borderRadius: '20px', padding: '10px 15px' }}>
@@ -141,7 +162,7 @@ export default function Home() {
         </button>
       </h2>
 
-      {janghak.length <= 0 ?
+      {janghak.length <= 0 ? (
         <>
           <div style={{
             position: 'absolute',
@@ -177,52 +198,104 @@ export default function Home() {
               </div>
             </div>
           </div>
-
         </>
-        :
+      ) : (
         <>
-          <div style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            top: '50%',
-            transform: 'translateY(-40%)'
-          }}>
-            {janghak && <h3 style={{ textAlign: 'center' }}>지금까지 총 {janghak.length - 2}건의<br />장학금을 수여받았어요!</h3>}
-            <Spacer y={20} />
-            {janghak.length > 0 && (
-              <div
-                ref={containerRef}
-                style={{
-                  display: 'flex',
-                  overflowX: 'auto',
-                  scrollbarWidth: 'none',
-                  msOverflowStyle: 'none',
-                  scrollSnapType: 'x mandatory',
-                  alignItems: 'center',
-                  height: 'fit-content',
-                  padding: '15px 0',
-                }}
-              >
-                {janghak.map((scholarship, index) => (
-                  <div key={index} style={{ scrollSnapAlign: 'center' }}>
-                    {scholarship ? (
-                      <ScholarshipCard scholarship={scholarship} isFocused={index === focusedIndex} />
-                    ) : (
-                      <div style={{ width: 'calc(25vw - 40px)', height: '70vw' }}>
-                        <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}></div>
-                      </div>
-                    )}
-                  </div>
-                ))}
+
+
+          {viewType === 'card' ? (
+            <>
+              <div style={{
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                top: '50%',
+                transform: 'translateY(-50%)'
+              }}>
+                {janghak && <h3 style={{ textAlign: 'center' }}>지금까지 총 {janghak.length - 2}건의<br />장학금을 수여받았어요!</h3>}
+                <Spacer y={20} />
+                <div
+                  ref={containerRef}
+                  style={{
+                    display: 'flex',
+                    overflowX: 'auto',
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none',
+                    scrollSnapType: 'x mandatory',
+                    alignItems: 'center',
+                    height: 'fit-content',
+                    padding: '15px 0',
+                  }}
+                >
+                  {janghak.map((scholarship, index) => (
+                    <div key={index} style={{ scrollSnapAlign: 'center' }}>
+                      {scholarship ? (
+                        <ScholarshipCard scholarship={scholarship} isFocused={index === focusedIndex} />
+                      ) : (
+                        <div style={{ width: 'calc(25vw - 40px)', height: '70vw' }}>
+                          <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}></div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
               </div>
-            )}
-          </div>
+            </>
+          ) : (
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column', width: '100%', gap: '15px', padding: '25px 0'
+            }}>
+              {janghak.slice(1, -1).map((scholarship, index) => (
+                <ScholarshipListItem key={index} scholarship={scholarship} />
+              ))}
+            </div>
+          )}
         </>
+      )}
 
-      }
-
-
+      <div style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: '60px',
+        backgroundColor: 'var(--background)',
+        borderTop: '1px solid var(--card-background)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}>
+        <button
+          onClick={() => setViewType('card')}
+          style={{
+            width: 'fit-content',
+            padding: '8px 16px',
+            borderRadius: '20px',
+            backgroundColor: viewType === 'card' ? 'var(--card-background)' : 'transparent',
+            border: 'none',
+            fontSize: '14px',
+            textAlign: 'center'
+          }}
+        >
+          카드
+        </button>
+        <button
+          onClick={() => setViewType('list')}
+          style={{
+            width: 'fit-content',
+            padding: '8px 16px',
+            borderRadius: '20px',
+            backgroundColor: viewType === 'list' ? 'var(--card-background)' : 'transparent',
+            border: 'none',
+            fontSize: '14px',
+            textAlign: 'center'
+          }}
+        >
+          리스트
+        </button>
+      </div>
     </main>
   );
 }
