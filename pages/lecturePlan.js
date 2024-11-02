@@ -27,7 +27,6 @@ export default function LectureHome() {
                 });
         };
 
-
         Android.completePageLoad();
     }, [])
 
@@ -95,17 +94,17 @@ export default function LectureHome() {
             <span style={{ fontSize: '15px' }}>
                 <IonIcon style={{ position: 'relative', top: '2px', color: '#ff7661' }} name='desktop-outline' />
                 <span style={{ marginLeft: '5px', opacity: .7 }}>
-                    원격 수업 {lecturePlan.onlineOpt === "1" ? "100%" : lecturePlan.blendedOpt === "1" ? "50% 이상" : "아님"}
-                </span>,&nbsp;
+                    {lecturePlan.onlineOpt === "1" ? "원격 수업 100%, " : lecturePlan.blendedOpt === "1" ? "원격수업 50% 이상, " : ""}
+                </span>
                 <span style={{ opacity: .7 }}>
                     {[
-                        lecturePlan.face100Opt === 'Y' && '100%대면강의',
+                        lecturePlan.face100Opt === 'Y' && '100% 대면강의',
                         lecturePlan.faceliveOpt === 'Y' && '대면+실시간 화상강의',
                         lecturePlan.facerecOpt === 'Y' && '대면+사전녹화강의',
                         lecturePlan.faceliverecOpt === 'Y' && '대면+실시간 화상강의+사전녹화강의',
                         lecturePlan.recliveOpt === 'Y' && '실시간 화상강의+사전녹화강의',
-                        lecturePlan.live100Opt === 'Y' && '100%실시간 화상강의',
-                        lecturePlan.rec100Opt === 'Y' && '100%사전녹화강의'
+                        lecturePlan.live100Opt === 'Y' && '100% 실시간 화상강의',
+                        lecturePlan.rec100Opt === 'Y' && '100% 사전녹화강의'
                     ].filter(Boolean).join(', ') || '강의운영 방식 정보 없음'}
                 </span>
             </span><br />
@@ -156,41 +155,63 @@ export default function LectureHome() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                         <span style={{ fontSize: '15px' }}>
                             <IonIcon style={{ position: 'relative', top: '2px', color: '#ff7661' }} name='call-outline' />
-                            <span style={{ marginLeft: '5px', opacity: .7 }}>{lecturePlan.telNo}</span>
+                            <span style={{ marginLeft: '5px', opacity: .7 }}>{lecturePlan.telNo || "비공개"}</span>
                         </span>
                         <span style={{ fontSize: '15px' }}>
                             <IonIcon style={{ position: 'relative', top: '2px', color: '#ff7661' }} name='phone-portrait-outline' />
-                            <span style={{ marginLeft: '5px', opacity: .7 }}>{lecturePlan.hpNo}</span>
+                            <span style={{ marginLeft: '5px', opacity: .7 }}>{lecturePlan.hpNo || "비공개"}</span>
                         </span>
                         <span style={{ fontSize: '15px' }}>
                             <IonIcon style={{ position: 'relative', top: '2px', color: '#ff7661' }} name='mail-outline' />
-                            <span style={{ marginLeft: '5px', opacity: .7 }}>{lecturePlan.addinfoemail}</span>
+                            <span style={{ marginLeft: '5px', opacity: .7 }}>{lecturePlan.addinfoemail || "비공개"}</span>
                         </span>
                     </div>
                 </div>
                 <Spacer y={10} />
-                <hr style={{ opacity: 0.1 }} />
-                <Spacer y={10} />
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignContent: 'center' }}>
-                        <h5>{lectureAssistant.name}</h5>
-                        <span style={{ opacity: .7, marginTop: '5px' }}>담당조교</span>
-                    </div>
+                {data.lectureTeam.length > 0 && (
+                    <>
+                        <hr style={{ opacity: 0.1 }} />
+                        <Spacer y={10} />
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignContent: 'center' }}>
+                                <h5>{data.lectureTeam[0].name}</h5>
+                                <span style={{ opacity: .7, marginTop: '5px' }}>팀티칭/공동교수</span>
+                            </div>
+                        </div>
+                    </>
+                )}
+                {data.lectureAssistant.length > 0 && (
+                    <>
+                        <hr style={{ opacity: 0.1 }} />
+                        <Spacer y={10} />
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignContent: 'center' }}>
+                                <h5>{lectureAssistant.name}</h5>
+                                <span style={{ opacity: .7, marginTop: '5px' }}>담당조교</span>
+                            </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        <span style={{ fontSize: '15px' }}>
-                            <IonIcon style={{ position: 'relative', top: '2px', color: '#ff7661' }} name='mail-outline' />
-                            <span style={{ marginLeft: '5px', opacity: .7 }}>{lectureAssistant.astntemail}</span>
-                        </span>
-                    </div>
-                </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                <span style={{ fontSize: '15px' }}>
+                                    <IonIcon style={{ position: 'relative', top: '2px', color: '#ff7661' }} name='mail-outline' />
+                                    <span style={{ marginLeft: '5px', opacity: .7 }}>{lectureAssistant.astntemail}</span>
+                                </span>
+                            </div>
+                        </div>
+                    </>
+                )}
+
             </div>
 
             <Spacer y={30} />
             <h3>개요</h3><Spacer y={15} />
             <div className="card non-anim" id="notices" style={{ padding: '5px 15px' }}>
                 <p style={{ opacity: .6, fontSize: '15px' }}>
-                    {lecturePlan.summary}
+                    {lecturePlan.summary?.split('\r\n').map((line, i) => (
+                        <span key={i}>
+                            {line}
+                            {i < lecturePlan.summary.split('\r\n').length - 1 && <br />}
+                        </span>
+                    ))}
                 </p>
 
                 <p style={{ opacity: .6, fontSize: '15px' }}>
@@ -211,270 +232,276 @@ export default function LectureHome() {
                 </p>
             </div>
 
-            <Spacer y={30} />
-            <h3>학습성과</h3><Spacer y={15} />
-            <div className="card non-anim" id="notices" style={{ padding: '20px 15px' }}>
-                {lecturePlan.reflectPer1 && (
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort1}</span>
-                        <p style={{ opacity: .6, fontSize: '15px' }}>
-                            {lecturePlan.result1.split('\r\n').map((line, i) => (
-                                <span key={i}>
-                                    {line}
-                                    {i < lecturePlan.result1.split('\r\n').length - 1 && <br />}
-                                </span>
-                            ))}
-                        </p>
+
+            {data.lecturePlanTab4.length > 0 && (
+                <>
+                    <Spacer y={30} />
+                    <h3>학습성과</h3><Spacer y={15} />
+                    <div className="card non-anim" id="notices" style={{ padding: '20px 15px' }}>
+                        {lecturePlan.reflectPer1 && (
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort1}</span>
+                                <p style={{ opacity: .6, fontSize: '15px' }}>
+                                    {lecturePlan.result1 && lecturePlan.result1.split('\r\n').map((line, i) => (
+                                        <span key={i}>
+                                            {line}
+                                            {i < lecturePlan.result1.split('\r\n').length - 1 && <br />}
+                                        </span>
+                                    ))}
+                                </p>
+                            </div>
+                        )}
+                        {lecturePlan.reflectPer2 && (
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort2}</span>
+                                <p style={{ opacity: .6, fontSize: '15px' }}>
+                                    {lecturePlan.result2 && lecturePlan.result2.split('\r\n').map((line, i) => (
+                                        <span key={i}>
+                                            {line}
+                                            {i < lecturePlan.result2.split('\r\n').length - 1 && <br />}
+                                        </span>
+                                    ))}
+                                </p>
+                            </div>
+                        )}
+                        {lecturePlan.reflectPer3 && (
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort3}</span>
+                                <p style={{ opacity: .6, fontSize: '15px' }}>
+                                    {lecturePlan.result3 && lecturePlan.result3.split('\r\n').map((line, i) => (
+                                        <span key={i}>
+                                            {line}
+                                            {i < lecturePlan.result3.split('\r\n').length - 1 && <br />}
+                                        </span>
+                                    ))}
+                                </p>
+                            </div>
+                        )}
+                        {lecturePlan.reflectPer4 && (
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort4}</span>
+                                <p style={{ opacity: .6, fontSize: '15px' }}>
+                                    {lecturePlan.result4 && lecturePlan.result4.split('\r\n').map((line, i) => (
+                                        <span key={i}>
+                                            {line}
+                                            {i < lecturePlan.result4.split('\r\n').length - 1 && <br />}
+                                        </span>
+                                    ))}
+                                </p>
+                            </div>
+                        )}
+                        {lecturePlan.reflectPer5 && (
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort5}</span>
+                                <p style={{ opacity: .6, fontSize: '15px' }}>
+                                    {lecturePlan.result5 && lecturePlan.result5.split('\r\n').map((line, i) => (
+                                        <span key={i}>
+                                            {line}
+                                            {i < lecturePlan.result5.split('\r\n').length - 1 && <br />}
+                                        </span>
+                                    ))}
+                                </p>
+                            </div>
+                        )}
+                        {lecturePlan.reflectPer6 && (
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort6}</span>
+                                <p style={{ opacity: .6, fontSize: '15px' }}>
+                                    {lecturePlan.result6 && lecturePlan.result6.split('\r\n').map((line, i) => (
+                                        <span key={i}>
+                                            {line}
+                                            {i < lecturePlan.result6.split('\r\n').length - 1 && <br />}
+                                        </span>
+                                    ))}
+                                </p>
+                            </div>
+                        )}
+                        {lecturePlan.reflectPer7 && (
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort7}</span>
+                                <p style={{ opacity: .6, fontSize: '15px' }}>
+                                    {lecturePlan.result7 && lecturePlan.result7.split('\r\n').map((line, i) => (
+                                        <span key={i}>
+                                            {line}
+                                            {i < lecturePlan.result7.split('\r\n').length - 1 && <br />}
+                                        </span>
+                                    ))}
+                                </p>
+                            </div>
+                        )}
+                        {lecturePlan.reflectPer8 && (
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort8}</span>
+                                <p style={{ opacity: .6, fontSize: '15px' }}>
+                                    {lecturePlan.result8 && lecturePlan.result8.split('\r\n').map((line, i) => (
+                                        <span key={i}>
+                                            {line}
+                                            {i < lecturePlan.result8.split('\r\n').length - 1 && <br />}
+                                        </span>
+                                    ))}
+                                </p>
+                            </div>
+                        )}
+                        {lecturePlan.reflectPer9 && (
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort9}</span>
+                                <p style={{ opacity: .6, fontSize: '15px' }}>
+                                    {lecturePlan.result9 && lecturePlan.result9.split('\r\n').map((line, i) => (
+                                        <span key={i}>
+                                            {line}
+                                            {i < lecturePlan.result9.split('\r\n').length - 1 && <br />}
+                                        </span>
+                                    ))}
+                                </p>
+                            </div>
+                        )}
+                        {lecturePlan.reflectPer10 && (
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort10}</span>
+                                <p style={{ opacity: .6, fontSize: '15px' }}>
+                                    {lecturePlan.result10 && lecturePlan.result10.split('\r\n').map((line, i) => (
+                                        <span key={i}>
+                                            {line}
+                                            {i < lecturePlan.result10.split('\r\n').length - 1 && <br />}
+                                        </span>
+                                    ))}
+                                </p>
+                            </div>
+                        )}
+                        {lecturePlan.reflectPer11 && (
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort11}</span>
+                                <p style={{ opacity: .6, fontSize: '15px' }}>
+                                    {lecturePlan.result11 && lecturePlan.result11.split('\r\n').map((line, i) => (
+                                        <span key={i}>
+                                            {line}
+                                            {i < lecturePlan.result11.split('\r\n').length - 1 && <br />}
+                                        </span>
+                                    ))}
+                                </p>
+                            </div>
+                        )}
+                        {lecturePlan.reflectPer12 && (
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort12}</span>
+                                <p style={{ opacity: .6, fontSize: '15px' }}>
+                                    {lecturePlan.result12 && lecturePlan.result12.split('\r\n').map((line, i) => (
+                                        <span key={i}>
+                                            {line}
+                                            {i < lecturePlan.result12.split('\r\n').length - 1 && <br />}
+                                        </span>
+                                    ))}
+                                </p>
+                            </div>
+                        )}
+                        {lecturePlan.reflectPer13 && (
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort13}</span>
+                                <p style={{ opacity: .6, fontSize: '15px' }}>
+                                    {lecturePlan.result13 && lecturePlan.result13.split('\r\n').map((line, i) => (
+                                        <span key={i}>
+                                            {line}
+                                            {i < lecturePlan.result13.split('\r\n').length - 1 && <br />}
+                                        </span>
+                                    ))}
+                                </p>
+                            </div>
+                        )}
+                        {lecturePlan.reflectPer14 && (
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort14}</span>
+                                <p style={{ opacity: .6, fontSize: '15px' }}>
+                                    {lecturePlan.result14 && lecturePlan.result14.split('\r\n').map((line, i) => (
+                                        <span key={i}>
+                                            {line}
+                                            {i < lecturePlan.result14.split('\r\n').length - 1 && <br />}
+                                        </span>
+                                    ))}
+                                </p>
+                            </div>
+                        )}
+                        {lecturePlan.reflectPer15 && (
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort15}</span>
+                                <p style={{ opacity: .6, fontSize: '15px' }}>
+                                    {lecturePlan.result15 && lecturePlan.result15.split('\r\n').map((line, i) => (
+                                        <span key={i}>
+                                            {line}
+                                            {i < lecturePlan.result15.split('\r\n').length - 1 && <br />}
+                                        </span>
+                                    ))}
+                                </p>
+                            </div>
+                        )}
+                        {lecturePlan.reflectPer16 && (
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort16}</span>
+                                <p style={{ opacity: .6, fontSize: '15px' }}>
+                                    {lecturePlan.result16 && lecturePlan.result16.split('\r\n').map((line, i) => (
+                                        <span key={i}>
+                                            {line}
+                                            {i < lecturePlan.result16.split('\r\n').length - 1 && <br />}
+                                        </span>
+                                    ))}
+                                </p>
+                            </div>
+                        )}
+                        {lecturePlan.reflectPer17 && (
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort17}</span>
+                                <p style={{ opacity: .6, fontSize: '15px' }}>
+                                    {lecturePlan.result17 && lecturePlan.result17.split('\r\n').map((line, i) => (
+                                        <span key={i}>
+                                            {line}
+                                            {i < lecturePlan.result17.split('\r\n').length - 1 && <br />}
+                                        </span>
+                                    ))}
+                                </p>
+                            </div>
+                        )}
+                        {lecturePlan.reflectPer18 && (
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort18}</span>
+                                <p style={{ opacity: .6, fontSize: '15px' }}>
+                                    {lecturePlan.result18 && lecturePlan.result18.split('\r\n').map((line, i) => (
+                                        <span key={i}>
+                                            {line}
+                                            {i < lecturePlan.result18.split('\r\n').length - 1 && <br />}
+                                        </span>
+                                    ))}
+                                </p>
+                            </div>
+                        )}
+                        {lecturePlan.reflectPer19 && (
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort19}</span>
+                                <p style={{ opacity: .6, fontSize: '15px' }}>
+                                    {lecturePlan.result19 && lecturePlan.result19.split('\r\n').map((line, i) => (
+                                        <span key={i}>
+                                            {line}
+                                            {i < lecturePlan.result19.split('\r\n').length - 1 && <br />}
+                                        </span>
+                                    ))}
+                                </p>
+                            </div>
+                        )}
+                        {lecturePlan.reflectPer20 && (
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort20}</span>
+                                <p style={{ opacity: .6, fontSize: '15px' }}>
+                                    {lecturePlan.result20 && lecturePlan.result20.split('\r\n').map((line, i) => (
+                                        <span key={i}>
+                                            {line}
+                                            {i < lecturePlan.result20.split('\r\n').length - 1 && <br />}
+                                        </span>
+                                    ))}
+                                </p>
+                            </div>
+                        )}
                     </div>
-                )}
-                {lecturePlan.reflectPer2 && (
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort2}</span>
-                        <p style={{ opacity: .6, fontSize: '15px' }}>
-                            {lecturePlan.result2.split('\r\n').map((line, i) => (
-                                <span key={i}>
-                                    {line}
-                                    {i < lecturePlan.result2.split('\r\n').length - 1 && <br />}
-                                </span>
-                            ))}
-                        </p>
-                    </div>
-                )}
-                {lecturePlan.reflectPer3 && (
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort3}</span>
-                        <p style={{ opacity: .6, fontSize: '15px' }}>
-                            {lecturePlan.result3.split('\r\n').map((line, i) => (
-                                <span key={i}>
-                                    {line}
-                                    {i < lecturePlan.result3.split('\r\n').length - 1 && <br />}
-                                </span>
-                            ))}
-                        </p>
-                    </div>
-                )}
-                {lecturePlan.reflectPer4 && (
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort4}</span>
-                        <p style={{ opacity: .6, fontSize: '15px' }}>
-                            {lecturePlan.result4.split('\r\n').map((line, i) => (
-                                <span key={i}>
-                                    {line}
-                                    {i < lecturePlan.result4.split('\r\n').length - 1 && <br />}
-                                </span>
-                            ))}
-                        </p>
-                    </div>
-                )}
-                {lecturePlan.reflectPer5 && (
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort5}</span>
-                        <p style={{ opacity: .6, fontSize: '15px' }}>
-                            {lecturePlan.result5.split('\r\n').map((line, i) => (
-                                <span key={i}>
-                                    {line}
-                                    {i < lecturePlan.result5.split('\r\n').length - 1 && <br />}
-                                </span>
-                            ))}
-                        </p>
-                    </div>
-                )}
-                {lecturePlan.reflectPer6 && (
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort6}</span>
-                        <p style={{ opacity: .6, fontSize: '15px' }}>
-                            {lecturePlan.result6.split('\r\n').map((line, i) => (
-                                <span key={i}>
-                                    {line}
-                                    {i < lecturePlan.result6.split('\r\n').length - 1 && <br />}
-                                </span>
-                            ))}
-                        </p>
-                    </div>
-                )}
-                {lecturePlan.reflectPer7 && (
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort7}</span>
-                        <p style={{ opacity: .6, fontSize: '15px' }}>
-                            {lecturePlan.result7.split('\r\n').map((line, i) => (
-                                <span key={i}>
-                                    {line}
-                                    {i < lecturePlan.result7.split('\r\n').length - 1 && <br />}
-                                </span>
-                            ))}
-                        </p>
-                    </div>
-                )}
-                {lecturePlan.reflectPer8 && (
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort8}</span>
-                        <p style={{ opacity: .6, fontSize: '15px' }}>
-                            {lecturePlan.result8.split('\r\n').map((line, i) => (
-                                <span key={i}>
-                                    {line}
-                                    {i < lecturePlan.result8.split('\r\n').length - 1 && <br />}
-                                </span>
-                            ))}
-                        </p>
-                    </div>
-                )}
-                {lecturePlan.reflectPer9 && (
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort9}</span>
-                        <p style={{ opacity: .6, fontSize: '15px' }}>
-                            {lecturePlan.result9.split('\r\n').map((line, i) => (
-                                <span key={i}>
-                                    {line}
-                                    {i < lecturePlan.result9.split('\r\n').length - 1 && <br />}
-                                </span>
-                            ))}
-                        </p>
-                    </div>
-                )}
-                {lecturePlan.reflectPer10 && (
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort10}</span>
-                        <p style={{ opacity: .6, fontSize: '15px' }}>
-                            {lecturePlan.result10.split('\r\n').map((line, i) => (
-                                <span key={i}>
-                                    {line}
-                                    {i < lecturePlan.result10.split('\r\n').length - 1 && <br />}
-                                </span>
-                            ))}
-                        </p>
-                    </div>
-                )}
-                {lecturePlan.reflectPer11 && (
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort11}</span>
-                        <p style={{ opacity: .6, fontSize: '15px' }}>
-                            {lecturePlan.result11.split('\r\n').map((line, i) => (
-                                <span key={i}>
-                                    {line}
-                                    {i < lecturePlan.result11.split('\r\n').length - 1 && <br />}
-                                </span>
-                            ))}
-                        </p>
-                    </div>
-                )}
-                {lecturePlan.reflectPer12 && (
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort12}</span>
-                        <p style={{ opacity: .6, fontSize: '15px' }}>
-                            {lecturePlan.result12.split('\r\n').map((line, i) => (
-                                <span key={i}>
-                                    {line}
-                                    {i < lecturePlan.result12.split('\r\n').length - 1 && <br />}
-                                </span>
-                            ))}
-                        </p>
-                    </div>
-                )}
-                {lecturePlan.reflectPer13 && (
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort13}</span>
-                        <p style={{ opacity: .6, fontSize: '15px' }}>
-                            {lecturePlan.result13.split('\r\n').map((line, i) => (
-                                <span key={i}>
-                                    {line}
-                                    {i < lecturePlan.result13.split('\r\n').length - 1 && <br />}
-                                </span>
-                            ))}
-                        </p>
-                    </div>
-                )}
-                {lecturePlan.reflectPer14 && (
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort14}</span>
-                        <p style={{ opacity: .6, fontSize: '15px' }}>
-                            {lecturePlan.result14.split('\r\n').map((line, i) => (
-                                <span key={i}>
-                                    {line}
-                                    {i < lecturePlan.result14.split('\r\n').length - 1 && <br />}
-                                </span>
-                            ))}
-                        </p>
-                    </div>
-                )}
-                {lecturePlan.reflectPer15 && (
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort15}</span>
-                        <p style={{ opacity: .6, fontSize: '15px' }}>
-                            {lecturePlan.result15.split('\r\n').map((line, i) => (
-                                <span key={i}>
-                                    {line}
-                                    {i < lecturePlan.result15.split('\r\n').length - 1 && <br />}
-                                </span>
-                            ))}
-                        </p>
-                    </div>
-                )}
-                {lecturePlan.reflectPer16 && (
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort16}</span>
-                        <p style={{ opacity: .6, fontSize: '15px' }}>
-                            {lecturePlan.result16.split('\r\n').map((line, i) => (
-                                <span key={i}>
-                                    {line}
-                                    {i < lecturePlan.result16.split('\r\n').length - 1 && <br />}
-                                </span>
-                            ))}
-                        </p>
-                    </div>
-                )}
-                {lecturePlan.reflectPer17 && (
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort17}</span>
-                        <p style={{ opacity: .6, fontSize: '15px' }}>
-                            {lecturePlan.result17.split('\r\n').map((line, i) => (
-                                <span key={i}>
-                                    {line}
-                                    {i < lecturePlan.result17.split('\r\n').length - 1 && <br />}
-                                </span>
-                            ))}
-                        </p>
-                    </div>
-                )}
-                {lecturePlan.reflectPer18 && (
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort18}</span>
-                        <p style={{ opacity: .6, fontSize: '15px' }}>
-                            {lecturePlan.result18.split('\r\n').map((line, i) => (
-                                <span key={i}>
-                                    {line}
-                                    {i < lecturePlan.result18.split('\r\n').length - 1 && <br />}
-                                </span>
-                            ))}
-                        </p>
-                    </div>
-                )}
-                {lecturePlan.reflectPer19 && (
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort19}</span>
-                        <p style={{ opacity: .6, fontSize: '15px' }}>
-                            {lecturePlan.result19.split('\r\n').map((line, i) => (
-                                <span key={i}>
-                                    {line}
-                                    {i < lecturePlan.result19.split('\r\n').length - 1 && <br />}
-                                </span>
-                            ))}
-                        </p>
-                    </div>
-                )}
-                {lecturePlan.reflectPer20 && (
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontWeight: 'bold' }}>{lecturePlan.studyResultShort20}</span>
-                        <p style={{ opacity: .6, fontSize: '15px' }}>
-                            {lecturePlan.result20.split('\r\n').map((line, i) => (
-                                <span key={i}>
-                                    {line}
-                                    {i < lecturePlan.result20.split('\r\n').length - 1 && <br />}
-                                </span>
-                            ))}
-                        </p>
-                    </div>
-                )}
-            </div>
+                </>
+            )}
+
 
             {data.lectureEngineerCourse.length > 0 && data.lectureEngineerCourse[0].engOpt === "Y" && (
                 <>
@@ -720,17 +747,19 @@ export default function LectureHome() {
                     <div className="notice-item">
                         <span>부교재 · <b>{lecturePlan.book1Name}</b></span><br />
                         <span style={{ opacity: 0.6, fontSize: '13px' }}>{lecturePlan.write1Name} | {lecturePlan.company1Name}({lecturePlan.print1Year})</span>
+                        {lecturePlan.book2Name && <hr style={{ opacity: 0.3 }} />}
                     </div>
                 )}
                 {lecturePlan.book2Name && (
                     <div className="notice-item">
-                        <span>부교재 · <b>{lecturePlan.book1Name}</b></span><br />
+                        <span>부교재 · <b>{lecturePlan.book2Name}</b></span><br />
                         <span style={{ opacity: 0.6, fontSize: '13px' }}>{lecturePlan.write2Name} | {lecturePlan.company2Name}({lecturePlan.print2Year})</span>
+                        {lecturePlan.book3Name && <hr style={{ opacity: 0.3 }} />}
                     </div>
                 )}
                 {lecturePlan.book3Name && (
                     <div className="notice-item">
-                        <span>부교재 · <b>{lecturePlan.book1Name}</b></span><br />
+                        <span>부교재 · <b>{lecturePlan.book3Name}</b></span><br />
                         <span style={{ opacity: 0.6, fontSize: '13px' }}>{lecturePlan.write3Name} | {lecturePlan.company3Name}({lecturePlan.print3Year})</span>
                     </div>
                 )}
