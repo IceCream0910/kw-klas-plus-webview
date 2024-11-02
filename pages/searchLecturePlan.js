@@ -91,7 +91,7 @@ export default function LectureHome() {
     };
 
     const search = async () => {
-        if (!name && !professor && !selectedGwamok && !selectedHakgwa) {
+        if (!name && !professor && !selectedGwamok && !selectedHakgwa && !isMy) {
             alert('과목명 또는 교수명을 입력하지 않은 경우 반드시 공통 과목이나 학과를 선택하셔야 합니다.');
             return;
         }
@@ -260,30 +260,29 @@ export default function LectureHome() {
                             <span>조회된 데이터가 없습니다</span>
                         </div>)}
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', height: '80dvh', overflow: 'scroll' }}>
-                        {data && data.map((item, index) => (
-                            <div key={index} className={item.summary ? "card" : "card non-anim"} style={{ padding: "10px 15px", opacity: !item.summary ? 0.5 : 1 }}
-                                onClick={openLecturePlan(`U${item.thisYear}${item.hakgi}${item.openGwamokNo}${item.openMajorCode}${item.bunbanNo}${item.openGrade}`)}>
-                                <span style={{ fontSize: '16px' }}><b>{item.gwamokKname}
-                                    {item.closeOpt !== null && "(폐강)"}
-                                    {!item.summary && "(미입력)"}
-                                </b></span>&nbsp;
-                                <span style={{ opacity: .8, fontSize: '16px' }}>({item.openMajorCode}-{item.openGrade}-{item.openGwamokNo}-{item.bunbanNo})</span>
-                                <Spacer y={1} />
-                                <span>
-                                    <IonIcon style={{ fontSize: '14px', position: 'relative', top: '2px', opacity: .5 }} name='person-outline' />
-                                    <span style={{ fontSize: '14px', marginLeft: '5px', opacity: .8 }}>{item.memberName}</span>
-                                </span><br />
-                                <span style={{ fontSize: '15px' }}>
-                                    <IonIcon style={{ fontSize: '13px', position: 'relative', top: '2px', opacity: .5 }} name='time-outline' />
-                                    <span style={{ fontSize: '13px', marginLeft: '5px', opacity: .5 }}>{item.codeName1} | {item.hakjumNum}학점/{item.sisuNum}시간</span>
-                                </span>
-                                <Spacer y={5} />
-                            </div>
-                        ))}
+                    {data && data.map((item, index) => (
+                        <div key={index} className={(item.summary && !item.closeOpt) ? "card" : "card non-anim"} style={{ padding: "10px 15px", opacity: (!item.summary || item.closeOpt) ? 0.5 : 1, marginBottom: '15px' }}
+                            onClick={item.summary ? openLecturePlan(`U${item.thisYear}${item.hakgi}${item.openGwamokNo}${item.openMajorCode}${item.bunbanNo}${item.openGrade}`) : null}>
+                            <span style={{ fontSize: '16px' }}><b>{item.gwamokKname}
+                                {item.closeOpt !== null && "(폐강)"}
+                                {!item.summary && "(미입력)"}
+                            </b></span>&nbsp;
+                            <span style={{ opacity: .8, fontSize: '16px' }}>({item.openMajorCode}-{item.openGrade}-{item.openGwamokNo}-{item.bunbanNo})</span>
+                            <Spacer y={1} />
+                            <span>
+                                <IonIcon style={{ fontSize: '14px', position: 'relative', top: '2px', opacity: .5 }} name='person-outline' />
+                                <span style={{ fontSize: '14px', marginLeft: '5px', opacity: .8 }}>{item.memberName}</span>
+                            </span><br />
+                            <span style={{ fontSize: '15px' }}>
+                                <IonIcon style={{ fontSize: '13px', position: 'relative', top: '2px', opacity: .5 }} name='time-outline' />
+                                <span style={{ fontSize: '13px', marginLeft: '5px', opacity: .5 }}>{item.codeName1} | {item.hakjumNum}학점/{item.sisuNum}시간</span>
+                            </span>
+                            <Spacer y={5} />
+                        </div>
+                    ))}
+                    <Spacer y={80} />
 
-                    </div>
-                    <div className='bottom-sheet-footer'>
+                    <div className='bottom-sheet-footer' style={{ position: 'fixed', bottom: '0' }}>
                         <button onClick={() => setSearchMode(true)} style={{ background: 'var(--button-background)' }}>다시 검색</button>
                     </div>
                 </>
