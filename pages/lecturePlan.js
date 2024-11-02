@@ -29,9 +29,8 @@ export default function LectureHome() {
                 });
         };
 
-        window.receivedData('ODVmODJjNjgtY2YxMC00ZDYyLWFlZDUtMGVjNjNhODVhNjY5', 'U2024256740000021')
 
-        //Android.completePageLoad();
+        Android.completePageLoad();
     }, [])
 
 
