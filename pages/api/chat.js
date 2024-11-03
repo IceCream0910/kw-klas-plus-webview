@@ -457,7 +457,7 @@ async function getHaksik() {
             const weeklyMenu = [];
 
             headers.forEach((header, index) => {
-                if (index === 0) return; // 첫 번째 열은 "구분"이므로 건너뜁니다.
+                if (index === 0) return;
 
                 const day = header.querySelector('.nowDay')?.text.trim();
                 const date = header.querySelector('.nowDate')?.text.trim();
@@ -470,7 +470,6 @@ async function getHaksik() {
                 });
             });
 
-            // 식당 정보 추출
             const restaurantInfo = menuRow.querySelector('td');
             const restaurantName = restaurantInfo.querySelector('.dietTitle')?.text.trim();
             const price = restaurantInfo.querySelector('.dietPrice')?.text.trim();

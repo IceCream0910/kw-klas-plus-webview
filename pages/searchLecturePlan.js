@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react';
 import Spacer from './components/spacer';
 import IonIcon from '@reacticons/ionicons';
+import { useRouter } from 'next/router';
 
 export default function LectureHome() {
+    const router = useRouter();
+    const [isValid, setIsValid] = useState(false);
     const [data, setData] = useState(null);
     const [searchMode, setSearchMode] = useState(true);
     const [token, setToken] = useState(null);
 
-    // Lists for select options
     const [gwamokList, setGwamokList] = useState([]);
     const [hakgwaList, setHakgwaList] = useState([]);
     const [majorList, setMajorList] = useState([]);
 
-    // Selected values
     const [year, setYear] = useState(new Date().getFullYear());
     const [hakgi, setHakgi] = useState(1);
     const [name, setName] = useState('');
@@ -27,7 +28,6 @@ export default function LectureHome() {
             if (!receivedToken) return;
             setToken(receivedToken);
 
-            // Fetch initial data
             fetchGwamokList(receivedToken);
             fetchHakgwaList(receivedToken);
         }
@@ -42,6 +42,14 @@ export default function LectureHome() {
 
         Android.completePageLoad();
     }, []);
+
+    useEffect(() => {
+        if (router.query.result && !isValid) {
+            setSearchMode(true);
+            return;
+        }
+        setSearchMode(!router.query.result);
+    }, [router.query]);
 
     const fetchGwamokList = async (currentToken) => {
         const response = await fetch("/api/searchLecturePlan/gwamokList", {
@@ -95,6 +103,12 @@ export default function LectureHome() {
             alert('과목명 또는 교수명을 입력하지 않은 경우 반드시 공통 과목이나 학과를 선택하셔야 합니다.');
             return;
         }
+        setIsValid(true);
+
+        router.push({
+            pathname: router.pathname,
+            query: { result: 'true' }
+        });
 
         const response = await fetch("/api/searchLecturePlan/search", {
             method: "POST",
@@ -113,15 +127,18 @@ export default function LectureHome() {
         });
         const responseData = await response.json();
         setData(responseData);
-        setSearchMode(false);
     };
 
     const openLecturePlan = (id) => () => {
         try {
             Android.openLecturePlanPage(id);
         } catch {
-            alert('최신 버전 앱에서만 강의계획서를 열람할 수 있어요. 업데이트 후 다시 시도해주세요.');
+            Android.openPage(`https://klas.kw.ac.kr/std/cps/atnlc/popup/LectrePlanStdView.do?selectSubj=${id}`);
         }
+    };
+
+    const backToSearch = () => {
+        router.back();
     };
 
     return (
@@ -283,7 +300,7 @@ export default function LectureHome() {
                     <Spacer y={80} />
 
                     <div className='bottom-sheet-footer' style={{ position: 'fixed', bottom: '0' }}>
-                        <button onClick={() => setSearchMode(true)} style={{ background: 'var(--button-background)' }}>다시 검색</button>
+                        <button onClick={backToSearch} style={{ background: 'var(--button-background)' }}>다시 검색</button>
                     </div>
                 </>
             )}

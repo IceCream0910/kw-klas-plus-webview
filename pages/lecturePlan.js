@@ -557,7 +557,7 @@ export default function LectureHome() {
                             datasets: [
                                 {
                                     data: [lecturePlan.attendBiyul || 0],
-                                    backgroundColor: '#FF6B6B', // 부드러운 빨강
+                                    backgroundColor: '#FF6B6B',
                                     label: '출석',
                                     barThickness: 15
                                 },
