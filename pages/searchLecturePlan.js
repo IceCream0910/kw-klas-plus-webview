@@ -103,6 +103,11 @@ export default function LectureHome() {
             alert('과목명 또는 교수명을 입력하지 않은 경우 반드시 공통 과목이나 학과를 선택하셔야 합니다.');
             return;
         }
+        if (!isMy && !name && !professor) {
+            alert('내가 수강한 과목 중에서 검색 옵션이 꺼져있는 경우 반드시 과목명 또는 교수명을 입력하셔야 합니다.');
+            return;
+        }
+
         setIsValid(true);
 
         router.push({
