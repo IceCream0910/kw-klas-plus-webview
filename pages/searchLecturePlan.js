@@ -40,8 +40,7 @@ export default function LectureHome() {
             setHakgi(2);
         }
 
-        //Android.completePageLoad();
-        window.receiveToken('MmRlOWEzODItOWQ3ZC00YzQ2LWE5OTQtNTg3N2I1YTQ2NDAw')
+        Android.completePageLoad();
     }, []);
 
     useEffect(() => {
