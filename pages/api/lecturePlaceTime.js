@@ -4,23 +4,26 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { token } = req.body;
-    if (!token) {
-        return res.status(401).json({ error: 'Token is required' });
+    const { token, subj, yearHakgi } = req.body;
+    if (!token || !subj || !yearHakgi) {
+        return res.status(401).json({ error: 'Missing required values' });
     }
 
     try {
         const options = {
             method: 'POST',
             headers: {
-                'Cookie': `SESSION=${token};`,
-                'Accept': `application/json, text/plain, */*`,
-                'Content-Type': 'application/json;charset=UTF-8',
+                Accept: 'application/json, text/html, */*',
+                Cookie: `SESSION=${token};`,
+                'Content-Type': 'application/json'
             },
-            body: '{}',
+            body: JSON.stringify({
+                "selectYearhakgi": yearHakgi,
+                "selectSubj": subj
+            })
         };
 
-        const response = await fetch('https://klas.kw.ac.kr/std/cmn/frame/YearhakgiAtnlcSbjectList.do', options);
+        const response = await fetch('https://klas.kw.ac.kr/std/cmn/frame/LctrumSchdulInfo.do', options);
         if (!response.ok) {
             return res.status(response.status).json({ error: 'Failed to fetch data' });
         }

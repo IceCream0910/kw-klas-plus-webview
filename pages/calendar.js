@@ -9,6 +9,7 @@ import IonIcon from '@reacticons/ionicons';
 import { set } from 'zod';
 
 const localizer = momentLocalizer(moment);
+var yearHakgi;
 
 const TouchCellWrapper = ({ children, value, onSelectSlot }) =>
     cloneElement(Children.only(children), {
@@ -39,6 +40,9 @@ export default function CalendarPage() {
             if (!receivedToken) return;
             setToken(receivedToken);
         };
+
+        const urlParams = new URLSearchParams(window.location.search);
+        yearHakgi = urlParams.get('yearHakgi');
 
         Android.completePageLoad();
     }, []);
@@ -552,7 +556,13 @@ function EventForm({ event, date, onSave, onDelete, onClose }) {
                 <Spacer y={10} />
 
                 {place.startsWith("U20") ? (<>
-                    <button onClick={() => Android.openLectureActivity(place, event.title.split("::")[0].replace("[과제] ", "").trim())}>해당 강의 홈으로 이동 →</button>
+                    <button onClick={() => {
+                        if (yearHakgi != null && yearHakgi != `${event.year},${event.hakgi}`) {
+                            alert('시간표 탭에서 선택되어 있는 학기와 일치하는 강의만 조회할 수 있습니다.' + yearHakgi + " " + `${event.year},${event.hakgi}`);
+                            return;
+                        }
+                        Android.openLectureActivity(place, event.title.split("::")[0].replace("[과제] ", "").trim())
+                    }}>해당 강의 홈으로 이동 →</button>
                 </>) : (<>
                     <input
                         disabled={event && event.typeNm == "개인일정" ? false : true}

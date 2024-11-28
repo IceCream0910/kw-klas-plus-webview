@@ -31,22 +31,30 @@ export default function Home() {
     };
 
     useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        setYearHakgi(urlParams.get('yearHakgi'));
+
         window.receiveToken = function (receivedToken) {
             if (!receivedToken) return;
             setToken(receivedToken);
         };
-        window.receiveSubjList = function (receivedSubjList) {
-            if (!receivedSubjList) return;
-            const data = JSON.parse(receivedSubjList)[0].subjList;
-            setSubjList(data);
-            setRandomSubjName(data[Math.floor(Math.random() * data.length)].name)
-        };
 
         Android.completePageLoad();
-
-        const urlParams = new URLSearchParams(window.location.search);
-        setYearHakgi(urlParams.get('yearHakgi'));
     }, []);
+
+    useEffect(() => {
+        window.receiveSubjList = function (receivedSubjList) {
+            if (!receivedSubjList) return;
+
+            const filteredSubjList = JSON.parse(receivedSubjList).filter(subj => subj.value == yearHakgi);
+            try {
+                setSubjList(filteredSubjList[0].subjList);
+                setRandomSubjName(filteredSubjList[0].subjList[Math.floor(Math.random() * filteredSubjList[0].subjList.length)].name);
+            } catch (error) {
+                console.error("Error parsing JSON:", error);
+            }
+        };
+    }, [yearHakgi]);
 
 
     const sendMessage = async (conversation) => {

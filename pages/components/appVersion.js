@@ -8,7 +8,7 @@ const AppVersion = ({ updater }) => {
         const userAgent = navigator.userAgent;
         const version = userAgent.split('AndroidApp_v')[1];
         if (version) {
-            setVersion(version);
+            setVersion(version.trim());
         } else {
             setVersion("알 수 없음");
         }

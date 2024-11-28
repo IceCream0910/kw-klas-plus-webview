@@ -248,7 +248,7 @@ export default function LectureHome() {
                     </div>
 
                     <div className='bottom-sheet-footer'>
-                        <button onClick={search} style={{ background: 'var(--button-background)' }}>조회</button>
+                        <button onClick={search} style={{ background: 'var(--button-background)', borderRadius: '15px' }}>조회</button>
                     </div>
                 </>
             ) : (
@@ -301,7 +301,7 @@ export default function LectureHome() {
                     <Spacer y={80} />
 
                     <div className='bottom-sheet-footer' style={{ position: 'fixed', bottom: '0' }}>
-                        <button onClick={backToSearch} style={{ background: 'var(--button-background)' }}>다시 검색</button>
+                        <button onClick={backToSearch} style={{ background: 'var(--button-background)', borderRadius: '15px' }}>다시 검색</button>
                     </div>
                 </>
             )}
