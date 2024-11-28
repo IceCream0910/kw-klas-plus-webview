@@ -275,18 +275,22 @@ export default function Home() {
 
       <h3><span className='tossface' style={{ position: 'relative', top: '2px' }}>⏰</span> 잊지 말고 챙겨볼까요?
 
-        <button type="button" onClick={() => {
+        { /*<button type="button" onClick={() => {
           try {
             Android.reload();
           } catch (e) {
-            alert('현재 버전에서 지원되지 않는 기능입니다. 앱을 최신 버전으로 업데이트 해주세요.');
+            toast.error('현재 버전에서 지원되지 않는 기능입니다. 앱을 최신 버전으로 업데이트 해주세요.');
             console.error(e);
           }
         }} style={{ background: 'var(--card-background)', padding: '5px', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', justifyContent: 'center', alignItems: 'center', float: 'right', marginTop: '-5px' }}>
           <IonIcon name="refresh" />
         </button>
+*/ }
+
       </h3>
-      <Spacer y={5} />
+
+      {/* <Spacer y={5} /> */}
+
 
 
       {showToggle && (
