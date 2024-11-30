@@ -73,7 +73,7 @@ export default function Home() {
   const fetchData = async () => {
     try {
       const [cafeteriaData, kwNoticeData] = await Promise.all([
-        fetch("/api/crawler/crawler/cafeteria").then(res => res.json()),
+        fetch("/api/crawler/cafeteria").then(res => res.json()),
         fetch("/api/crawler/kwNotice").then(res => res.json())
       ]);
 
