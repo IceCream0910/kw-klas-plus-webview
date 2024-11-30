@@ -100,7 +100,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!token) return;
-    fetch("/api/janghak", {
+    fetch("/api/grade/janghak", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token }),

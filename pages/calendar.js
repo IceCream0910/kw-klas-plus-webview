@@ -77,7 +77,7 @@ export default function CalendarPage() {
     };
 
     const fetchEvents = async () => {
-        const response = await fetch('/api/getSchedule', {
+        const response = await fetch('/api/calendar/getSchedule', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -136,7 +136,7 @@ export default function CalendarPage() {
             token: token
         };
 
-        const response = await fetch('/api/saveSchedule', {
+        const response = await fetch('/api/calendar/saveSchedule', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body),
@@ -173,7 +173,7 @@ export default function CalendarPage() {
         };
 
         if (confirm('정말 이 일정을 삭제할까요?')) {
-            const response = await fetch('/api/deleteSchedule', {
+            const response = await fetch('/api/calendar/deleteSchedule', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body),

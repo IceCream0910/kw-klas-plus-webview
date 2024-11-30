@@ -16,7 +16,7 @@ export default function Home() {
     window.receivedData = function (token, subj, yearHakgi) {
       if (!token || !subj || !yearHakgi) return;
 
-      fetch("/api/onlineLectureList", {
+      fetch("/api/lecture/onlineLectureList", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

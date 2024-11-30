@@ -14,7 +14,7 @@ export default function LectureHome() {
             fetchSubjectInfo(token, subj);
             fetchSubjectPlaceTime(token, subj, yearHakgi);
 
-            fetch("/api/lectureHome", {
+            fetch("/api/lecture/lectureHome", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -52,7 +52,7 @@ export default function LectureHome() {
     }
 
     const fetchSubjectPlaceTime = (token, subj, yearHakgi) => {
-        fetch("/api/lecturePlaceTime", {
+        fetch("/api/lecture/lecturePlaceTime", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

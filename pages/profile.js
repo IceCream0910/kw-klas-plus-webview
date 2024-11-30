@@ -60,7 +60,7 @@ export default function Home() {
         console.error(error);
       });
 
-    fetch("/api/grade", {
+    fetch("/api/grade/grade", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

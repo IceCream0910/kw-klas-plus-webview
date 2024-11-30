@@ -73,8 +73,8 @@ export default function Home() {
   const fetchData = async () => {
     try {
       const [cafeteriaData, kwNoticeData] = await Promise.all([
-        fetch("/api/cafeteria").then(res => res.json()),
-        fetch("/api/kwNotice").then(res => res.json())
+        fetch("/api/crawler/crawler/cafeteria").then(res => res.json()),
+        fetch("/api/crawler/kwNotice").then(res => res.json())
       ]);
 
       setCafeteria(cafeteriaData.weeklyMenu);

@@ -30,7 +30,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!token) return;
-    fetch("/api/grade", {
+    fetch("/api/grade/grade", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -45,7 +45,7 @@ export default function Home() {
         console.error(error);
       });
 
-    fetch("/api/totGrade", {
+    fetch("/api/grade/totGrade", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -13,7 +13,7 @@ export default function LectureHome() {
         window.receivedData = function (token, subj) {
             if (!token || !subj) return;
             setSubjId(subj);
-            fetch("/api/lecturePlan", {
+            fetch("/api/lecture/lecturePlan", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
