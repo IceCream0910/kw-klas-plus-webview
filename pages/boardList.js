@@ -78,10 +78,13 @@ export default function BoardList() {
   return (
     <main>
       <Spacer y={20} />
-      <h2 style={{
-        wordBreak: 'break-word',
-        overflowWrap: 'break-word',
-      }}>{boardTitle || "게시판"}</h2>
+      <h2>{boardTitle || "게시판"}
+
+        <button onClick={() => Android.openPage(`https://klas.kw.ac.kr/std/lis/sport/${requestData && requestData.path}/BoardListStdPage.do`)}
+          style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-7px', borderRadius: '20px', padding: '10px 15px' }}>
+          KLAS에서 열기
+        </button>
+      </h2>
       <Spacer y={15} />
 
       <div style={{ display: 'flex', flexDirection: 'column' }}>
