@@ -5,7 +5,8 @@ export default async function handler(req, res) {
     }
 
     const { path, token, subj, yearHakgi, page } = req.body;
-    if (!path || !token || !subj || !yearHakgi || !page) {
+    console.log(req.body);
+    if (!path || !token || !subj || !yearHakgi) {
         return res.status(401).json({ error: 'Missing required values' });
     }
 

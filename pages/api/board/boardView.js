@@ -4,8 +4,8 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { path, token, subj, yearHakgi } = req.body;
-    if (!path || !token || !subj || !yearHakgi) {
+    const { path, token, subj, yearHakgi, boardNo, masterNo } = req.body;
+    if (!path || !token || !subj || !yearHakgi || !boardNo || !masterNo) {
         return res.status(401).json({ error: 'Missing required values' });
     }
 
@@ -18,13 +18,17 @@ export default async function handler(req, res) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
+                "cmd": "select",
                 "selectYearhakgi": yearHakgi,
                 "selectSubj": subj,
-                "selectChangeYn": "Y"
+                "selectChangeYn": "Y",
+                "boardNo": boardNo,
+                "masterNo": masterNo,
+                "storageId": "CLS_BOARD"
             })
         };
 
-        const response = await fetch(`https://klas.kw.ac.kr/std/lis/sport/${path}/BoardViewStdPage.do`, options);
+        const response = await fetch(`https://klas.kw.ac.kr/std/lis/sport/${path}/BoardStdView.do`, options);
         if (!response.ok) {
             return res.status(response.status).json({ error: 'Failed to fetch data' });
         }

@@ -109,22 +109,40 @@ export default function LectureHome() {
     };
 
 
-    if (!data || !subjectInfo || !subjectPlaceTime) return <main>Loading...</main>;
+    if (!data || !subjectInfo || !subjectPlaceTime) return <main>
+        <Spacer y={40} />
+        <div className="skeleton" style={{ height: '30px', width: '30%', marginBottom: '10px' }} />
+        <div className="skeleton" style={{ height: '10px', width: '40%' }} />
+        <Spacer y={20} />
+        <div className="skeleton" style={{ height: '80px', width: '100%' }} />
+        <Spacer y={20} />
+        <div className="skeleton" style={{ height: '80px', width: '100%' }} />
+        <Spacer y={20} />
+        <div className="skeleton" style={{ height: '80px', width: '100%' }} />
+        <Spacer y={20} />
+        <div className="skeleton" style={{ height: '80px', width: '100%' }} />
+        <Spacer y={20} />
+        <div className="skeleton" style={{ height: '80px', width: '100%' }} />
+    </main>;
     const stats = calculateStats(data.atendSubList);
 
     return (
         <main>
-            <Spacer y={40} />
+            <Spacer y={20} />
             <h2>{subjectInfo.name}</h2>
             <span style={{ opacity: .5, fontSize: '14px' }}>{subjectInfo.label.split(') - ')[1]} | {subjectPlaceTime}</span>
 
             <Spacer y={30} />
-            <h3>강의 공지사항</h3>
+            <h3>강의 공지사항
+                <button onClick={() => Android.openBoardList("notice", "강의 공지사항")} style={{ float: "right", width: 'fit-content', marginTop: '-5px' }}>
+                    <IonIcon name='add-outline' />
+                </button>
+            </h3>
             <Spacer y={15} />
             {data.noticeList.length > 0 ? (
                 <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
                     {data.noticeList.map((notice, index) => (
-                        <div key={index} className="notice-item" onClick={() => Android.evaluteKLASScript(`appModule.goBoardViewPage("${notice.boardNo}")`)}>
+                        <div key={index} className="notice-item" onClick={() => Android.openBoardView("notice", notice.boardNo.toString(), notice.masterNo.toString())}>
                             <span><b>{notice.title}</b></span><br />
                             <span style={{ opacity: 0.6, fontSize: '12px' }}>
                                 {new Date(notice.registDt).getFullYear()}-{(new Date(notice.registDt).getMonth() + 1).toString().padStart(2, '0')}-{new Date(notice.registDt).getDate().toString().padStart(2, '0')}</span><br />
@@ -172,7 +190,7 @@ export default function LectureHome() {
                     </div>
                 )}
                 {data.pdsNewCnt !== 0 && (
-                    <div onClick={() => Android.evaluteKLASScript(`appModule.goPds()`)}
+                    <div onClick={() => Android.openBoardList("pds", "강의 자료실")}
                         className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
                         <span><b>자료 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
                         <span style={{ opacity: .7, color: data.pdsNewCnt == 1 && 'var(--red)' }}>{data.pdsCnt}</span>
@@ -265,7 +283,7 @@ export default function LectureHome() {
             {data.taskTop.length > 0 ? (
                 <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
                     {data.taskTop.map((task, index) => (
-                        <div key={index} className="notice-item">
+                        <div key={index} className="notice-item" onClick={() => Android.evaluteKLASScript(`appModule.goTask()`)}>
                             <span><b>{task.title}</b></span><br />
                             <span style={{ opacity: 0.6, fontSize: '12px' }}>
                                 <IonIcon style={{ position: 'relative', top: '2px', marginRight: '3px' }} name='time-outline' />

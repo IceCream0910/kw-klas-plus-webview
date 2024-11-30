@@ -91,6 +91,11 @@ button .tossface {
   margin-right: 0.5rem;
 }
 
+button[disabled] {
+  cursor: not-allowed;
+  opacity: .6;
+}
+
 input {
   padding: 10px;
   outline: none;
@@ -615,4 +620,17 @@ input[type="datetime-local"] {
 
 .rbc-event {
   font-size: 12px;
+}
+
+/* Calendar */
+.board-content {
+  background-color: var(--background);
+  color: var(--text-color);
+  max-width: 100dvw;
+}
+
+.board-content * {
+  color: var(--text-color) !important;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
