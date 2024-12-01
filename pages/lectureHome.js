@@ -251,13 +251,13 @@ export default function LectureHome() {
 
             <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
                 <h4 style={{ margin: '0', display: 'inline-block' }}>
-                    <span>현재까지 출석율은</span> <span style={{ color: '#7099ff', fontSize: '18px' }}>{stats.attendanceRate.toFixed(1)}%</span> <span>예요.</span>
+                    <span>현재까지 출석률은</span> <span style={{ color: '#7099ff', fontSize: '18px' }}>{stats.attendanceRate.toFixed(1)}%</span> <span>예요.</span>
                 </h4>
                 <br />
                 {(stats.lateCount == 0 && stats.absentCount == 0) ? <span style={{ opacity: .7 }}>지각과 결석이 한 번도 없어요!</span>
                     : <span style={{ opacity: .7 }}>지각 {stats.lateCount}회, 결석 {stats.absentCount}회가 있어요.</span>}
                 <Spacer y={10} />
-                <button onClick={() => setAttendExpand(!attendExpand)} style={{ background: 'var(--card-border)', width: 'fit-content' }}>자세히 보기 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-down' /></button>
+                <button onClick={() => setAttendExpand(!attendExpand)} style={{ background: 'var(--card-border)', width: 'fit-content' }}>{attendExpand ? '접기' : '자세히 보기'} <IonIcon style={{ position: 'relative', top: '2px' }} name={attendExpand ? 'chevron-up' : 'chevron-down'} /></button>
 
                 {attendExpand && (<>
                     <Spacer y={20} />
