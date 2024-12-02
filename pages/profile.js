@@ -162,7 +162,7 @@ export default function Home() {
         { name: "토론참여", icon: "💬", url: "https://klas.kw.ac.kr/std/lis/evltn/DscsnStdPage.do" },
         { name: "설문참여", icon: "📊", url: "https://klas.kw.ac.kr/std/lis/sport/QustnrStdPage.do" },
         { name: "학습현황 조회", icon: "📈", url: "https://klas.kw.ac.kr/std/lis/evltn/LrnSttusStdPage.do" },
-        { name: "수업평가", icon: "🗳️", url: "https://klas.kw.ac.kr/std/cps/inqire/LctreEvlStdPage.do" }
+        { name: "수업평가", icon: "🗳️", url: "https://klas.kw.ac.kr/mst/cps/inqire/LctreEvlMstPage.do" }
       ]
     },
     {
