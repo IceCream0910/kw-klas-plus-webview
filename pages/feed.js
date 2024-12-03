@@ -4,6 +4,7 @@ import IonIcon from '@reacticons/ionicons';
 import AppVersion from './components/appVersion';
 import LectureNotices from './components/lectureNotices';
 import Spacer from './components/spacer';
+import toast, { Toaster } from 'react-hot-toast';
 
 export default function Home() {
   const [yearHakgi, setYearHakgi] = useState(null);
@@ -249,6 +250,9 @@ export default function Home() {
 
   return (
     <div style={{ padding: '5px' }}>
+      <Toaster
+        position="top-center"
+      />
       {statusText ? (
         <div id="current_status">
 
