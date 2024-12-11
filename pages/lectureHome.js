@@ -189,7 +189,7 @@ export default function LectureHome() {
                         <span style={{ opacity: .7, color: data.quizPrsntCnt !== data.quizCnt && 'var(--red)' }}>{data.quizPrsntCnt}/{data.quizCnt}</span>
                     </div>
                 )}
-                {data.pdsNewCnt !== 0 && (
+                {data.pdsCnt !== 0 && (
                     <div onClick={() => Android.openBoardList("pds", "강의 자료실")}
                         className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
                         <span><b>자료 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
