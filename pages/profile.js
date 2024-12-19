@@ -18,6 +18,7 @@ export default function Home() {
   const [hideGrades, setHideGrades] = useState(false);
   const [showGrades, setShowGrades] = useState(true);
   const [menuOrder, setMenuOrder] = useState([]);
+  const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
     window.receiveToken = function (receivedToken) {
@@ -39,6 +40,11 @@ export default function Home() {
       setMenuOrder(JSON.parse(savedMenuOrder));
     } else {
       setMenuOrder(menuItems.map(item => item.title));
+    }
+
+    const savedFavorites = localStorage.getItem('favorites');
+    if (savedFavorites) {
+      setFavorites(JSON.parse(savedFavorites));
     }
   }, [])
 
@@ -110,6 +116,15 @@ export default function Home() {
     if (hideGrades) {
       setShowGrades(true);
     }
+  };
+
+  const handleToggleFavorite = (item) => {
+    const newFavorites = favorites.includes(item.url)
+      ? favorites.filter(url => url !== item.url)
+      : [...favorites, item.url];
+
+    setFavorites(newFavorites);
+    localStorage.setItem('favorites', JSON.stringify(newFavorites));
   };
 
   const menuItems = [
@@ -298,7 +313,7 @@ export default function Home() {
           </button>
           <br />
           {totGrade &&
-            <div className="profile-card grade-card" style={{ padding: 0, flexDirection: 'row', alignItems: 'space-between', width: '100%' }} onClick={() => showGrades && Android.openPage('https://kw-klas-plus-webview.vercel.app/grade')}>
+            <div className="profile-card grade-card" style={{ padding: 0, flexDirection: 'row', alignItems: 'space-between', width: '100%' }} onClick={() => showGrades && Android.openPage('https://klasplus.yuntae.in/grade')}>
               <div style={{ textAlign: 'center', width: '100%' }} onClick={handleGradeClick}>
                 <span style={{ opacity: .8, fontSize: '12px' }}>취득학점</span>
                 <h3>{hideGrades && !showGrades ? '??' : totGrade.credit}</h3>
@@ -353,6 +368,37 @@ export default function Home() {
         />
       </div>
 
+      {favorites.length > 0 && (
+        <div>
+          <h5 style={{ marginLeft: '10px', marginTop: '30px', marginBottom: '10px' }}>즐겨찾기</h5>
+          {menuItems.flatMap(category =>
+            category.items.filter(item => favorites.includes(item.url))
+          ).map((item, index) => (
+            <button key={`favorite-${index}`} onClick={() => Android.openPage(item.url)}>
+              <span className="tossface">{item.icon}</span>
+              <span>{item.name}</span>
+              {item.badge && <span style={{ background: 'var(--button-background)', padding: '3px 5px', borderRadius: '10px', fontSize: '12px', position: 'relative', left: '5px', top: '-1px', opacity: .8 }}>{item.badge}</span>}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggleFavorite(item);
+                }}
+                style={{
+                  float: 'right',
+                  width: '20px',
+                  height: 'fit-content',
+                  padding: '0',
+                  opacity: .8,
+                  color: 'var(--red)'
+                }}
+              >
+                <IonIcon name='star' />
+              </button>
+            </button>
+          ))}
+        </div>
+      )}
+
 
       {filteredMenuItems.map((category, index) => (
         <div key={index}>
@@ -362,6 +408,22 @@ export default function Home() {
               <span className="tossface">{item.icon}</span>
               <span>{item.name}</span>
               {item.badge && <span style={{ background: 'var(--button-background)', padding: '3px 5px', borderRadius: '10px', fontSize: '12px', position: 'relative', left: '5px', top: '-1px', opacity: .8 }}>{item.badge}</span>}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggleFavorite(item);
+                }}
+                style={{
+                  float: 'right',
+                  width: '20px',
+                  height: 'fit-content',
+                  padding: '0',
+                  opacity: favorites.includes(item.url) ? '.8' : '.5',
+                  color: favorites.includes(item.url) ? 'var(--red)' : 'inherit'
+                }}
+              >
+                <IonIcon name={favorites.includes(item.url) ? 'star' : 'star-outline'} />
+              </button>
             </button>
           ))}
         </div>

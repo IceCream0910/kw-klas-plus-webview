@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Line } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import handleCalculateGPA, { calculateGPA } from "./utils/calculateGPA";
@@ -73,6 +73,13 @@ export default function Home() {
     getData();
   }, [grade]);
 
+  useEffect(() => {
+    if (isModalOpen) {
+      window.scrollTo(0, document.body.scrollHeight);
+    } else {
+      window.scrollTo(0, 0);
+    }
+  }, [isModalOpen]);
 
   useEffect(() => {
     if (!synthesisGPAs) return;
@@ -297,8 +304,12 @@ export default function Home() {
         </div>
       )}
 
-      <BottomSheet open={isModalOpen} expandOnContentDrag={false} scrollLocking={true} onDismiss={() => setIsModalOpen(false)}>
-        <div className="bottom-sheet">
+      <BottomSheet open={isModalOpen} expandOnContentDrag={false} scrollLocking={false} onDismiss={() => setIsModalOpen(false)}
+        data-body-scroll-lock-ignore="true">
+        <div className="bottom-sheet"
+          style={{
+            WebkitOverflowScrolling: 'touch'
+          }}>
           <h2>{subjects && subjects.name}</h2>
           <br />
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: "70dvh", overflowY: 'scroll', msOverflowStyle: 'none' }}>
@@ -317,6 +328,9 @@ export default function Home() {
           <button onClick={() => setIsModalOpen(false)}>닫기</button>
         </div>
       </BottomSheet>
+
+      {isModalOpen &&
+        <div style={{ height: '100dvh' }} />}
     </main >
   );
 }
