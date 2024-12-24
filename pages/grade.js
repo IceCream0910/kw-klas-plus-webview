@@ -320,7 +320,11 @@ export default function Home() {
                   <span style={{ opacity: .8, fontSize: '14px' }}>{value.codeName1}, {value.hakjumNum}학점</span><br />
                   <span style={{ opacity: .5, fontSize: '14px' }}>{value.hakgwa} {value.certname && (" | " + value.certname)} {value.retakeOpt == "Y" && " | 재수강"} {value.retakeGetGrade != null && " | 삭제 예정"}</span>
                 </div>
-                <h3 style={{ float: 'right' }}>{value.getGrade}</h3>
+                <h3 style={{ float: 'right' }}>{value.getGrade.replace("미입력", "").replace("(처리중)", "").replace("수업 미평가", "")}
+                  {value.getGrade.includes('미입력') && <span style={{ opacity: .5 }}>미입력</span>}
+                  {value.getGrade.includes('수업 미평가') && <span style={{ opacity: .5 }}>수업 미평가</span>}
+                  {value.getGrade.includes('(처리중)') && <span style={{ opacity: .5 }}>(처리중)</span>}
+                </h3>
               </div>
             ))}
           </div>
