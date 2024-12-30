@@ -159,7 +159,8 @@ export default function Home() {
         { name: "세부전공 선택", icon: "🎓", url: "https://klas.kw.ac.kr/std/hak/hakjuk/DetailMajorSelectStdPage.do" },
         { name: "복수/부/심화전공 신청/조회", icon: "📚", url: "https://klas.kw.ac.kr/std/hak/hakjuk/CompnoMajorStdPage.do" },
         { name: "연계전공 신청/조회", icon: "🔗", url: "https://klas.kw.ac.kr/std/hak/hakjuk/CntcSbjectStdPage.do" },
-        { name: "휴복학 신청", icon: "🔄", url: "https://klas.kw.ac.kr/std/hak/hakjuk/TmpabssklStdPage.do" }
+        { name: "마이크로전공 신청", icon: "🔄", url: "https://klas.kw.ac.kr/std/hak/hakjuk/MicroMajorStdPage.do" }
+        { name: "휴복학 신청", icon: "💤", url: "https://klas.kw.ac.kr/std/hak/hakjuk/TmpabssklStdPage.do" }
       ]
     },
     {
@@ -245,7 +246,6 @@ export default function Home() {
         { name: "Office 365", icon: "💻", url: "https://www.kw.ac.kr/ko/life/notice.jsp?BoardMode=view&DUID=21819" },
         { name: "학번QR코드", icon: "📱", url: "https://klas.kw.ac.kr/std/sys/optrn/MyNumberQrStdPage.do" },
         { name: "K-MOOC", icon: "🎓", url: "https://www.kmooc.kr/view/search/%EA%B4%91%EC%9A%B4%EB%8C%80%ED%95%99%EA%B5%90" },
-        { name: "무선인터넷 장애신고 게시판", icon: "🛜", url: "https://klas.kw.ac.kr/std/sys/optrn/180aff26e3c742108290a0e58c93e091/BoardListStdPage.do" },
       ]
     },
     {
