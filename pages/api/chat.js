@@ -364,7 +364,7 @@ async function getKWNoticeList() {
 
 async function searchKWNoticeList({ query }) {
     try {
-        const response = await fetch('https://www.kw.ac.kr/ko/life/notice.jsp?srCategoryId=&mode=list&searchKey=1&x=28&y=15&searchVal=' + encodeURIComponent(query));
+        const response = await fetch('https://www.kw.ac.kr/ko/life/notice.jsp?srCategoryId=&mode=list&searchKey=3&x=28&y=15&searchVal=' + encodeURIComponent(query));
         const html = await response.text();
 
         const root = parse(html);
