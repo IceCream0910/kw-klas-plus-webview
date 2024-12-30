@@ -159,7 +159,7 @@ export default function Home() {
         { name: "세부전공 선택", icon: "🎓", url: "https://klas.kw.ac.kr/std/hak/hakjuk/DetailMajorSelectStdPage.do" },
         { name: "복수/부/심화전공 신청/조회", icon: "📚", url: "https://klas.kw.ac.kr/std/hak/hakjuk/CompnoMajorStdPage.do" },
         { name: "연계전공 신청/조회", icon: "🔗", url: "https://klas.kw.ac.kr/std/hak/hakjuk/CntcSbjectStdPage.do" },
-        { name: "마이크로전공 신청", icon: "🔄", url: "https://klas.kw.ac.kr/std/hak/hakjuk/MicroMajorStdPage.do" }
+        { name: "마이크로전공 신청", icon: "🔄", url: "https://klas.kw.ac.kr/std/hak/hakjuk/MicroMajorStdPage.do" },
         { name: "휴복학 신청", icon: "💤", url: "https://klas.kw.ac.kr/std/hak/hakjuk/TmpabssklStdPage.do" }
       ]
     },
