@@ -114,25 +114,17 @@ export default function Settings() {
       <hr style={{ margin: '0 10px', opacity: .1 }} />
       <Spacer y={20} />
       <h3 style={{ margin: '10px' }}>정보</h3>
-      <button className="unclikable" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} disabled
-        onClick={() => Android.openYearHakgiSelectModal()}>
+      <button className="unclikable" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} disabled>
         <span style={{ fontSize: '16px' }}>앱 버전</span>
         <span style={{ opacity: .8, fontSize: '14px' }}>v{appVersion}</span>
       </button>
-      <button className="unclikable" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} disabled
-        onClick={() => Android.openYearHakgiSelectModal()}>
+      <button className="unclikable" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} disabled>
         <span style={{ fontSize: '16px' }}>Git SHA</span>
-        <span style={{ opacity: .8, fontSize: '14px' }}>{process.env.VERCEL_GIT_COMMIT_SHA || 'n/a'}</span>
+        <span style={{ opacity: .8, fontSize: '14px' }}>{process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA || 'n/a'}</span>
       </button>
-      <button className="unclikable" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} disabled
-        onClick={() => Android.openYearHakgiSelectModal()}>
-        <span style={{ fontSize: '16px' }}>Deploy ID</span>
-        <span style={{ opacity: .8, fontSize: '14px' }}>{process.env.VERCEL_DEPLOYMENT_ID || 'n/a'}</span>
-      </button>
-      <button className="unclikable" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} disabled
-        onClick={() => Android.openYearHakgiSelectModal()}>
+      <button className="unclikable" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} disabled>
         <span style={{ fontSize: '16px' }}>Runtime Region</span>
-        <span style={{ opacity: .8, fontSize: '14px' }}>{process.env.VERCEL_REGION || 'n/a'}</span>
+        <span style={{ opacity: .8, fontSize: '14px' }}>icn1</span>
       </button>
       <Spacer y={10} />
       <div style={{ fontSize: '14px', opacity: .5, margin: '5px' }}><span className="tossface">⚠️</span> KLAS+는 학교의 공식 앱이 아닙니다. 불법적인 목적으로 사용 시 발생하는 불이익에 대해서 개발자는 어떠한 책임도 지지 않음을 밝힙니다.</div>
