@@ -64,6 +64,14 @@ export default function CalendarPage() {
         }
     }, [currentMonth, events]);
 
+    useEffect(() => {
+        try {
+            if (isModalOpen) Android.openWebViewBottomSheet()
+            else Android.closeWebViewBottomSheet()
+        } catch (e) {
+            console.error(e);
+        }
+    }, [isModalOpen]);
 
 
     const updateSelectedDayEvents = (date) => {

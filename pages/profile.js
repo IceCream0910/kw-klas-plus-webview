@@ -105,6 +105,15 @@ export default function Home() {
     localStorage.setItem('hideGrades', hideGrades.toString());
   }, [hideGrades]);
 
+  useEffect(() => {
+    try {
+      if (isOpenSettingsModal) Android.openWebViewBottomSheet()
+      else Android.closeWebViewBottomSheet()
+    } catch (e) {
+      console.error(e);
+    }
+  }, [isOpenSettingsModal]);
+
 
   const handleHideGradesChange = (e) => {
     const checked = e.target.checked;
@@ -440,7 +449,7 @@ export default function Home() {
         onDismiss={() => { setIsOpenSettingsModal(false); }}
         draggable={false}
       >
-        <div style={{ maxHeight: '90dvh', padding: '20px', overflow: 'hidden' }}>
+        <div style={{ maxHeight: '100dvh', padding: '20px', overflow: 'hidden' }}>
           <h2>메뉴 순서 편집</h2>
           <Spacer y={20} />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
