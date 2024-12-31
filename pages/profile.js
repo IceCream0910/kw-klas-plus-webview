@@ -102,10 +102,6 @@ export default function Home() {
   }, [synthesisGPAs]);
 
   useEffect(() => {
-    localStorage.setItem('hideGrades', hideGrades.toString());
-  }, [hideGrades]);
-
-  useEffect(() => {
     try {
       if (isOpenSettingsModal) Android.openWebViewBottomSheet()
       else Android.closeWebViewBottomSheet()
@@ -114,12 +110,6 @@ export default function Home() {
     }
   }, [isOpenSettingsModal]);
 
-
-  const handleHideGradesChange = (e) => {
-    const checked = e.target.checked;
-    setHideGrades(checked);
-    setShowGrades(!checked);
-  };
 
   const handleGradeClick = () => {
     if (hideGrades) {

@@ -119,7 +119,7 @@ export default function Settings() {
         <span style={{ opacity: .8, fontSize: '14px' }}>v{appVersion}</span>
       </button>
       <button className="unclikable" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} disabled>
-        <span style={{ fontSize: '16px' }}>Git SHA</span>
+        <span style={{ fontSize: '16px' }}>WebView Git SHA</span>
         <span style={{ opacity: .8, fontSize: '14px' }}>{process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA.substring(0, 7) || 'n/a'}</span>
       </button>
       <button className="unclikable" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} disabled>
