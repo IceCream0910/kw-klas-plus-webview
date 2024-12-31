@@ -81,6 +81,12 @@ button:active {
   transform: scale(0.98);
 }
 
+button.unclikable:active {
+  background-color: inherit;
+  transform: none;
+}
+
+
 button.icon {
   width: fit-content;
   padding: 0;

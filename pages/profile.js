@@ -296,14 +296,11 @@ export default function Home() {
         {data ? <>
           <div className="profile-card" style={{ padding: 0, display: 'flex', flexDirection: 'row', justifyContent: "space-between", alignItems: 'center', width: '100%' }}>
             <div>
-              <h3>{data.kname}</h3>
+              <Spacer y={5} />
+              <h3 style={{ marginBottom: '5px' }}>{data.kname}</h3>
               <span style={{ opacity: .8, fontSize: '14px' }}>{data.hakgwa} | {data.hakbun}</span><br />
               <span style={{ opacity: .5, fontSize: '12px' }}>{data.hakjukStatu}</span>
             </div>
-
-            <button onClick={() => setIsOpenSettingsModal(!isOpenSettingsModal)} style={{ background: 'var(--background)', width: '40px', height: '40px', fontSize: '20px', borderRadius: '50%' }}>
-              <IonIcon name='settings-outline' />
-            </button>
           </div>
           <br />
           <button onClick={() => Android.openLibraryQR()}
@@ -352,20 +349,26 @@ export default function Home() {
 
 
 
-      <div className="search-container">
-        <span className="tossface" style={{ position: 'relative', left: '10px', top: '30px' }}>🔍</span>
-        <input
-          style={{ paddingLeft: '35px' }}
-          placeholder={"메뉴 검색"}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          onKeyUp={(e) => {
-            if (e.key === 'Enter') {
-              e.target.blur();
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', gap: "10px", width: '100%' }}>
+        <div className="search-container">
+          <span className="tossface" style={{ position: 'relative', left: '10px', top: '30px' }}>🔍</span>
+          <input
+            style={{ paddingLeft: '35px' }}
+            placeholder={"메뉴 검색"}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyUp={(e) => {
+              if (e.key === 'Enter') {
+                e.target.blur();
+              }
             }
-          }
-          }
-        />
+            }
+          />
+        </div>
+        <button onClick={() => setIsOpenSettingsModal(!isOpenSettingsModal)}
+          style={{ background: 'var(--card-background)', padding: '5px', width: '50px', height: '42px', display: 'flex', justifyContent: 'center', alignItems: 'center', float: 'right', marginTop: '20px' }}>
+          <IonIcon name='sync-outline' />
+        </button>
       </div>
 
       {favorites.length > 0 && (
@@ -438,59 +441,43 @@ export default function Home() {
         draggable={false}
       >
         <div style={{ maxHeight: '90dvh', padding: '20px', overflow: 'hidden' }}>
-          <h2>옵션</h2>
+          <h2>메뉴 순서 편집</h2>
           <Spacer y={20} />
-
-          <div style={{ maxHeight: '90dvh', overflowY: 'auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span><b>메뉴 탭에서 학점 숨기기</b></span>
-              <label className="switch">
-                <input
-                  type="checkbox"
-                  checked={hideGrades}
-                  onChange={handleHideGradesChange}
-                />
-                <span className="slider"></span>
-              </label>
-            </div>
-            <Spacer y={20} />
-            <h3>메뉴 순서 설정</h3>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ opacity: .6, fontSize: '15px' }}>메뉴 순서를 드래그하여 변경하세요</span>
-              <button onClick={handleResetMenuOrder} style={{ background: 'var(--card-background)', padding: '0', width: '30px', height: '30px', fontSize: '16px', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '-5px' }}>
-                <IonIcon name='refresh-outline' />
-              </button>
-            </div>
-            <DragDropContext onDragEnd={handleMenuReorder}>
-              <Droppable droppableId="menu-list">
-                {(provided) => (
-                  <ul style={{ padding: 0 }} {...provided.droppableProps} ref={provided.innerRef}>
-                    {menuOrder.map((title, index) => (
-                      <Draggable key={title} draggableId={title} index={index}>
-                        {(provided) => (
-                          <li
-                            className="menu-item-draggable"
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            style={{
-                              ...provided.draggableProps.style
-                            }}
-                          >
-                            <IonIcon name='menu-outline' style={{ marginRight: '10px', opacity: .7 }} />
-                            {title}
-                          </li>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </ul>
-                )}
-              </Droppable>
-            </DragDropContext>
-            <Spacer y={90} />
-
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ opacity: .6, fontSize: '15px' }}>메뉴 순서를 드래그하여 변경하세요</span>
+            <button onClick={handleResetMenuOrder} style={{ background: 'var(--card-background)', padding: '0', width: '30px', height: '30px', fontSize: '16px', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '-5px' }}>
+              <IonIcon name='refresh-outline' />
+            </button>
           </div>
+          <DragDropContext onDragEnd={handleMenuReorder}>
+            <Droppable droppableId="menu-list">
+              {(provided) => (
+                <ul style={{ padding: 0 }} {...provided.droppableProps} ref={provided.innerRef}>
+                  {menuOrder.map((title, index) => (
+                    <Draggable key={title} draggableId={title} index={index}>
+                      {(provided) => (
+                        <li
+                          className="menu-item-draggable"
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          style={{
+                            ...provided.draggableProps.style
+                          }}
+                        >
+                          <IonIcon name='menu-outline' style={{ marginRight: '10px', opacity: .7 }} />
+                          {title}
+                        </li>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </ul>
+              )}
+            </Droppable>
+          </DragDropContext>
+          <Spacer y={90} />
+
 
         </div>
 
