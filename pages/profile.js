@@ -26,6 +26,10 @@ export default function Home() {
       setToken(receivedToken);
     };
 
+    window.closeWebViewBottomSheet = function () {
+      setIsOpenSettingsModal(false);
+    }
+
     Android.completePageLoad();
 
     const savedHideGrades = localStorage.getItem('hideGrades');

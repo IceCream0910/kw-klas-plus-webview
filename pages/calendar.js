@@ -41,6 +41,10 @@ export default function CalendarPage() {
             setToken(receivedToken);
         };
 
+        window.closeWebViewBottomSheet = function () {
+            setIsModalOpen(false);
+        };
+
         const urlParams = new URLSearchParams(window.location.search);
         yearHakgi = urlParams.get('yearHakgi');
 
