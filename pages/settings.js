@@ -93,19 +93,19 @@ export default function Settings() {
       <Spacer y={20} />
       <h3 style={{ margin: '10px' }}>링크</h3>
 
-      <button onClick={() => Android.openExternalLink("https://blog.yuntae.in/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD-3e1124b78f224c36b0bb9cb87a7e55de")}>
+      <button onClick={() => Android.openExternalLink("https://blog.yuntae.in/3e1124b7-8f22-4c36-b0bb-9cb87a7e55de")}>
         <span className="tossface">🔔</span>
         <span>공지사항</span>
       </button>
-      <button onClick={() => Android.openExternalLink("https://blog.yuntae.in/%EC%9E%90%EC%A3%BC-%EB%AC%BB%EB%8A%94-%EC%A7%88%EB%AC%B8faq-23363fe4f23d46778f717f33e502b13a")}>
+      <button onClick={() => Android.openExternalLink("https://blog.yuntae.in/23363fe4-f23d-4677-8f71-7f33e502b13a")}>
         <span className="tossface">❓</span>
         <span>자주 묻는 질문(FAQ)</span>
       </button>
-      <button onClick={() => Android.openExternalLink("https://blog.yuntae.in/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4-%EC%B2%98%EB%A6%AC%EB%B0%A9%EC%B9%A8-11cfc9b93eca807896a0c41c4ca9cb8f")}>
+      <button onClick={() => Android.openExternalLink("https://blog.yuntae.in/11cfc9b9-3eca-8078-96a0-c41c4ca9cb8f")}>
         <span className="tossface">🔒</span>
         <span>개인정보 처리방침</span>
       </button>
-      <button onClick={() => Android.openExternalLink("https://blog.yuntae.in/%EC%98%A4%ED%94%88%EC%86%8C%EC%8A%A4-%EB%9D%BC%EC%9D%B4%EC%84%A0%EC%8A%A4-11cfc9b93eca802c8c10ebbccc3b2811")}>
+      <button onClick={() => Android.openExternalLink("https://blog.yuntae.in/11cfc9b9-3eca-802c-8c10-ebbccc3b2811")}>
         <span className="tossface">🔧</span>
         <span>오픈소스 라이선스</span>
       </button>

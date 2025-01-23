@@ -784,7 +784,11 @@ export default function LectureHome() {
                         <div className="notice-item" key={i}>
                             <span>{i + 1}주차 · <b>{lecturePlan[`week${i + 1}Lecture`]}</b></span><br />
                             <span style={{ opacity: 0.6, fontSize: '13px' }}>{lecturePlan[`week${i + 1}Bigo`]}</span>
-                            <hr style={{ opacity: 0.3 }} />
+                            {lecturePlan[`week${i + 1}Subs`] && <span style={{ opacity: 0.6, fontSize: '13px' }}>
+                                {lecturePlan[`week${i + 1}Bigo`] && <br />}
+                                <span style={{ color: 'var(--red)', fontSize: '13px' }}>강의 보강일시 및 보강방법: {lecturePlan[`week${i + 1}Subs`]}</span></span>
+                            }
+                            < hr style={{ opacity: 0.3 }} />
                         </div>
                     )
                 )}
@@ -796,23 +800,25 @@ export default function LectureHome() {
                 </div>
             </div>
 
-            {(lecturePlan.cqiNow || lecturePlan.cqiSummary) && (<>
-                <Spacer y={30} />
-                <h3>CQI <span style={{ background: 'var(--button-background)', padding: '3px 5px', borderRadius: '10px', fontSize: '12px', position: 'relative', left: '5px', top: '-1px', opacity: .8 }}>KLAS+</span></h3>
-                <Spacer y={5} />
-                <span style={{ opacity: .6, fontSize: '14px' }}>이전 학기 강의평가 등을 바탕으로 담당 교수가 작성한 강의 개선보고서 내용이에요.</span>
-                <Spacer y={15} />
-                <div className="card non-anim" id="notices" style={{ padding: '5px 15px' }}>
-                    <p style={{ opacity: .6, fontSize: '15px' }}>
-                        {lecturePlan.cqiSummary}
-                        {lecturePlan.cqiNow}
-                    </p>
-                </div>
-            </>
-            )}
+            {
+                (lecturePlan.cqiNow || lecturePlan.cqiSummary) && (<>
+                    <Spacer y={30} />
+                    <h3>CQI <span style={{ background: 'var(--button-background)', padding: '3px 5px', borderRadius: '10px', fontSize: '12px', position: 'relative', left: '5px', top: '-1px', opacity: .8 }}>KLAS+</span></h3>
+                    <Spacer y={5} />
+                    <span style={{ opacity: .6, fontSize: '14px' }}>이전 학기 강의평가 등을 바탕으로 담당 교수가 작성한 강의 개선보고서 내용이에요.</span>
+                    <Spacer y={15} />
+                    <div className="card non-anim" id="notices" style={{ padding: '5px 15px' }}>
+                        <p style={{ opacity: .6, fontSize: '15px' }}>
+                            {lecturePlan.cqiSummary}
+                            {lecturePlan.cqiNow}
+                        </p>
+                    </div>
+                </>
+                )
+            }
 
 
             <Spacer y={30} />
-        </main>
+        </main >
     );
 }
