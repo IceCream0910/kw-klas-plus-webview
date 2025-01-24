@@ -4,45 +4,50 @@ let currentYearHakgi = null;
 import { parse } from 'node-html-parser';
 
 export const config = {
-    runtime: "edge",
+  runtime: "edge",
 };
 
 export default async function handler(req) {
-    if (req.method === 'POST') {
-        const { conversation, subjList, token, yearHakgi } = await req.json();
-        sessionId = token;
-        currentYearHakgi = yearHakgi || new Date().getFullYear() + ',' + (new Date().getMonth() < 7 ? 1 : 2);
+  if (req.method === 'POST') {
+    const { conversation, subjList, token, yearHakgi } = await req.json();
+    sessionId = token;
+    currentYearHakgi = yearHakgi || new Date().getFullYear() + ',' + (new Date().getMonth() < 7 ? 1 : 2);
 
-        const encoder = new TextEncoder();
+    const encoder = new TextEncoder();
 
-        const stream = new ReadableStream({
-            async start(controller) {
-                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'connected', message: 'Connected' })}\n\n`));
+    const stream = new ReadableStream({
+      async start(controller) {
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'connected', message: 'Connected' })}\n\n`));
 
-                await processChatRequest(conversation, subjList, controller, encoder);
+        try {
+          await processChatRequest(conversation, subjList, controller, encoder);
+        } catch (error) {
+          console.error('처리 중 오류 발생:', error);
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', message: error.message })}\n\n`));
+        }
 
-                controller.close();
-            }
-        });
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'complete', message: '처리 완료' })}\n\n`));
+        controller.close();
+      }
+    });
 
-        return new Response(stream, {
-            headers: {
-                'Content-Type': 'text/event-stream',
-                'Cache-Control': 'no-cache',
-                'Connection': 'keep-alive',
-            },
-        });
-    } else {
-        return new Response('Method Not Allowed', { status: 405 });
-    }
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
+    });
+  } else {
+    return new Response('Method Not Allowed', { status: 405 });
+  }
 }
 
 const processChatRequest = async (conversation, subjList, controller, encoder) => {
-    const messages = [
-        {
-            role: "system",
-            content: `
-            You are KLAS GPT, an AI chatbot designed to assist students of 광운대학교 (Kwangwoon University). You are based on the GPT-4 architecture and trained by OpenAI. Your primary function is to provide information about courses, assignments, announcements, and university-related matters. Your knowledge is current up to October 2023.\
+  const messages = [
+    {
+      role: "system",
+      content: `You are KLAS GPT, an AI chatbot designed to assist students of 광운대학교 (Kwangwoon University). You are based on the GPT-4 architecture and trained by OpenAI. Your primary function is to provide information about courses, assignments, announcements, and university-related matters. Your knowledge is current up to October 2023.\
             Current Date: ${new Date().toLocaleDateString()}\
 \
 You will receive two inputs:\
@@ -83,425 +88,477 @@ Remember:\
 - Do not include function names or technical details in your response.\
 - Avoid repeating information unnecessarily.\
 - Stay within the scope of university-related matters.\
-- If you need clarification, ask the user before proceeding.`,
-        },
-        ...conversation.map(item => ({
-            role: item.type === 'question' ? 'user' : 'assistant',
-            content: item.content
-        }))
-    ];
+- If you need clarification, ask the user before proceeding.`
+    },
+    ...conversation.map(item => ({
+      role: item.type === 'question' ? 'user' : 'assistant',
+      content: item.content
+    }))
+  ];
 
-    const sendChunk = (chunk) => {
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`));
-    };
+  const sendChunk = (chunk) => {
+    controller.enqueue(encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`));
+  };
 
-    let response = await callChatCompletion(messages, sendChunk);
-    let functionCalls = [];
+  let shouldContinue = true;
+  let iterationCount = 0;
 
-    while (response.choices[0].finish_reason === "function_call") {
-        const functionCall = response.choices[0].message.function_call;
-        functionCalls.push(functionCall);
+  while (shouldContinue && iterationCount < 5) {
+    iterationCount++;
+    const response = await callChatCompletion(messages, sendChunk);
 
-        const functionResponse = await executeFunctionCall(functionCall);
-        messages.push({
-            role: "function",
-            name: functionCall.name,
-            content: JSON.stringify(functionResponse),
-        });
+    if (response.choices[0].finish_reason === "function_call") {
+      const functionCall = response.choices[0].message.function_call;
+      console.log('함수 호출 감지:', functionCall.name, '인수:', functionCall.arguments);
 
-        response = await callChatCompletion(messages, sendChunk);
+      // 툴 시작 이벤트 전송
+      sendChunk({
+        type: 'tool_start',
+        tool: functionCall.name,
+        input: JSON.parse(functionCall.arguments)
+      });
+
+      // 함수 실행
+      const functionResponse = await executeFunctionCall(functionCall);
+      console.log('함수 실행 결과:', functionCall.name, functionResponse);
+
+      // 툴 종료 이벤트 전송
+      sendChunk({
+        type: 'tool_end',
+        tool: functionCall.name,
+        output: functionResponse
+      });
+
+      // 메시지에 함수 결과 추가
+      messages.push({
+        role: "function",
+        name: functionCall.name,
+        content: JSON.stringify(functionResponse),
+      });
+    } else {
+      shouldContinue = false;
     }
+  }
 };
 
 const callChatCompletion = async (messages, sendChunk) => {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-            Authorization: `Bearer ${apiKey}`,
-            "Content-Type": "application/json",
+  console.log('API 호출:', messages.slice(-1)[0].content.substring(0, 50) + '...');
+
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "gpt-4o-mini",
+      messages: messages,
+      functions: [
+        {
+          name: 'searchCourseInfo',
+          description: '해당 강의의 출석 현황, 최근 공지사항(최대 4개), 온라인 강의 리스트, 과제 개수 등 종합 조회',
+          parameters: {
+            type: 'object',
+            properties: {
+              courseName: { type: 'string' },
+              courseLabel: { type: 'string' },
+              courseCode: { type: 'string' },
+            },
+            required: ['courseCode', 'courseName', 'courseLabel'],
+          },
         },
-        body: JSON.stringify({
-            model: "gpt-4o-mini",
-            messages: messages,
-            functions: [
-                {
-                    name: 'searchCourseInfo',
-                    description: '해당 강의의 출석 현황, 최근 공지사항(최대 4개), 온라인 강의 리스트, 과제 개수 등 종합 조회',
-                    parameters: {
-                        type: 'object',
-                        properties: {
-                            courseName: { type: 'string' },
-                            courseLabel: { type: 'string' },
-                            courseCode: { type: 'string' },
-                        },
-                        required: ['courseCode', 'courseName', 'courseLabel'],
-                    },
-                },
-                {
-                    name: 'searchTaskList',
-                    description: '해당 강의의 과제 목록 조회',
-                    parameters: {
-                        type: 'object',
-                        properties: {
-                            courseName: { type: 'string' },
-                            courseLabel: { type: 'string' },
-                            courseCode: { type: 'string' },
-                        },
-                        required: ['courseCode', 'courseName', 'courseLabel'],
-                    },
-                },
-                {
-                    name: 'getKWNoticeList',
-                    description: '학교 홈페이지에서 최근 공지사항 목록 조회',
-                    parameters: {
-                        type: 'object',
-                        properties: {},
-                        required: [],
-                    },
-                },
-                {
-                    name: 'searchKWNoticeList',
-                    description: '학교 홈페이지에서 공지사항 검색',
-                    parameters: {
-                        type: 'object',
-                        properties: {
-                            query: { type: 'string' },
-                        },
-                        required: ['query'],
-                    },
-                },
-                {
-                    name: 'getSchedules',
-                    description: '학교 홈페이지에서 올해 학사일정 조회',
-                    parameters: {
-                        type: 'object',
-                        properties: {},
-                        required: [],
-                    },
-                },
-                {
-                    name: 'getHaksik',
-                    description: '이번 주 학식 메뉴 조회',
-                    parameters: {
-                        type: 'object',
-                        properties: {},
-                        required: [],
-                    },
-                },
-                {
-                    name: 'getUniversityHomepage',
-                    description: '학교 홈페이지 메인 화면의 콘텐츠를 markdown 형식으로 반환. 학교에 대한 다양한 정보를 확인할 수 있는 URL이 포함된 사이트맵, 보도자료, 최신연구성과 등 정보 포함.',
-                    parameters: {
-                        type: 'object',
-                        properties: {},
-                        required: [],
-                    },
-                },
-            ],
-            stream: true,
-        }),
-    });
+        {
+          name: 'searchTaskList',
+          description: '해당 강의의 과제 목록 조회',
+          parameters: {
+            type: 'object',
+            properties: {
+              courseName: { type: 'string' },
+              courseLabel: { type: 'string' },
+              courseCode: { type: 'string' },
+            },
+            required: ['courseCode', 'courseName', 'courseLabel'],
+          },
+        },
+        {
+          name: 'getKWNoticeList',
+          description: '학교 홈페이지에서 최근 공지사항 목록 조회',
+          parameters: {
+            type: 'object',
+            properties: {},
+            required: [],
+          },
+        },
+        {
+          name: 'searchKWNoticeList',
+          description: '학교 홈페이지에서 공지사항 검색',
+          parameters: {
+            type: 'object',
+            properties: {
+              query: { type: 'string' },
+            },
+            required: ['query'],
+          },
+        },
+        {
+          name: 'getSchedules',
+          description: '학교 홈페이지에서 올해 학사일정 조회',
+          parameters: {
+            type: 'object',
+            properties: {},
+            required: [],
+          },
+        },
+        {
+          name: 'getHaksik',
+          description: '이번 주 학식 메뉴 조회',
+          parameters: {
+            type: 'object',
+            properties: {},
+            required: [],
+          },
+        },
+        {
+          name: 'getUniversityHomepage',
+          description: '학교 홈페이지 메인 화면의 콘텐츠를 markdown 형식으로 반환. 학교에 대한 다양한 정보를 확인할 수 있는 URL이 포함된 사이트맵, 보도자료, 최신연구성과 등 정보 포함.',
+          parameters: {
+            type: 'object',
+            properties: {},
+            required: [],
+          },
+        },
+      ],
+      stream: true,
+    }),
+  });
 
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = '';
-    let result = { choices: [{ finish_reason: null, message: { content: '' } }] };
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let result = { choices: [{ finish_reason: null, message: { content: '', function_call: null } }] };
 
-    while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
 
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop();
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop();
 
-        for (const line of lines) {
-            if (line.startsWith('data: ')) {
-                const data = line.slice(6);
-                if (data === '[DONE]') {
-                    sendChunk({ type: 'done', message: 'Stream finished' });
-                    return result;
-                }
-                try {
-                    const parsed = JSON.parse(data);
-                    if (parsed.choices[0].delta.content) {
-                        result.choices[0].message.content += parsed.choices[0].delta.content;
-                        sendChunk({ type: 'content', message: parsed.choices[0].delta.content });
-                    }
-                    if (parsed.choices[0].finish_reason) {
-                        result.choices[0].finish_reason = parsed.choices[0].finish_reason;
-                    }
-                    if (parsed.choices[0].delta.function_call) {
-                        result.choices[0].message.function_call = result.choices[0].message.function_call || { name: '', arguments: '' };
-                        result.choices[0].message.function_call.name += parsed.choices[0].delta.function_call.name || '';
-                        result.choices[0].message.function_call.arguments += parsed.choices[0].delta.function_call.arguments || '';
-                    }
-                } catch (error) {
-                    console.error('Error parsing JSON:', error);
-                }
-            }
+    for (const line of lines) {
+      if (!line.startsWith('data: ')) continue;
+
+      const dataStr = line.slice(6);
+      if (dataStr === '[DONE]') break;
+
+      try {
+        const data = JSON.parse(dataStr);
+        const delta = data.choices[0].delta;
+
+        // 콘텐츠 스트리밍
+        if (delta?.content) {
+          result.choices[0].message.content += delta.content;
+          sendChunk({ type: 'content', message: delta.content });
         }
-    }
 
-    return result;
+        // 함수 호출 정보 수집
+        if (delta?.function_call) {
+          result.choices[0].message.function_call = result.choices[0].message.function_call || { name: '', arguments: '' };
+          if (delta.function_call.name) {
+            result.choices[0].message.function_call.name += delta.function_call.name;
+          }
+          if (delta.function_call.arguments) {
+            result.choices[0].message.function_call.arguments += delta.function_call.arguments;
+          }
+        }
+
+        // 완료 이유 업데이트
+        if (data.choices[0].finish_reason) {
+          result.choices[0].finish_reason = data.choices[0].finish_reason;
+        }
+      } catch (error) {
+        console.error('JSON 파싱 오류:', error);
+      }
+    }
+  }
+
+  return result;
 };
 
 const executeFunctionCall = async (functionCall) => {
+  console.log('함수 실행 시작:', functionCall.name);
+  try {
     const args = JSON.parse(functionCall.arguments);
+    let result;
+
     switch (functionCall.name) {
-        case "searchCourseInfo":
-            return await searchCourseInfo(args);
-        case "searchTaskList":
-            return await searchTaskList(args);
-        case 'getKWNoticeList':
-            return await getKWNoticeList();
-        case 'searchKWNoticeList':
-            return await searchKWNoticeList(args);
-        case 'getSchedules':
-            return await getSchedules();
-        case 'getHaksik':
-            return await getHaksik();
-        case 'getUniversityHomepage':
-            return await getUniversityHomepage();
-        default:
-            return { error: "Unknown function" };
+      case "searchCourseInfo":
+        result = await searchCourseInfo(args);
+        break;
+      case "searchTaskList":
+        result = await searchTaskList(args);
+        break;
+      case 'getKWNoticeList':
+        result = await getKWNoticeList();
+        break;
+      case 'searchKWNoticeList':
+        result = await searchKWNoticeList(args);
+        break;
+      case 'getSchedules':
+        result = await getSchedules();
+        break;
+      case 'getHaksik':
+        result = await getHaksik();
+        break;
+      case 'getUniversityHomepage':
+        result = await getUniversityHomepage();
+        break;
+      default:
+        result = { error: "알 수 없는 함수" };
     }
+
+    console.log('함수 실행 완료:', functionCall.name);
+    return result;
+  } catch (error) {
+    console.error('함수 실행 오류:', functionCall.name, error);
+    return { error: error.message };
+  }
 };
 
 
 async function searchCourseInfo({ courseName, courseLabel, courseCode }) {
-    const options = {
-        method: 'POST',
-        headers: {
-            Cookie: `SESSION=${sessionId};`,
-            'Content-Type': 'application/json'
-        },
-        body: `{
-  "selectYearhakgi": "${currentYearHakgi}",
-  "selectSubj": "${courseCode}",
-  "selectChangeYn": "Y",
-  "subjNm": "${courseLabel}",
-  "subj": {
-    "value": "${courseCode}",
-    "label": "${courseLabel}",
-    "name": "${courseName}"
-  }
+  const options = {
+    method: 'POST',
+    headers: {
+      Cookie: `SESSION=${sessionId};`,
+      'Content-Type': 'application/json'
+    },
+    body: `{
+"selectYearhakgi": "${currentYearHakgi}",
+"selectSubj": "${courseCode}",
+"selectChangeYn": "Y",
+"subjNm": "${courseLabel}",
+"subj": {
+  "value": "${courseCode}",
+  "label": "${courseLabel}",
+  "name": "${courseName}"
+}
 }`
-    };
+  };
 
-    try {
-        const response = await fetch('https://klas.kw.ac.kr/std/lis/evltn/LctrumHomeStdInfo.do', options);
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error(error);
-        return { error: error };
-    }
+  try {
+    const response = await fetch('https://klas.kw.ac.kr/std/lis/evltn/LctrumHomeStdInfo.do', options);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+    return { error: error };
+  }
 }
 
 async function searchTaskList({ courseName, courseLabel, courseCode }) {
-    const options = {
-        method: 'POST',
-        headers: {
-            Cookie: `SESSION=${sessionId};`,
-            'Content-Type': 'application/json'
-        },
-        body: `{
-  "selectYearhakgi": "${currentYearHakgi}",
-  "selectSubj": "${courseCode}",
-  "selectChangeYn": "Y",
-  "subjNm": "${courseLabel}",
-  "subj": {
-    "value": "${courseCode}",
-    "label": "${courseLabel}",
-    "name": "${courseName}"
-  }
+  const options = {
+    method: 'POST',
+    headers: {
+      Cookie: `SESSION=${sessionId};`,
+      'Content-Type': 'application/json'
+    },
+    body: `{
+"selectYearhakgi": "${currentYearHakgi}",
+"selectSubj": "${courseCode}",
+"selectChangeYn": "Y",
+"subjNm": "${courseLabel}",
+"subj": {
+  "value": "${courseCode}",
+  "label": "${courseLabel}",
+  "name": "${courseName}"
+}
 }`
-    };
+  };
 
-    try {
-        const response = await fetch('https://klas.kw.ac.kr/std/lis/evltn/TaskStdList.do', options);
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error(error);
-        return { error: error };
-    }
+  try {
+    const response = await fetch('https://klas.kw.ac.kr/std/lis/evltn/TaskStdList.do', options);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+    return { error: error };
+  }
 }
 
 async function getKWNoticeList() {
-    try {
-        const response = await fetch('https://www.kw.ac.kr/ko/index.jsp');
-        const html = await response.text();
+  try {
+    const response = await fetch('https://www.kw.ac.kr/ko/index.jsp');
+    const html = await response.text();
 
-        const root = parse(html);
-        const tabContent = root.querySelector('div.tab_content');
+    const root = parse(html);
+    const tabContent = root.querySelector('div.tab_content');
 
-        if (tabContent) {
-            const notices = tabContent.querySelectorAll('li');
-            const noticeList = notices.map(notice => {
-                const linkElement = notice.querySelector('a');
-                const title = linkElement?.text.trim();
-                const link = linkElement?.getAttribute('href');
-                const date = notice.querySelector('span')?.text.trim();
+    if (tabContent) {
+      const notices = tabContent.querySelectorAll('li');
+      const noticeList = notices.map(notice => {
+        const linkElement = notice.querySelector('a');
+        const title = linkElement?.text.trim();
+        const link = linkElement?.getAttribute('href');
+        const date = notice.querySelector('span')?.text.trim();
 
-                return {
-                    title,
-                    link: link ? `https://www.kw.ac.kr${link}` : null,
-                    date
-                };
-            });
-            return noticeList;
-        } else {
-            console.log('tab_content를 찾을 수 없습니다.');
-            return [];
-        }
-    } catch (error) {
-        console.error('에러 발생:', error.message);
-        return [];
+        return {
+          title,
+          link: link ? `https://www.kw.ac.kr${link}` : null,
+          date
+        };
+      });
+      return noticeList;
+    } else {
+      console.log('tab_content를 찾을 수 없습니다.');
+      return [];
     }
+  } catch (error) {
+    console.error('에러 발생:', error.message);
+    return [];
+  }
 }
 
 async function searchKWNoticeList({ query }) {
-    try {
-        const response = await fetch('https://www.kw.ac.kr/ko/life/notice.jsp?srCategoryId=&mode=list&searchKey=3&x=28&y=15&searchVal=' + encodeURIComponent(query));
-        const html = await response.text();
+  try {
+    const response = await fetch('https://www.kw.ac.kr/ko/life/notice.jsp?srCategoryId=&mode=list&searchKey=3&x=28&y=15&searchVal=' + encodeURIComponent(query));
+    const html = await response.text();
 
-        const root = parse(html);
-        const boardListBox = root.querySelector('div.board-list-box');
+    const root = parse(html);
+    const boardListBox = root.querySelector('div.board-list-box');
 
-        if (boardListBox) {
-            const notices = boardListBox.querySelectorAll('li');
-            const noticeList = notices.map(notice => {
-                const number = notice.querySelector('span.no')?.text.trim();
-                const category = notice.querySelector('strong.category')?.text.trim();
-                const linkElement = notice.querySelector('div.board-text a');
-                const title = linkElement?.text.replace(category, '').trim();
-                const link = linkElement?.getAttribute('href');
-                const hasAttachment = notice.querySelector('span.ico-file') !== null;
-                const infoText = notice.querySelector('p.info')?.text.trim();
-                const [views, createdDate, modifiedDate, author] = infoText ? infoText.split('|').map(item => item.trim()) : [];
+    if (boardListBox) {
+      const notices = boardListBox.querySelectorAll('li');
+      const noticeList = notices.map(notice => {
+        const number = notice.querySelector('span.no')?.text.trim();
+        const category = notice.querySelector('strong.category')?.text.trim();
+        const linkElement = notice.querySelector('div.board-text a');
+        const title = linkElement?.text.replace(category, '').trim();
+        const link = linkElement?.getAttribute('href');
+        const hasAttachment = notice.querySelector('span.ico-file') !== null;
+        const infoText = notice.querySelector('p.info')?.text.trim();
+        const [views, createdDate, modifiedDate, author] = infoText ? infoText.split('|').map(item => item.trim()) : [];
 
-                return {
-                    number: parseInt(number),
-                    category,
-                    title,
-                    link: link ? `https://www.kw.ac.kr${link}` : null,
-                    hasAttachment,
-                    views: views ? parseInt(views.replace('조회수 ', '')) : null,
-                    createdDate: createdDate ? createdDate.replace('작성일 ', '') : null,
-                    modifiedDate: modifiedDate ? modifiedDate.replace('수정일 ', '') : null,
-                    author
-                };
-            });
-            return noticeList;
-        } else {
-            console.log('board-list-box를 찾을 수 없습니다.');
-            return [];
-        }
-    } catch (error) {
-        console.error('에러 발생:', error.message);
-        return [];
+        return {
+          number: parseInt(number),
+          category,
+          title,
+          link: link ? `https://www.kw.ac.kr${link}` : null,
+          hasAttachment,
+          views: views ? parseInt(views.replace('조회수 ', '')) : null,
+          createdDate: createdDate ? createdDate.replace('작성일 ', '') : null,
+          modifiedDate: modifiedDate ? modifiedDate.replace('수정일 ', '') : null,
+          author
+        };
+      });
+      return noticeList;
+    } else {
+      console.log('board-list-box를 찾을 수 없습니다.');
+      return [];
     }
+  } catch (error) {
+    console.error('에러 발생:', error.message);
+    return [];
+  }
 }
 
 async function getSchedules() {
-    try {
-        const response = await fetch('https://www.kw.ac.kr/KWBoard/list5_detail.jsp');
-        const html = await response.text();
+  try {
+    const response = await fetch('https://www.kw.ac.kr/KWBoard/list5_detail.jsp');
+    const html = await response.text();
 
-        const root = parse(html);
-        const scheduleListBox = root.querySelector('.schedule-this-yearlist');
+    const root = parse(html);
+    const scheduleListBox = root.querySelector('.schedule-this-yearlist');
 
-        if (scheduleListBox) {
-            const monthBoxes = scheduleListBox.querySelectorAll('.month_box');
-            const calendarEvents = [];
+    if (scheduleListBox) {
+      const monthBoxes = scheduleListBox.querySelectorAll('.month_box');
+      const calendarEvents = [];
 
-            monthBoxes.forEach(monthBox => {
-                const events = monthBox.querySelectorAll('.list ul li');
+      monthBoxes.forEach(monthBox => {
+        const events = monthBox.querySelectorAll('.list ul li');
 
-                events.forEach(event => {
-                    const date = event.querySelector('strong')?.text.trim();
-                    const description = event.querySelector('p')?.text.trim();
+        events.forEach(event => {
+          const date = event.querySelector('strong')?.text.trim();
+          const description = event.querySelector('p')?.text.trim();
 
-                    calendarEvents.push({
-                        date,
-                        description
-                    });
-                });
-            });
+          calendarEvents.push({
+            date,
+            description
+          });
+        });
+      });
 
-            return calendarEvents;
-        } else {
-            console.log('schedule-list-box를 찾을 수 없습니다.');
-            return [];
-        }
-    } catch (error) {
-        console.error('에러 발생:', error.message);
-        return [];
+      return calendarEvents;
+    } else {
+      console.log('schedule-list-box를 찾을 수 없습니다.');
+      return [];
     }
+  } catch (error) {
+    console.error('에러 발생:', error.message);
+    return [];
+  }
 }
 
 async function getHaksik() {
-    try {
-        const response = await fetch('https://www.kw.ac.kr/ko/life/facility11.jsp');
-        const html = await response.text();
+  try {
+    const response = await fetch('https://www.kw.ac.kr/ko/life/facility11.jsp');
+    const html = await response.text();
 
-        const root = parse(html);
-        const table = root.querySelector('table.tbl-list');
+    const root = parse(html);
+    const table = root.querySelector('table.tbl-list');
 
-        if (table) {
-            const headers = table.querySelectorAll('thead th');
-            const menuRow = table.querySelector('tbody tr');
+    if (table) {
+      const headers = table.querySelectorAll('thead th');
+      const menuRow = table.querySelector('tbody tr');
 
-            const weeklyMenu = [];
+      const weeklyMenu = [];
 
-            headers.forEach((header, index) => {
-                if (index === 0) return;
+      headers.forEach((header, index) => {
+        if (index === 0) return;
 
-                const day = header.querySelector('.nowDay')?.text.trim();
-                const date = header.querySelector('.nowDate')?.text.trim();
-                const menu = menuRow.querySelectorAll('td')[index].querySelector('pre')?.text.trim();
+        const day = header.querySelector('.nowDay')?.text.trim();
+        const date = header.querySelector('.nowDate')?.text.trim();
+        const menu = menuRow.querySelectorAll('td')[index].querySelector('pre')?.text.trim();
 
-                weeklyMenu.push({
-                    day,
-                    date,
-                    menu
-                });
-            });
+        weeklyMenu.push({
+          day,
+          date,
+          menu
+        });
+      });
 
-            const restaurantInfo = menuRow.querySelector('td');
-            const restaurantName = restaurantInfo.querySelector('.dietTitle')?.text.trim();
-            const price = restaurantInfo.querySelector('.dietPrice')?.text.trim();
-            const time = restaurantInfo.querySelector('.dietTime')?.text.trim();
+      const restaurantInfo = menuRow.querySelector('td');
+      const restaurantName = restaurantInfo.querySelector('.dietTitle')?.text.trim();
+      const price = restaurantInfo.querySelector('.dietPrice')?.text.trim();
+      const time = restaurantInfo.querySelector('.dietTime')?.text.trim();
 
-            return {
-                restaurantInfo: {
-                    name: restaurantName,
-                    price,
-                    time
-                },
-                weeklyMenu
-            };
-        } else {
-            console.log('식단표를 찾을 수 없습니다.');
-            return null;
-        }
-    } catch (error) {
-        console.error('에러 발생:', error.message);
-        return null;
+      return {
+        restaurantInfo: {
+          name: restaurantName,
+          price,
+          time
+        },
+        weeklyMenu
+      };
+    } else {
+      console.log('식단표를 찾을 수 없습니다.');
+      return null;
     }
+  } catch (error) {
+    console.error('에러 발생:', error.message);
+    return null;
+  }
 }
 
 async function getUniversityHomepage() {
-    try {
-        const response = await fetch('https://klasplus.yuntae.in/api/crawler/crawling?url=https://www.kw.ac.kr/ko/index.jsp');
-        const json = await response.json();
-        const data = json.markdown;
-        console.log(data);
-        return data;
-    } catch (error) {
-        console.error('에러 발생:', error.message);
-        return [];
-    }
+  try {
+    const response = await fetch('https://klasplus.yuntae.in/api/crawler/crawling?url=https://www.kw.ac.kr/ko/index.jsp');
+    const json = await response.json();
+    const data = json.markdown;
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error('에러 발생:', error.message);
+    return [];
+  }
 }

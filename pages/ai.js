@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import IonIcon from '@reacticons/ionicons';
 import LoadingComponent from './components/loader';
 import Spacer from './components/spacer';
+import remarkGfm from 'remark-gfm'
 
 export default function Home() {
     const [subjList, setSubjList] = useState(null);
@@ -11,6 +12,7 @@ export default function Home() {
     const [token, setToken] = useState("");
     const [chat, setChat] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [activeTools, setActiveTools] = useState([]);
     const scrollRef = useRef(null);
     const abortControllerRef = useRef(null);
     const [randomSubjName, setRandomSubjName] = useState(null);
@@ -39,7 +41,11 @@ export default function Home() {
             setToken(receivedToken);
         };
 
-        Android.completePageLoad();
+        try {
+            Android.completePageLoad();
+        } catch (error) {
+            console.log("not app");
+        }
     }, []);
 
     useEffect(() => {
@@ -67,14 +73,13 @@ export default function Home() {
                 signal: abortControllerRef.current.signal,
             });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
 
-            setChat(prevChat => [...prevChat, { type: 'answer', content: '' }]);
+            setChat(prev => [...prev, { type: 'answer', content: '' }]);
+            setActiveTools([]);
 
             while (true) {
                 const { value, done } = await reader.read();
@@ -84,30 +89,58 @@ export default function Home() {
                 const lines = chunkValue.split('\n\n');
 
                 for (const line of lines) {
-                    if (line.startsWith('data: ')) {
-                        try {
-                            const data = JSON.parse(line.slice(6));
-                            if (data.type === 'content') {
-                                setChat(prevChat => {
-                                    const newChat = [...prevChat];
+                    if (!line.startsWith('data: ')) continue;
+
+                    try {
+                        const data = JSON.parse(line.slice(6));
+
+                        switch (data.type) {
+                            case 'content':
+                                setChat(prev => {
+                                    const newChat = [...prev];
                                     const lastMessage = newChat[newChat.length - 1];
                                     lastMessage.content += data.message;
                                     return newChat;
                                 });
-                            }
-                        } catch (error) {
-                            console.error("Error parsing JSON:", error);
+                                break;
+
+                            case 'tool_start':
+                                setActiveTools(tools => [
+                                    ...tools,
+                                    {
+                                        name: data.tool,
+                                        status: 'running',
+                                    }
+                                ]);
+                                break;
+
+                            case 'tool_end':
+                                setActiveTools(tools => tools.map(tool =>
+                                    tool.name === data.tool
+                                        ? { ...tool, status: 'completed' }
+                                        : tool
+                                ));
+                                break;
+
+                            case 'complete':
+                                setIsLoading(false);
+                                break;
+
+                            case 'error':
+                                setChat(prev => [...prev, {
+                                    type: 'answer',
+                                    content: `⚠️ 오류 발생: ${data.message}`
+                                }]);
+                                setIsLoading(false);
+                                break;
                         }
+                    } catch (error) {
+                        console.error("Error parsing JSON:", error);
                     }
                 }
             }
         } catch (error) {
-            if (error.name === 'AbortError') {
-                console.log('Fetch aborted');
-            } else {
-                console.error("Error fetching response:", error);
-                setChat(prevChat => [...prevChat, { type: 'answer', content: "서버에 오류가 생겼어요. 잠시 후 다시 시도해주세요." }]);
-            }
+            console.error("Error fetching chat:", error);
         } finally {
             setIsLoading(false);
         }
@@ -177,14 +210,39 @@ export default function Home() {
                     {chat.map((item, index) => (
                         <div key={index} className={`message`}>
                             {item.type === 'question' && <IonIcon name="person-circle" style={{ fontSize: '30px' }} />}
-                            <div style={{ maxWidth: item.type === 'question' ? '80%' : '100%' }}>
-                                <ReactMarkdown>{item.content}</ReactMarkdown>
-                            </div>
+                            <ReactMarkdown
+                                remarkPlugins={[remarkGfm]}
+                                components={{
+                                    ol: ({ children }) => <>{children}</>,
+                                    ul: ({ children }) => <>{children}</>,
+                                    li: ({ children }) => <>{children}</>,
+                                }}
+                            >
+                                {item.content}
+                            </ReactMarkdown>
+                            {index === chat.length - 1 && isLoading && activeTools.length <= 0 && (
+                                <div style={{ marginTop: '20px' }}>
+                                    <LoadingComponent />
+                                </div>
+                            )}
+                            {index === chat.length - 1 && isLoading && activeTools.length > 0 && (
+                                <div className="tools-status">
+                                    <LoadingComponent />
+                                    {activeTools.map((tool, index) => (
+                                        <div key={index} className="tool-item">
+                                            <div className="tool-header">
+                                                <IonIcon
+                                                    name={tool.status === 'running' ? 'hourglass' : 'checkmark-circle-outline'}
+                                                    style={{ color: tool.status === 'running' ? 'inherit' : 'var(--green)' }}
+                                                />
+                                                <span className="tool-name">{tool.name}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     ))}
-                    {isLoading && (
-                        <LoadingComponent />
-                    )}
                 </div>
             </main>
 
@@ -217,6 +275,29 @@ export default function Home() {
                 <span style={{ fontSize: '12px', opacity: .4 }}>AI는 틀린 답변을 제공할 수 있습니다. <span style={{ fontSize: '12px', opacity: .5, marginTop: '5px' }}><a href="https://blog.yuntae.in/11cfc9b9-3eca-8078-96a0-c41c4ca9cb8f" target='_blank' style={{ color: 'inherit' }}>개인정보 처리방침</a></span>
                 </span>
             </form>
+
+            <style jsx>{`
+    .tools-status {
+        padding: 10px;
+        background: var(--card-background);
+        border-radius: 12px;
+        margin-top: 20px;
+    }
+
+    .tool-item {
+        padding: 10px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+    }
+
+    .tool-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        opacity: .8;
+    }
+`}</style>
         </div >
     );
 }

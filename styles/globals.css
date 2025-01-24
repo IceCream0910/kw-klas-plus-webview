@@ -184,7 +184,7 @@ select {
 
 .message {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   width: 100%;
   box-sizing: border-box;
   gap: 10px;
@@ -199,7 +199,6 @@ select {
   background-color: var(--card-background);
   border-radius: 10px;
   width: fit-content;
-  margin-top: 20px;
 }
 
 .messages-container {
