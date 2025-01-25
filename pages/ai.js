@@ -48,8 +48,6 @@ export default function Home() {
         } catch (error) {
             console.log("not app");
         }
-
-        window.receiveToken("NTIwMDg0NTYtZGQyYi00YjUwLWFjZGYtNWU4YmMwODA2NGUz")
     }, []);
 
     useEffect(() => {
