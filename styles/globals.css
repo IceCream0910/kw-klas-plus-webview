@@ -152,34 +152,32 @@ select {
   justify-content: space-between;
   gap: 10px;
   padding: 1rem;
-  border-radius: 15px;
+  padding-top: 40px;
   position: fixed;
   left: 0;
   bottom: 0;
   width: 100%;
   box-sizing: border-box;
+  background: linear-gradient(to top, var(--background) 80%, transparent 100%);
 }
 
 .chat-input-container button {
-  position: absolute;
-  bottom: 45px;
-  right: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  width: fit-content;
   background-color: var(--button-background);
   color: var(--button-text);
+  border-radius: 20px;
+  padding: 7px 10px;
+  font-size: 13px;
 }
 
 .chat-input-container input {
   width: 100%;
-  border-radius: 1.5rem;
-  padding-right: 50px;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
   height: 50px;
-  border: 2px solid var(--card-border);
 }
 
 .message {
@@ -188,10 +186,16 @@ select {
   width: 100%;
   box-sizing: border-box;
   gap: 10px;
-  padding: 10px;
-  word-break: break-all;
-  word-wrap: break-word;
-  border-bottom: 1px solid var(--card-background);
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+.message .me {
+  align-self: flex-end;
+  background-color: var(--card-background);
+  border-radius: 15px;
+  padding: 10px 15px;
+  max-width: 80%;
 }
 
 .message.loading {
@@ -204,8 +208,9 @@ select {
 .messages-container {
   display: flex;
   flex-direction: column;
+  gap: 10px;
   overflow-y: auto;
-  max-height: 80vh;
+  height: calc(100dvh - 140px);
 }
 
 .spinner {

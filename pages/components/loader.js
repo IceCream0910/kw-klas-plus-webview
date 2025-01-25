@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
 const LoadingComponent = () => {
-    const [loadingText, setLoadingText] = useState("질문을 이해하는 중");
-    const loadingTexts = ["검색 중", "정보를 찾는 중", "답변 생성 중"];
+    const [loadingText, setLoadingText] = useState("답변 생성 중");
+    const loadingTexts = ["답변 생성 중"];
     let index = 0;
 
     useEffect(() => {
@@ -15,7 +15,7 @@ const LoadingComponent = () => {
     }, []);
 
     return (
-        <div className="message loading" style={{ flexDirection: "row" }}>
+        <div className="loading" style={{ display: 'flex', flexDirection: "row", gap: '10px' }}>
             <div className="spinner"></div>
             {loadingText}
         </div>

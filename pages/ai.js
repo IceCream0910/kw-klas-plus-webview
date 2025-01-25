@@ -10,7 +10,8 @@ export default function Home() {
     const [subjList, setSubjList] = useState(null);
     const [input, setInput] = useState('');
     const [token, setToken] = useState("");
-    const [chat, setChat] = useState([]);
+    const [chat, setChat] = useState([
+    ]);
     const [isLoading, setIsLoading] = useState(false);
     const [activeTools, setActiveTools] = useState([]);
     const scrollRef = useRef(null);
@@ -18,6 +19,7 @@ export default function Home() {
     const [randomSubjName, setRandomSubjName] = useState(null);
     const [yearHakgi, setYearHakgi] = useState(null);
     const [isInputFocused, setIsInputFocused] = useState(false);
+    const pendingToolsRef = useRef([]);
 
 
     const handleSubmit = async (e) => {
@@ -46,6 +48,8 @@ export default function Home() {
         } catch (error) {
             console.log("not app");
         }
+
+        window.receiveToken("NTIwMDg0NTYtZGQyYi00YjUwLWFjZGYtNWU4YmMwODA2NGUz")
     }, []);
 
     useEffect(() => {
@@ -109,6 +113,8 @@ export default function Home() {
                                     ...tools,
                                     {
                                         name: data.tool,
+                                        title: data.name,
+                                        input: data.input,
                                         status: 'running',
                                     }
                                 ]);
@@ -120,9 +126,26 @@ export default function Home() {
                                         ? { ...tool, status: 'completed' }
                                         : tool
                                 ));
+                                pendingToolsRef.current.push({
+                                    type: 'tool',
+                                    content: JSON.stringify(data.output)
+                                });
                                 break;
 
                             case 'complete':
+                                if (pendingToolsRef.current.length > 0) {
+                                    console.log("Pending tools:", pendingToolsRef.current);
+                                    setTimeout(() => {
+                                        setChat(prev => {
+                                            const newChat = [...prev];
+                                            pendingToolsRef.current.forEach(tool => {
+                                                newChat.push(tool);
+                                            });
+                                            pendingToolsRef.current = [];
+                                            return newChat;
+                                        });
+                                    }, 100);
+                                }
                                 setIsLoading(false);
                                 break;
 
@@ -153,11 +176,12 @@ export default function Home() {
         }
     };
 
+
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
-    }, [chat]);
+    }, [chat, activeTools]);
 
     return (
         <div>
@@ -209,17 +233,6 @@ export default function Home() {
                     )}
                     {chat.map((item, index) => (
                         <div key={index} className={`message`}>
-                            {item.type === 'question' && <IonIcon name="person-circle" style={{ fontSize: '30px' }} />}
-                            <ReactMarkdown
-                                remarkPlugins={[remarkGfm]}
-                                components={{
-                                    ol: ({ children }) => <>{children}</>,
-                                    ul: ({ children }) => <>{children}</>,
-                                    li: ({ children }) => <>{children}</>,
-                                }}
-                            >
-                                {item.content}
-                            </ReactMarkdown>
                             {index === chat.length - 1 && isLoading && activeTools.length <= 0 && (
                                 <div style={{ marginTop: '20px' }}>
                                     <LoadingComponent />
@@ -235,23 +248,41 @@ export default function Home() {
                                                     name={tool.status === 'running' ? 'hourglass' : 'checkmark-circle-outline'}
                                                     style={{ color: tool.status === 'running' ? 'inherit' : 'var(--green)' }}
                                                 />
-                                                <span className="tool-name">{tool.name}</span>
+                                                <span className="tool-name">{tool.title}</span>
                                             </div>
+                                            {JSON.stringify(tool.input) > 5 && <span className='tool-description' style={{ fontSize: '12px', opacity: .6, marginLeft: '25px' }}>{JSON.stringify(tool.input)}</span>}
                                         </div>
                                     ))}
                                 </div>
                             )}
+
+                            {item.type === 'question' ?
+                                <div className="me">{item.content}</div>
+                                : item.type != 'tool' &&
+                                <>
+                                    <ReactMarkdown
+                                        remarkPlugins={[remarkGfm]}
+                                        components={{
+                                            ol: ({ children }) => <>{children}</>,
+                                            ul: ({ children }) => <>{children}</>,
+                                            li: ({ children }) => <>{children}</>,
+                                        }}
+                                    >
+                                        {item.content}
+                                    </ReactMarkdown>
+                                </>
+
+                            }
+
                         </div>
                     ))}
                 </div>
             </main>
 
             <form onSubmit={handleSubmit} className='chat-input-container'>
-                {!isInputFocused && (
-                    <button type="button" disabled={isLoading} onClick={() => [setChat([]), setInput('')]} style={{ background: 'var(--background)', left: '20px' }}>
-                        <IonIcon name="refresh" />
-                    </button>
-                )}
+                {chat.length === 0 &&
+                    <span style={{ fontSize: '12px', opacity: .4 }}>AI는 틀린 답변을 제공할 수 있습니다. <span style={{ fontSize: '12px', opacity: .5, marginTop: '5px' }}><a href="https://blog.yuntae.in/11cfc9b9-3eca-8078-96a0-c41c4ca9cb8f" target='_blank' style={{ color: 'inherit' }}>개인정보 처리방침</a></span>
+                    </span>}
                 <input
                     type="text"
                     value={input}
@@ -261,33 +292,44 @@ export default function Home() {
                     className='chat-input'
                     onFocus={() => setIsInputFocused(true)}
                     onBlur={() => setIsInputFocused(false)}
-                    style={{ paddingLeft: isInputFocused ? '20px' : '50px' }}
                 />
-                {isLoading ? (
-                    <button type="button" onClick={handleStopResponse}>
-                        <IonIcon name="stop" />
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', width: '100%' }}>
+
+                    <button type="button" disabled={isLoading} onClick={() => [setChat([]), setInput('')]} style={{ background: 'var(--card-background)', left: '20px' }}>
+                        <IonIcon name="add-outline" /> 새 채팅
                     </button>
-                ) : (
-                    <button type="submit">
-                        <IonIcon name="send" />
-                    </button>
-                )}
-                <span style={{ fontSize: '12px', opacity: .4 }}>AI는 틀린 답변을 제공할 수 있습니다. <span style={{ fontSize: '12px', opacity: .5, marginTop: '5px' }}><a href="https://blog.yuntae.in/11cfc9b9-3eca-8078-96a0-c41c4ca9cb8f" target='_blank' style={{ color: 'inherit' }}>개인정보 처리방침</a></span>
-                </span>
+
+                    {isLoading ? (
+                        <button type="button" style={{ width: '30px', height: '30px', padding: 0, background: 'var(--card-background)' }} onClick={handleStopResponse}>
+                            <IonIcon name="stop" />
+                        </button>
+                    ) : (
+                        <button style={{ width: '30px', height: '30px', padding: 0 }} type="submit">
+                            <IonIcon name="send" />
+                        </button>
+                    )}
+                </div>
+
+
+
             </form>
 
             <style jsx>{`
     .tools-status {
-        padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+        padding: 15px;
         background: var(--card-background);
         border-radius: 12px;
         margin-top: 20px;
     }
 
     .tool-item {
-        padding: 10px;
         border: 1px solid var(--border-color);
         border-radius: 8px;
+        margin-left: 30px;
     }
 
     .tool-header {
