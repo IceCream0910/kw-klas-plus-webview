@@ -606,7 +606,7 @@ async function getHaksik() {
 
 async function getHomepageSitemap() {
   try {
-    const response = await fetch('http://localhost:3000/api/crawler/kwSitemap');
+    const response = await fetch('https://klasplus.yuntae.in/api/crawler/kwSitemap');
     const data = await response.json();
     console.log(data);
     return data;
