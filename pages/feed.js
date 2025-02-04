@@ -34,7 +34,11 @@ export default function Home() {
     setupWindowFunctions(savedExcludeNotStarted);
     fetchData();
 
-    Android.completePageLoad();
+    try {
+      Android.completePageLoad();
+    } catch (e) {
+      console.log('not app')
+    }
 
     return () => {
       delete window.receiveDeadlineData;
