@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Spacer from "./components/spacer";
+import LoadingComponent from "./components/loader";
 
 const generateRandomColor = () => {
   const hue = Math.floor(Math.random() * 360);
@@ -80,17 +81,22 @@ const ScholarshipListItem = ({ scholarship }) => {
 export default function Home() {
   const [token, setToken] = useState("");
   const [janghak, setJanghak] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const containerRef = useRef(null);
   const [focusedIndex, setFocusedIndex] = useState(1);
   const observerRef = useRef(null);
-  const [viewType, setViewType] = useState('card');
+  const [viewType, setViewType] = useState('list');
 
   useEffect(() => {
     window.receiveToken = (receivedToken) => {
       if (receivedToken) setToken(receivedToken);
     };
 
-    Android.completePageLoad();
+    try {
+      Android.completePageLoad();
+    } catch (e) {
+      console.log('not app');
+    }
   }, []);
 
   useEffect(() => {
@@ -110,8 +116,12 @@ export default function Home() {
         data.unshift(null);
         data.push(null);
         setJanghak(data);
+        setIsLoading(false); // mark as loaded
       })
-      .catch(console.error);
+      .catch(err => {
+        console.error(err);
+        setIsLoading(false);
+      });
   }, [token]);
 
   useEffect(() => {
@@ -153,6 +163,20 @@ export default function Home() {
     container.scrollLeft = container.children[0].offsetWidth;
   }, [janghak]);
 
+  if (isLoading) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        background: 'var(--background)'
+      }}>
+        <LoadingComponent texts={["장학 정보 불러오는 중"]} />
+      </div>
+    );
+  }
+
   return (
     <main style={{ paddingBottom: '60px' }}>
       <Spacer y={5} />
@@ -172,31 +196,9 @@ export default function Home() {
             transform: 'translateY(-40%)'
           }}>
             <h3 style={{ textAlign: 'center' }}>지금까지 수여받은<br />장학금이 아직 없어요!</h3>
-            <Spacer y={20} />
-            <div
-              ref={containerRef}
-              style={{
-                display: 'flex',
-                overflowX: 'auto',
-                scrollbarWidth: 'none',
-                msOverflowStyle: 'none',
-                scrollSnapType: 'x mandatory',
-                alignItems: 'center',
-                height: 'fit-content',
-                padding: '15px 0',
-              }}
-            >
-              <div style={{ width: 'calc(25vw - 40px)', height: '70vw' }}>
-                <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}></div>
-              </div>
-
-              <div onClick={() => window.open("https://www.kw.ac.kr/ko/life/summary.jsp")}>
-                <ScholarshipCard scholarship={{ janghakAmt: '???', janghakName: '광운대학교 장학 제도 살펴보기', yearHakgi: 'ㅇㅇ-ㅇ', grade: "ㅇ" }} isFocused={false} />
-              </div>
-              <div style={{ width: 'calc(25vw - 40px)', height: '70vw' }}>
-                <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}></div>
-              </div>
-            </div>
+            <button onClick={() => Android.openPage('https://www.kw.ac.kr/ko/life/summary.jsp')} style={{ background: 'var(--button-background)', color: 'var(--button-text)', width: 'fit-content', margin: '0 auto', display: 'block', fontSize: '14px', marginTop: '15px', padding: '10px 15px' }}>
+              학부 장학안내 보러가기
+            </button>
           </div>
         </>
       ) : (
@@ -268,20 +270,6 @@ export default function Home() {
         alignItems: 'center'
       }}>
         <button
-          onClick={() => setViewType('card')}
-          style={{
-            width: 'fit-content',
-            padding: '8px 16px',
-            borderRadius: '20px',
-            backgroundColor: viewType === 'card' ? 'var(--card-background)' : 'transparent',
-            border: 'none',
-            fontSize: '14px',
-            textAlign: 'center'
-          }}
-        >
-          카드
-        </button>
-        <button
           onClick={() => setViewType('list')}
           style={{
             width: 'fit-content',
@@ -294,6 +282,21 @@ export default function Home() {
           }}
         >
           리스트
+        </button>
+
+        <button
+          onClick={() => setViewType('card')}
+          style={{
+            width: 'fit-content',
+            padding: '8px 16px',
+            borderRadius: '20px',
+            backgroundColor: viewType === 'card' ? 'var(--card-background)' : 'transparent',
+            border: 'none',
+            fontSize: '14px',
+            textAlign: 'center'
+          }}
+        >
+          카드
         </button>
       </div>
     </main>

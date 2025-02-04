@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
-const LoadingComponent = () => {
-    const [loadingText, setLoadingText] = useState("생각 중");
-    const loadingTexts = ["생각 중", "필요한 정보 수집 중", "답변 생성 중"];
+const LoadingComponent = ({ texts }) => {
+    const defaultTexts = ["생각 중", "필요한 정보 수집 중", "답변 생성 중"];
+    const loadingTexts = texts || defaultTexts;
+    const [loadingText, setLoadingText] = useState(loadingTexts[0]);
     let index = 0;
 
     useEffect(() => {
@@ -12,7 +13,7 @@ const LoadingComponent = () => {
         }, 3000);
 
         return () => clearInterval(intervalId);
-    }, []);
+    }, [loadingTexts]);
 
     return (
         <div className="loading" style={{ display: 'flex', flexDirection: "row", gap: '10px' }}>
