@@ -1,6 +1,7 @@
 :root {
   --background: #fff8f7;
   --text-color: #000000;
+  --text-color-transparent: rgba(0, 0, 0, 0.45);
   --card-background: #f5e8e8;
   --card-border: #e0e0e0;
   --button-background: #ffd2d2;
@@ -16,7 +17,8 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #211e1e;
-    --text-color: #e0e0e0;
+    --text-color: rgb(224, 224, 224);
+    --text-color-transparent: rgba(224, 244, 244, 0.45);
     --card-background: #3a3434;
     --card-border: #464646;
     --button-background: #72333c;
@@ -178,6 +180,53 @@ select {
   border-radius: 20px;
   padding: 0.5rem 1rem;
   height: 50px;
+}
+
+.shimmering {
+  color: var(--text-color-transparent);
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0) 40%, #aaaaaa 50%, rgba(255, 255, 255, 0) 60%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-background-size: 200% 100%;
+  background-size: 200% 100%;
+  -webkit-animation: shine 1.5s linear infinite;
+  animation: shine 1.5s linear infinite;
+}
+
+@keyframes shine {
+  0% {
+    -webkit-background-position: 100%;
+    background-position: 100%;
+  }
+
+  100% {
+    -webkit-background-position: -100%;
+    background-position: -100%;
+  }
+}
+
+.recommend-badge {
+  width: fit-content !important;
+  background-color: var(--card-background);
+  opacity: 0.9;
+  font-size: 14px;
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 4px 12px 4px 4px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.recommend-badge span {
+  width: 25px;
+  height: 25px;
+  font-size: 13px;
+  background: var(--background);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
 }
 
 .message {

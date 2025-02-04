@@ -192,39 +192,63 @@ export default function Home() {
                 <div className='messages-container' ref={scrollRef}>
                     {chat.length === 0 && (
                         <>
-                            <div>
+                            <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                                 <Spacer y={50} />
-                                <h2>궁금한 것을 물어보세요!</h2>
-                                <span style={{ opacity: .7 }}>KLAS와 학교 홈페이지에 있는 정보를 기반으로 답변해줄게요.</span>
+                                <h2>안녕! 저는 KLAS GPT예요.</h2>
+                                <span style={{ opacity: .6, fontSize: '14px', marginTop: '5px', textAlign: 'center', width: '90%', wordBreak: 'keep-all', overflowWrap: 'break-word' }}>무엇이든 물어보세요. KLAS와 학교 홈페이지에 있는 정보를 기반으로 답변해줄게요.</span>
                                 <Spacer y={20} />
-                                {randomSubjName && (
-                                    <>
-                                        <button onClick={() => setInput(`${randomSubjName} 출석 현황 알려줘`)} style={{ background: 'var(--card-background)', marginTop: '5px', display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                            <span style={{ width: '30px', height: '30px', background: 'var(--background)', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '50%' }}><IonIcon name="checkmark-outline" /></span>
-                                            <span style={{ width: 'calc(100% - 60px)' }}>{randomSubjName} 출석 현황 알려줘</span>
-                                        </button>
-                                        <button onClick={() => setInput(`${randomSubjName} 강의 공지사항 알려줘`)} style={{ background: 'var(--card-background)', marginTop: '5px', display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                            <span style={{ width: '30px', height: '30px', background: 'var(--background)', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '50%' }}><IonIcon name="notifications-outline" /></span>
-                                            <span style={{ width: 'calc(100% - 60px)' }}>{randomSubjName} 최근 공지사항 보여줘</span>
-                                        </button>
-                                        <button onClick={() => setInput(`${randomSubjName} 미제출 과제 있어?`)} style={{ background: 'var(--card-background)', marginTop: '5px', display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                            <span style={{ width: '30px', height: '30px', background: 'var(--background)', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '50%' }}><IonIcon name="documents-outline" /></span>
-                                            <span style={{ width: 'calc(100% - 60px)' }}>{randomSubjName} 미제출 과제 있어?</span>
-                                        </button>
-                                    </>
-                                )}
-                                <button onClick={() => setInput('최근 학교 공지사항 알려줘')} style={{ background: 'var(--card-background)', marginTop: '5px', display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                    <span style={{ width: '30px', height: '30px', background: 'var(--background)', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '50%' }}><IonIcon name="list-outline" /></span>
-                                    <span style={{ width: 'calc(100% - 60px)' }}>최근 학교 공지사항 알려줘</span>
-                                </button>
-                                <button onClick={() => setInput('오늘의 학식 메뉴')} style={{ background: 'var(--card-background)', marginTop: '5px', display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                    <span style={{ width: '30px', height: '30px', background: 'var(--background)', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '50%' }}><IonIcon name="fast-food-outline" /></span>
-                                    <span style={{ width: 'calc(100% - 60px)' }}>오늘 학식 메뉴 알려줘</span>
-                                </button>
-                                <button onClick={() => setInput(`${new Date().getMonth() + 1}월 학사일정`)} style={{ background: 'var(--card-background)', marginTop: '5px', display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                    <span style={{ width: '30px', height: '30px', background: 'var(--background)', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '50%' }}><IonIcon name="calendar-outline" /></span>
-                                    <span style={{ width: 'calc(100% - 60px)' }}>이번 달 학사일정 알려줘</span>
-                                </button>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'center' }}>
+                                    {randomSubjName && (
+                                        <>
+                                            <button
+                                                onClick={() => {
+                                                    const questions = ['출석 현황 알려줘', '강의 공지사항 알려줘', '미제출 과제 있어?'];
+                                                    const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+                                                    setInput(`${randomSubjName} ${randomQuestion}`);
+                                                }}
+                                                className='recommend-badge'>
+                                                <span><IonIcon name="checkmark-outline" /></span>
+                                                강의 정보 확인
+                                            </button>
+                                        </>
+                                    )}
+                                    <button
+                                        onClick={() => {
+                                            const questions = ['최근 학교 공지사항 정리해줘', '수강신청 관련 공지사항 찾아줘', '공지사항에 공모전 정보 올라온 거 있는지 확인해줘'];
+                                            const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+                                            setInput(randomQuestion);
+                                        }}
+                                        className='recommend-badge'>
+                                        <span><IonIcon name="notifications-outline" /></span>
+                                        학교 공지사항
+                                    </button>
+                                    <button
+                                        onClick={() => setInput('오늘의 학식 메뉴')}
+                                        className='recommend-badge'>
+                                        <span><IonIcon name="fast-food-outline" /></span>
+                                        학식 메뉴
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            const questions = [`${new Date().getMonth() + 1}월 학사일정 정리해줘`, '이번 학기 중간고사 기간 언제야?', '미제출 과제 있어?', '올해 월계 축전 언제해?'];
+                                            const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+                                            setInput(`${randomQuestion}`);
+                                        }}
+                                        className='recommend-badge'>
+                                        <span><IonIcon name="calendar-outline" /></span>
+                                        학사일정
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            const questions = ['학생증 재발급 비용 얼마야?', '우리 학교 총장에 대해서 알려줘', '인공지능융합대학에 대한 정보를 찾아서 요약해줘'];
+                                            const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+                                            setInput(`${randomQuestion}`);
+                                        }}
+                                        className='recommend-badge'>
+                                        <span><IonIcon name="school-outline" /></span>
+                                        학교 정보
+                                    </button>
+                                </div>
                                 <br />
                             </div>
                         </>
@@ -236,6 +260,7 @@ export default function Home() {
                                     <LoadingComponent />
                                 </div>
                             )}
+
                             {index === chat.length - 1 && isLoading && activeTools.length > 0 && (
                                 <div className="tools-status">
                                     <LoadingComponent />

@@ -138,7 +138,7 @@ Provide your response in the user's language, maintaining a natural conversation
     searchKWNoticeList: "학교 홈페이지에서 공지사항 검색",
     getSchedules: "학사 일정 조회",
     getHaksik: "학식 메뉴 조회",
-    getHomepageSitemap: "학교 홈페이지 사이트맵 조회",
+    getHomepageSitemap: "질문과 관련된 링크 찾기",
     getContentFromUrl: "URL 내용 확인",
   };
 
