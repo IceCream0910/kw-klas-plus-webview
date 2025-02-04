@@ -230,7 +230,7 @@ export default function Home() {
                                     </button>
                                     <button
                                         onClick={() => {
-                                            const questions = [`${new Date().getMonth() + 1}월 학사일정 정리해줘`, '이번 학기 중간고사 기간 언제야?', '미제출 과제 있어?', '올해 월계 축전 언제해?'];
+                                            const questions = [`${new Date().getMonth() + 1}월 학사일정 정리해줘`, '이번 학기 중간고사 기간 언제야?', '올해 월계 축전 언제해?'];
                                             const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
                                             setInput(`${randomQuestion}`);
                                         }}
