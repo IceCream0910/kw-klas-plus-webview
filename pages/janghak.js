@@ -43,7 +43,7 @@ const ScholarshipCard = ({ scholarship, isFocused }) => {
       <div>
         <Spacer y={20} />
         <h3>{scholarship?.janghakName || "장학금"}</h3>
-        <p style={{ fontSize: '13px', opacity: .8 }}>{scholarship?.yearHakgi?.split('-')[0]}년도 {scholarship?.grade || "?"}학년 {scholarship?.yearHakgi?.split('-')[1]}학기</p>
+        <p style={{ fontSize: '13px', opacity: .8 }}>{scholarship?.yearHakgi?.split('-')[0]}년도 {scholarship?.yearHakgi?.split('-')[1]}학기</p>
       </div>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -70,7 +70,7 @@ const ScholarshipListItem = ({ scholarship }) => {
       <div>
         <h3>{scholarship.janghakName}</h3>
         <p style={{ fontSize: '13px', opacity: .8 }}>
-          {scholarship.yearHakgi?.split('-')[0]}년도 {scholarship.grade}학년 {scholarship.yearHakgi?.split('-')[1]}학기
+          {scholarship.yearHakgi?.split('-')[0]}년도 {scholarship.yearHakgi?.split('-')[1]}학기
         </p>
       </div>
       <h3>₩{scholarship.janghakAmt?.toLocaleString()}</h3>
