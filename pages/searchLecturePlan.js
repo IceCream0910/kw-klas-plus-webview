@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import Spacer from './components/spacer';
 import IonIcon from '@reacticons/ionicons';
 import { useRouter } from 'next/router';
-import { KLAS } from './utils/klas';
-
+import { KLAS } from "../lib/klas";
 export default function LectureHome() {
     const router = useRouter();
     const [isValid, setIsValid] = useState(false);

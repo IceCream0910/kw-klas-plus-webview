@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import IonIcon from '@reacticons/ionicons';
 import Spacer from "./components/spacer";
-import { KLAS } from "./utils/klas";
+import { KLAS } from "../lib/klas";
 
 export default function BoardViewWrapper() {
   const router = useRouter();

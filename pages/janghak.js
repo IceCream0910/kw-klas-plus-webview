@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Spacer from "./components/spacer";
 import LoadingComponent from "./components/loader";
-import { KLAS } from "./utils/klas";
+import { KLAS } from "../lib/klas";
 
 const generateRandomColor = () => {
   const hue = Math.floor(Math.random() * 360);

@@ -6,8 +6,7 @@ import { BottomSheet } from 'react-spring-bottom-sheet';
 import 'react-spring-bottom-sheet/dist/style.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import IonIcon from '@reacticons/ionicons';
-import { KLAS } from './utils/klas';
-
+import { KLAS } from "../lib/klas";
 const localizer = momentLocalizer(moment);
 var yearHakgi;
 
