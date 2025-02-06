@@ -12,7 +12,7 @@
  * const response = await KLAS('https://klas.kw.ac.kr/endpoint', 'user의 sessionToken', { yearHakgi: '2025,1' });
  * ```
  */
-export function KLAS(url: string, token: string, body: any): Promise<any> {
+export default function KLAS(url: string, token: string, body: any): Promise<any> {
     if (!token || !url) {
         return Promise.reject(new Error('Missing required values'));
     }
