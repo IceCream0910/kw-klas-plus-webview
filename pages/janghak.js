@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Spacer from "./components/spacer";
 import LoadingComponent from "./components/loader";
+import { KLAS } from "./utils/klas";
 
 const generateRandomColor = () => {
   const hue = Math.floor(Math.random() * 360);
@@ -78,7 +79,7 @@ const ScholarshipListItem = ({ scholarship }) => {
   );
 };
 
-export default function Home() {
+export default function Janghak() {
   const [token, setToken] = useState("");
   const [janghak, setJanghak] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -93,7 +94,7 @@ export default function Home() {
     };
 
     try {
-      Android.completePageLoad();
+
     } catch (e) {
       console.log('not app');
     }
@@ -106,17 +107,12 @@ export default function Home() {
 
   useEffect(() => {
     if (!token) return;
-    fetch("/api/grade/janghak", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token }),
-    })
-      .then((response) => response.json())
+    KLAS("https://klas.kw.ac.kr/std/cps/inqire/JanghakHistoryStdList.do", token)
       .then((data) => {
         data.unshift(null);
         data.push(null);
         setJanghak(data);
-        setIsLoading(false); // mark as loaded
+        setIsLoading(false);
       })
       .catch(err => {
         console.error(err);

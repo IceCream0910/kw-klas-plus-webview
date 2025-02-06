@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Spacer from './components/spacer';
 import IonIcon from '@reacticons/ionicons';
+import { KLAS } from './utils/klas';
 
 export default function LectureHome() {
     const [data, setData] = useState(null);
@@ -14,14 +15,11 @@ export default function LectureHome() {
             fetchSubjectInfo(token, subj);
             fetchSubjectPlaceTime(token, subj, yearHakgi);
 
-            fetch("/api/lecture/lectureHome", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ token, subj, yearHakgi }),
+            KLAS("https://klas.kw.ac.kr/std/lis/evltn/LctrumHomeStdInfo.do", token, {
+                "selectYearhakgi": yearHakgi,
+                "selectSubj": subj,
+                "selectChangeYn": "Y"
             })
-                .then((response) => response.json())
                 .then((data) => {
                     console.log(data);
                     setData(data);
@@ -30,18 +28,11 @@ export default function LectureHome() {
                     console.error(error);
                 });
         };
-        Android.completePageLoad();
+
     }, []);
 
     const fetchSubjectInfo = (token, subj) => {
-        fetch("/api/stdList", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ token })
-        })
-            .then(response => response.json())
+        KLAS("https://klas.kw.ac.kr/std/cmn/frame/YearhakgiAtnlcSbjectList.do", token, {})
             .then(data => {
                 const subject = data.flatMap(semester => semester.subjList).find(subject => subject.value === subj);
                 setSubjectInfo(subject);
@@ -52,14 +43,10 @@ export default function LectureHome() {
     }
 
     const fetchSubjectPlaceTime = (token, subj, yearHakgi) => {
-        fetch("/api/lecture/lecturePlaceTime", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ token, subj, yearHakgi }),
+        KLAS("https://klas.kw.ac.kr/std/cmn/frame/LctrumSchdulInfo.do", token, {
+            "selectYearhakgi": yearHakgi,
+            "selectSubj": subj
         })
-            .then((response) => response.json())
             .then((data) => {
                 setSubjectPlaceTime(data);
             })

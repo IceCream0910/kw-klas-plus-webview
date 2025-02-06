@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import IonIcon from '@reacticons/ionicons';
 import Spacer from "./components/spacer";
+import { KLAS } from "./utils/klas";
 
 export default function BoardViewWrapper() {
   const router = useRouter();
@@ -25,7 +26,7 @@ function BoardView() {
       if (!token || !subj || !yearHakgi || !path) return;
       setRequestData({ path, token, subj, yearHakgi });
     };
-    Android.completePageLoad();
+
   }, []);
 
   useEffect(() => {
@@ -36,29 +37,18 @@ function BoardView() {
 
   useEffect(() => {
     if (!readyToFetch) return;
-
-    const fetchData = async () => {
-      try {
-        const response = await fetch("/api/board/boardView", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            path: requestData.path,
-            token: requestData.token,
-            subj: requestData.subj,
-            yearHakgi: requestData.yearHakgi,
-            boardNo,
-            masterNo,
-          }),
-        });
-
-        const result = await response.json();
-        setData(result);
-      } catch (error) {
-        console.error(error);
-      }
+    const fetchData = () => {
+      KLAS(`https://klas.kw.ac.kr/std/lis/sport/${requestData.path}/BoardStdView.do`, requestData.token, {
+        "cmd": "select",
+        "selectYearhakgi": requestData.yearHakgi,
+        "selectSubj": requestData.subj,
+        "selectChangeYn": "Y",
+        boardNo,
+        masterNo,
+        "storageId": "CLS_BOARD"
+      })
+        .then(result => setData(result))
+        .catch(error => console.error(error));
     };
 
     fetchData();
@@ -69,16 +59,12 @@ function BoardView() {
 
     const fetchAttachment = async (atchFileId) => {
       try {
-        const response = await fetch("/api/board/attachedFile", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ token: requestData.token, attachId: atchFileId }),
-        });
-
-        const result = await response.json();
-        setAttachment(result);
+        KLAS("https://klas.kw.ac.kr/common/file/UploadFileList.do", requestData.token, {
+          "attachId": atchFileId,
+          "storageId": "CLS_BOARD"
+        })
+          .then(result => setAttachment(result))
+          .catch(error => console.error(error));
       } catch (error) {
         console.error(error);
       }

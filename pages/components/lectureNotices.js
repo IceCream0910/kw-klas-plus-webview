@@ -11,7 +11,7 @@ const LectureNotices = ({ token }) => {
     const fetchNotices = async (fetchAll = false) => {
         setLoading(true);
         try {
-            const response = await fetch("/api/lecture/lectureNotice", {
+            const response = await fetch("/api/lectureNotice", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ token, all: fetchAll }),

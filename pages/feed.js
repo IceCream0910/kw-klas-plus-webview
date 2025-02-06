@@ -5,12 +5,12 @@ import AppVersion from './components/appVersion';
 import LectureNotices from './components/lectureNotices';
 import Spacer from './components/spacer';
 import toast, { Toaster } from 'react-hot-toast';
+import { KLAS } from './utils/klas';
 
-export default function Home() {
+export default function Feed() {
   const [yearHakgi, setYearHakgi] = useState(null);
   const [token, setToken] = useState(null);
   const [deadlines, setDeadlines] = useState([]);
-
   const [timetable, setTimetable] = useState(null);
   const [selectedSubj, setSelectedSubj] = useState(null);
   const [selectedSubjName, setSelectedSubjName] = useState(null);
@@ -22,6 +22,7 @@ export default function Home() {
   const [excludeNotStarted, setExcludeNotStarted] = useState(false);
   const [showToggle, setShowToggle] = useState(false);
   const [filteredDeadlines, setFilteredDeadlines] = useState(null);
+  const [advisor, setAdvisor] = useState(null);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -35,7 +36,7 @@ export default function Home() {
     fetchData();
 
     try {
-      Android.completePageLoad();
+
     } catch (e) {
       console.log('not app')
     }
@@ -46,6 +47,17 @@ export default function Home() {
       delete window.receiveTimetableData;
     }
   }, []);
+
+  useEffect(() => {
+    if (!token) return;
+    KLAS("https://klas.kw.ac.kr/std/cmn/frame/StdHome.do", token, { searchYearhakgi: yearHakgi })
+      .then((data) => {
+        setAdvisor(data.rspnsblProfsr);
+      })
+      .catch((error) => {
+        console.error('Error fetching advisor:', error);
+      });
+  }, [token]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -88,6 +100,7 @@ export default function Home() {
       console.error('Error fetching data:', error);
     }
   };
+
 
   const processDeadlineData = (data) => {
     const hasStartDate = data.some(item =>
@@ -404,6 +417,57 @@ export default function Home() {
           ))
         )}
       </div>
+      <Spacer y={40} />
+
+      <h3>책임지도교수</h3>
+      <Spacer y={15} />
+      {advisor ? (
+        <div className="card non-anim" style={{ paddingBottom: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
+            <span style={{ fontSize: '18px', fontWeight: 'bold' }}>{advisor.kname}</span>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {advisor.email && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <IonIcon name="mail-outline" style={{ opacity: 0.7 }} />
+                <a href={`mailto:${advisor.email}`} style={{ fontSize: '14.4px', textDecoration: 'none', color: 'inherit' }}>{advisor.email}</a>
+              </div>
+            )}
+
+            {advisor.telNum && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <IonIcon name="call-outline" style={{ opacity: 0.7 }} />
+                <a href={`tel:${advisor.telNum}`} style={{ fontSize: '14.4px', textDecoration: 'none', color: 'inherit' }}>{advisor.telNum}</a>
+              </div>
+            )}
+
+            {advisor.labLocation && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <IonIcon name="location-outline" style={{ opacity: 0.7 }} />
+                <span>{advisor.labLocation}</span>
+              </div>
+            )}
+
+            {advisor.counselTime && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <IonIcon name="time-outline" style={{ opacity: 0.7 }} />
+                <span>상담시간: {advisor.counselTime}</span>
+              </div>
+            )}
+
+            {advisor.homepage && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <IonIcon name="globe-outline" style={{ opacity: 0.7 }} />
+                <span onClick={() => Android.openPage(advisor.homepage)}>{advisor.homepage}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="skeleton" style={{ height: '150px', width: '100%' }} />
+      )}
+
       <br /> <br />
       <br />
     </div>

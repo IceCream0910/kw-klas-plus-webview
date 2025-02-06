@@ -6,6 +6,7 @@ import Spacer from "./components/spacer";
 import { BottomSheet } from 'react-spring-bottom-sheet';
 import 'react-spring-bottom-sheet/dist/style.css';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { KLAS } from "./utils/klas";
 
 export default function Home() {
   const [data, setData] = useState(null);
@@ -30,8 +31,6 @@ export default function Home() {
       setIsOpenSettingsModal(false);
     }
 
-    Android.completePageLoad();
-
     const savedHideGrades = localStorage.getItem('hideGrades');
     if (savedHideGrades !== null) {
       const parsedHideGrades = savedHideGrades === 'true';
@@ -55,14 +54,7 @@ export default function Home() {
   useEffect(() => {
     if (!token) return;
 
-    fetch("/api/profile", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ token }),
-    })
-      .then((response) => response.json())
+    KLAS("https://klas.kw.ac.kr/std/cps/inqire/AtnlcScreHakjukInfo.do", token)
       .then((data) => {
         setData(data);
       })
@@ -70,14 +62,7 @@ export default function Home() {
         console.error(error);
       });
 
-    fetch("/api/grade/grade", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ token }),
-    })
-      .then((response) => response.json())
+    KLAS("https://klas.kw.ac.kr/std/cps/inqire/AtnlcScreSungjukInfo.do", token)
       .then((data) => {
         setGrade(data);
       })
@@ -254,7 +239,7 @@ export default function Home() {
     {
       title: "KLAS+",
       items: [
-        { name: "서비스 공지사항", icon: "🔔", url: "https://blog.yuntae.in/3e1124b7-8f22-4c36-b0bb-9cb87a7e55de" },
+        { name: "서비스 공지사항", icon: "🔔", url: "https://klasplus-log.yuntae.in/widget" },
         { name: "자주 묻는 질문(FAQ)", icon: "❓", url: "https://blog.yuntae.in/23363fe4-f23d-4677-8f71-7f33e502b13a" },
         { name: "개인정보 처리방침", icon: "🔒", url: "https://blog.yuntae.in/11cfc9b9-3eca-8078-96a0-c41c4ca9cb8f" },
         { name: "오픈소스 라이선스", icon: "🔧", url: "https://blog.yuntae.in/11cfc9b9-3eca-802c-8c10-ebbccc3b2811" },

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Spacer from './components/spacer';
 import IonIcon from '@reacticons/ionicons';
 import { useRouter } from 'next/router';
+import { KLAS } from './utils/klas';
 
 export default function LectureHome() {
     const router = useRouter();
@@ -40,7 +41,7 @@ export default function LectureHome() {
             setHakgi(2);
         }
 
-        Android.completePageLoad();
+
     }, []);
 
     useEffect(() => {
@@ -52,33 +53,29 @@ export default function LectureHome() {
     }, [router.query]);
 
     const fetchGwamokList = async (currentToken) => {
-        const response = await fetch("/api/searchLecturePlan/gwamokList", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ token: currentToken }),
-        });
-        const data = await response.json();
-        setGwamokList(data);
+        KLAS("https://klas.kw.ac.kr/std/cps/atnlc/CmmnGamokList.do", currentToken, { "stopFlag": "" })
+            .then((data) => {
+                setGwamokList(data);
+            });
     };
 
     const fetchHakgwaList = async (currentToken) => {
-        const response = await fetch("/api/searchLecturePlan/hakgwaList", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ token: currentToken, year, hakgi }),
-        });
-        const data = await response.json();
-        setHakgwaList(data);
+        KLAS("https://klas.kw.ac.kr/std/cps/atnlc/CmmnHakgwaList.do", currentToken, {
+            "selectYear": year,
+            "selecthakgi": hakgi
+        })
+            .then((data) => {
+                setHakgwaList(data);
+            });
     };
 
     const fetchMajorList = async (hakgwa) => {
-        const response = await fetch("/api/searchLecturePlan/majorList", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ token, hakgwa }),
-        });
-        const data = await response.json();
-        setMajorList(data);
+        KLAS("https://klas.kw.ac.kr/std/cps/atnlc/CmmnMagerCodeList.do", token, {
+            selecthakgwa: hakgwa
+        })
+            .then((data) => {
+                setMajorList(data);
+            });
     };
 
     const handleGwamokChange = (value) => {
@@ -111,23 +108,22 @@ export default function LectureHome() {
             query: { result: 'true' }
         });
 
-        const response = await fetch("/api/searchLecturePlan/search", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                token,
-                year,
-                hakgi,
-                name,
-                professor,
-                gwamok: selectedGwamok,
-                hakgwa: selectedHakgwa,
-                major: selectedMajor,
-                isMy
-            }),
-        });
-        const responseData = await response.json();
-        setData(responseData);
+        KLAS("https://klas.kw.ac.kr/std/cps/atnlc/LectrePlanStdList.do", token, {
+            "selectYear": year,
+            "selecthakgi": hakgi,
+            "selectRadio": isMy ? "my" : "all",
+            "selectText": name,
+            "selectProfsr": professor,
+            "cmmnGamok": selectedGwamok,
+            "selecthakgwa": selectedHakgwa,
+            "selectMajor": selectedMajor
+        })
+            .then(responseData => {
+                setData(responseData);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
     };
 
     const openLecturePlan = (id) => () => {

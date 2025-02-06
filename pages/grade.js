@@ -5,9 +5,10 @@ import handleCalculateGPA, { calculateGPA } from "./utils/calculateGPA";
 import IonIcon from '@reacticons/ionicons';
 import { BottomSheet } from 'react-spring-bottom-sheet';
 import 'react-spring-bottom-sheet/dist/style.css'
+import { KLAS } from "./utils/klas";
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-export default function Home() {
+export default function Grade() {
   const [token, setToken] = useState("");
   const [grade, setGrade] = useState(null);
   const [synthesisGPAs, setSynthesisGPAs] = useState();
@@ -23,21 +24,12 @@ export default function Home() {
       if (!receivedToken) return;
       setToken(receivedToken);
     };
-
-    Android.completePageLoad();
     setPrefersDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
   }, [])
 
   useEffect(() => {
     if (!token) return;
-    fetch("/api/grade/grade", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ token }),
-    })
-      .then((response) => response.json())
+    KLAS("https://klas.kw.ac.kr/std/cps/inqire/AtnlcScreSungjukInfo.do", token)
       .then((data) => {
         setGrade(data);
       })
@@ -45,14 +37,7 @@ export default function Home() {
         console.error(error);
       });
 
-    fetch("/api/grade/totGrade", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ token }),
-    })
-      .then((response) => response.json())
+    KLAS("https://klas.kw.ac.kr/std/cps/inqire/AtnlcScreSungjukTot.do", token)
       .then((data) => {
         setTotGradeIncludeEmptyGrade(data);
       })

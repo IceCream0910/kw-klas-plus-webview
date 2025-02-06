@@ -40,7 +40,7 @@ export default function Settings() {
       setShowGrades(!parsedHideGrades);
     }
 
-    Android.completePageLoad();
+
   }, []);
 
 
@@ -93,7 +93,7 @@ export default function Settings() {
       <Spacer y={20} />
       <h3 style={{ margin: '10px' }}>링크</h3>
 
-      <button onClick={() => Android.openExternalLink("https://blog.yuntae.in/3e1124b7-8f22-4c36-b0bb-9cb87a7e55de")}>
+      <button onClick={() => Android.openExternalLink("https://klasplus-log.yuntae.in/widget")}>
         <span className="tossface">🔔</span>
         <span>공지사항</span>
       </button>

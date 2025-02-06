@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import IonIcon from '@reacticons/ionicons';
-import handleCalculateGPA, { calculateGPA } from "./utils/calculateGPA";
-import AppVersion from "./components/appVersion";
 import Spacer from "./components/spacer";
+import { KLAS } from "./utils/klas";
 
-export default function Home() {
+export default function Page() {
   const [list, setList] = useState(null);
   const [filteredList, setFilteredList] = useState(null);
   const [token, setToken] = useState(null);
@@ -16,14 +15,11 @@ export default function Home() {
     window.receivedData = function (token, subj, yearHakgi) {
       if (!token || !subj || !yearHakgi) return;
 
-      fetch("/api/lecture/onlineLectureList", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ token, subj, yearHakgi }),
+      KLAS("https://klas.kw.ac.kr/std/lis/evltn/SelectOnlineCntntsStdList.do", token, {
+        "selectYearhakgi": yearHakgi,
+        "selectSubj": subj,
+        "selectChangeYn": "Y"
       })
-        .then((response) => response.json())
         .then((data) => {
           setList(data);
         })
@@ -35,7 +31,7 @@ export default function Home() {
     const savedExcludeFinished = JSON.parse(localStorage.getItem('excludeFinished') || 'false');
     setExcludeFinished(savedExcludeFinished);
 
-    Android.completePageLoad();
+
   }, [])
 
 

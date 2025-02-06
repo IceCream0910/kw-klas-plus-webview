@@ -6,7 +6,7 @@ import { BottomSheet } from 'react-spring-bottom-sheet';
 import 'react-spring-bottom-sheet/dist/style.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import IonIcon from '@reacticons/ionicons';
-import { set } from 'zod';
+import { KLAS } from './utils/klas';
 
 const localizer = momentLocalizer(moment);
 var yearHakgi;
@@ -48,7 +48,7 @@ export default function CalendarPage() {
         const urlParams = new URLSearchParams(window.location.search);
         yearHakgi = urlParams.get('yearHakgi');
 
-        Android.completePageLoad();
+
     }, []);
 
     useEffect(() => {
@@ -88,27 +88,26 @@ export default function CalendarPage() {
         setSelectedDayEvents(filteredEvents);
     };
 
-    const fetchEvents = async () => {
-        const response = await fetch('/api/calendar/getSchedule', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                token,
-                start: currentMonth.clone().startOf('month').format('YYYY-MM-DD'),
-                end: currentMonth.clone().endOf('month').format('YYYY-MM-DD'),
-            }),
-        });
-        const data = await response.json();
-        const formattedEvents = data.map(event => ({
-            ...event,
-            start: event.typeNm === "과제"
-                ? moment(event.ended, "YYYYMMDDHHmm").startOf('day').toDate()
-                : moment(event.started, "YYYYMMDDHHmm").toDate(),
-            end: moment(event.ended, "YYYYMMDDHHmm").toDate(),
-            title: event.title.replace("[개인일정] ", "").replace("[학사일정] ", ""),
-            place: event.typeNm === "과제" ? `${event.subj}` : event.place
-        }));
-        setEvents(formattedEvents);
+    const fetchEvents = () => {
+        KLAS("https://klas.kw.ac.kr/std/ads/admst/MySchdulMonthTableList.do", token, {
+            start: currentMonth.clone().startOf('month').format('YYYY-MM-DD'),
+            end: currentMonth.clone().endOf('month').format('YYYY-MM-DD'),
+        })
+            .then(data => {
+                const formattedEvents = data.map(event => ({
+                    ...event,
+                    start: event.typeNm === "과제"
+                        ? moment(event.ended, "YYYYMMDDHHmm").startOf('day').toDate()
+                        : moment(event.started, "YYYYMMDDHHmm").toDate(),
+                    end: moment(event.ended, "YYYYMMDDHHmm").toDate(),
+                    title: event.title.replace("[개인일정] ", "").replace("[학사일정] ", ""),
+                    place: event.typeNm === "과제" ? `${event.subj}` : event.place
+                }));
+                setEvents(formattedEvents);
+            })
+            .catch(error => {
+                console.error('Error fetching events:', error);
+            });
     };
 
     const handleSelectSlot = (slotInfo) => {
@@ -148,16 +147,10 @@ export default function CalendarPage() {
             token: token
         };
 
-        const response = await fetch('/api/calendar/saveSchedule', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body),
-        });
-        if (response.ok) {
-            fetchEvents();
-            setIsModalOpen(false);
-            setIsAddingEvent(false);
-        }
+        await KLAS("https://klas.kw.ac.kr/std/ads/admst/MySchdulSave.do", token, body)
+        fetchEvents();
+        setIsModalOpen(false);
+        setIsAddingEvent(false);
     };
 
     const handleDeleteEvent = async (eventData) => {
@@ -185,15 +178,9 @@ export default function CalendarPage() {
         };
 
         if (confirm('정말 이 일정을 삭제할까요?')) {
-            const response = await fetch('/api/calendar/deleteSchedule', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body),
-            });
-            if (response.ok) {
-                fetchEvents();
-                setIsModalOpen(false);
-            }
+            await KLAS("https://klas.kw.ac.kr/std/ads/admst/MySchdulDelete.do", token, body)
+            fetchEvents();
+            setIsModalOpen(false);
         }
     };
 
@@ -459,14 +446,13 @@ function EventForm({ event, date, onSave, onDelete, onClose }) {
         <div style={styles.form}>
             <div style={{ maxHeight: '70dvh', overflow: 'scroll' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    {/* 제목 표시 부분 */}
                     {isEditingTitle ? (
                         <input
                             type="text"
                             value={title}
                             placeholder="제목 입력"
                             onChange={(e) => setTitle(e.target.value)}
-                            onBlur={handleTitleBlur}  // 포커스를 잃으면 blur 이벤트 발생
+                            onBlur={handleTitleBlur}
                             autoFocus
                             style={styles.titleInput}
                         />

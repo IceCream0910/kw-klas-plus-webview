@@ -5,7 +5,7 @@ import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, BarElement, Title, Tooltip, Legend } from 'chart.js';
 ChartJS.register(CategoryScale, LinearScale, PointElement, BarElement, Title, Tooltip, Legend);
 
-export default function LectureHome() {
+export default function LecturePlan() {
     const [data, setData] = useState(null);
     const [subjId, setSubjId] = useState(null);
 
@@ -13,7 +13,7 @@ export default function LectureHome() {
         window.receivedData = function (token, subj) {
             if (!token || !subj) return;
             setSubjId(subj);
-            fetch("/api/lecture/lecturePlan", {
+            fetch("/api/lecturePlan", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -29,7 +29,7 @@ export default function LectureHome() {
                 });
         };
 
-        Android.completePageLoad();
+
     }, [])
 
 

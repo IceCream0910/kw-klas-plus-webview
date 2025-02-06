@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import IonIcon from '@reacticons/ionicons';
 import Spacer from "./components/spacer";
+import { KLAS } from "./utils/klas";
 
 export default function BoardList() {
   const router = useRouter();
@@ -19,14 +20,12 @@ export default function BoardList() {
       if (!token || !subj || !yearHakgi || !path) return;
       setRequestData({ path, token, subj, yearHakgi });
 
-      fetch("/api/board/boardList", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ path, token, subj, yearHakgi, page }),
+      KLAS(`https://klas.kw.ac.kr/std/lis/sport/${path}/BoardStdList.do`, token, {
+        "selectYearhakgi": yearHakgi,
+        "selectSubj": subj,
+        "selectChangeYn": "Y",
+        "currentPage": 0
       })
-        .then((response) => response.json())
         .then((data) => {
           setList(data.list);
           setTotalPages(data.page.totalPages);
@@ -35,7 +34,7 @@ export default function BoardList() {
           console.error(error);
         });
     };
-    Android.completePageLoad();
+
   }, []);
 
 
@@ -47,14 +46,12 @@ export default function BoardList() {
       console.log(requestData);
       if (!requestData.path || !requestData.token || !requestData.subj || !requestData.yearHakgi) return;
 
-      fetch("/api/board/boardList", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ path: requestData.path, token: requestData.token, subj: requestData.subj, yearHakgi: requestData.yearHakgi, page }),
+      KLAS(`https://klas.kw.ac.kr/std/lis/sport/${requestData.path}/BoardStdList.do`, requestData.token, {
+        "selectYearhakgi": requestData.yearHakgi,
+        "selectSubj": requestData.subj,
+        "selectChangeYn": "Y",
+        "currentPage": page
       })
-        .then((response) => response.json())
         .then((data) => {
           setList(data.list);
           setTotalPages(data.page.totalPages);

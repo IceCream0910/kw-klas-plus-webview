@@ -6,7 +6,7 @@ import LoadingComponent from './components/loader';
 import Spacer from './components/spacer';
 import remarkGfm from 'remark-gfm'
 
-export default function Home() {
+export default function AI() {
     const [subjList, setSubjList] = useState(null);
     const [input, setInput] = useState('');
     const [token, setToken] = useState("");
@@ -44,7 +44,7 @@ export default function Home() {
         };
 
         try {
-            Android.completePageLoad();
+
         } catch (error) {
             console.log("not app");
         }
