@@ -27,6 +27,8 @@ function BoardView() {
       setRequestData({ path, token, subj, yearHakgi });
     };
 
+Android.completePageLoad();
+
   }, []);
 
   useEffect(() => {
