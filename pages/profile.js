@@ -443,7 +443,7 @@ export default function Home() {
               style={{
                 width: '80%',
                 maxWidth: '400px',
-                height: '60vh',
+                height: '70vh',
                 maxHeight: '600px',
                 background: 'var(--card-background)',
                 borderRadius: '15px',
