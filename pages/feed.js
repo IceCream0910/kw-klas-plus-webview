@@ -417,12 +417,51 @@ export default function Feed() {
           ))
         )}
       </div>
-      <Spacer y={40} />
 
+      <Spacer y={40} />
       <h3>책임지도교수</h3>
       <Spacer y={15} />
-      {advisor && advisor.kname}
-
+      {advisor ? (
+        <div className="card non-anim" style={{ paddingBottom: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
+            <span style={{ fontSize: '18px', fontWeight: 'bold' }}>{advisor.kname}</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {advisor.email && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <IonIcon name="mail-outline" style={{ opacity: 0.7 }} />
+                <a href={`mailto:${advisor.email}`} style={{ fontSize: '14.4px', textDecoration: 'none', color: 'inherit' }}>{advisor.email}</a>
+              </div>
+            )}
+            {advisor.telNum && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <IonIcon name="call-outline" style={{ opacity: 0.7 }} />
+                <a href={`tel:${advisor.telNum}`} style={{ fontSize: '14.4px', textDecoration: 'none', color: 'inherit' }}>{advisor.telNum}</a>
+              </div>
+            )}
+            {advisor.labLocation && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <IonIcon name="location-outline" style={{ opacity: 0.7 }} />
+                <span>{advisor.labLocation}</span>
+              </div>
+            )}
+            {advisor.counselTime && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <IonIcon name="time-outline" style={{ opacity: 0.7 }} />
+                <span>상담시간: {advisor.counselTime}</span>
+              </div>
+            )}
+            {advisor.homepage && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <IonIcon name="globe-outline" style={{ opacity: 0.7 }} />
+                <span onClick={() => Android.openPage(advisor.homepage)}>{advisor.homepage}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="skeleton" style={{ height: '150px', width: '100%' }} />
+      )}
       <br /> <br />
       <br />
     </div>
