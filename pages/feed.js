@@ -5,7 +5,7 @@ import AppVersion from './components/appVersion';
 import LectureNotices from './components/lectureNotices';
 import Spacer from './components/spacer';
 import toast, { Toaster } from 'react-hot-toast';
-import { KLAS } from './utils/klas';
+import { KLAS } from '../lib/klas';
 
 export default function Feed() {
   const [yearHakgi, setYearHakgi] = useState(null);
