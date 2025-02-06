@@ -430,13 +430,13 @@ export default function Feed() {
             {advisor.email && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <IonIcon name="mail-outline" style={{ opacity: 0.7 }} />
-                <a href={`mailto:${advisor.email}`} style={{ fontSize: '14.4px', textDecoration: 'none', color: 'inherit' }}>{advisor.email}</a>
+                <a style={{ fontSize: '14.4px', textDecoration: 'none', color: 'inherit' }}>{advisor.email}</a>
               </div>
             )}
             {advisor.telNum && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <IonIcon name="call-outline" style={{ opacity: 0.7 }} />
-                <a href={`tel:${advisor.telNum}`} style={{ fontSize: '14.4px', textDecoration: 'none', color: 'inherit' }}>{advisor.telNum}</a>
+                <a style={{ fontSize: '14.4px', textDecoration: 'none', color: 'inherit' }}>{advisor.telNum}</a>
               </div>
             )}
             {advisor.labLocation && (

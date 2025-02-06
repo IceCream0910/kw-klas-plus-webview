@@ -106,13 +106,6 @@ export default function Home() {
     } catch (e) { }
   }, [isOpenSettingsModal]);
 
-  useEffect(() => {
-    try {
-      if (isCardOpen) Android.openWebViewBottomSheet()
-      else Android.closeWebViewBottomSheet()
-    } catch (e) { }
-  }, [isCardOpen]);
-
   const handleGradeClick = () => {
     if (hideGrades) {
       setShowGrades(true);
@@ -326,14 +319,9 @@ export default function Home() {
           </>
             :
             <>
-              <div className="skeleton" style={{ height: '30px', width: '30%' }} />
-              <div className="skeleton" style={{ height: '20px', width: '80%' }} />
+              <div className="skeleton" style={{ height: '25px', width: '30%' }} />
+              <div className="skeleton" style={{ height: '15px', width: '80%' }} />
               <div className="skeleton" style={{ height: '10px', width: '60%' }} />
-              <button onClick={() => Android.openLibraryQR()}
-                style={{ background: 'var(--notice-hover)', borderRadius: '10px' }}>
-                <span className="tossface">🪪</span>모바일 학생증
-                <IonIcon name="chevron-forward-outline" style={{ position: 'relative', top: '2px' }} />
-              </button>
               <div style={{ marginTop: '15px', display: 'flex', justifyContent: 'center', width: '100%', gap: '20px' }}>
                 <div className="skeleton" style={{ height: '40px', width: '33%' }} />
                 <div className="skeleton" style={{ height: '40px', width: '33%' }} />
