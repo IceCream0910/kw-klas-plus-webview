@@ -6,7 +6,7 @@ function MyApp({ Component, pageProps }) {
     try {
       Android.completePageLoad();
     } catch (error) {
-      console.log("not app");
+      window.location.replace("https://play.google.com/store/apps/details?id=com.icecream.kwklasplus");
     }
   }, []);
 

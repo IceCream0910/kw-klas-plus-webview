@@ -106,6 +106,13 @@ export default function Home() {
     } catch (e) { }
   }, [isOpenSettingsModal]);
 
+  useEffect(() => {
+    try {
+      if (isCardOpen) Android.openWebViewBottomSheet()
+      else Android.closeWebViewBottomSheet()
+    } catch (e) { }
+  }, [isCardOpen]);
+
   const handleGradeClick = () => {
     if (hideGrades) {
       setShowGrades(true);
@@ -443,7 +450,7 @@ export default function Home() {
               style={{
                 width: '80%',
                 maxWidth: '400px',
-                height: '70vh',
+                height: '65vh',
                 maxHeight: '600px',
                 background: 'var(--card-background)',
                 borderRadius: '15px',

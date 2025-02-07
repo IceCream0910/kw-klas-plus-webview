@@ -35,6 +35,7 @@ export default function BoardList() {
         });
     };
 
+    Android.completePageLoad();
   }, []);
 
 
