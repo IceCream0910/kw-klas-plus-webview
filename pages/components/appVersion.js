@@ -22,7 +22,7 @@ const AppVersion = ({ updater }) => {
             {updater ?
                 <>
                     {version != process.env.NEXT_PUBLIC_ANDROID_LATEST_VERSION && <>
-                        <div className="card" style={{ paddingTop: '1em', paddingBottom: '0.1em', marginBottom: '30px' }} onClick={() => {
+                        <div className="card" style={{ padding: '15px 15px 0px 15px', marginBottom: '40px', borderRadius: '15px' }} onClick={() => {
                             try {
                                 Android.openExternalPage("https://play.google.com/store/apps/details?id=com.icecream.kwklasplus")
                             } catch (e) {
@@ -30,9 +30,9 @@ const AppVersion = ({ updater }) => {
                             }
                         }}>
                             <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignContent: 'center' }}>
-                                <b style={{ fontSize: '15px' }}>새로운 앱 업데이트가 있어요!</b>
+                                <b style={{ fontSize: '14px' }}>새로운 앱 업데이트가 있어요!</b>
                                 <div style={{ position: 'relative', top: '-8px', right: '-5px' }}>
-                                    <button style={{ width: 'fit-content', background: 'var(--background)', fontSize: '12px', padding: '8px 10px' }}
+                                    <button style={{ width: 'fit-content', background: 'var(--background)', fontSize: '11px', padding: '8px 10px' }}
                                     >업데이트</button>
                                 </div>
                             </div>

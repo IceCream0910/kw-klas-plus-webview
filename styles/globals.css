@@ -693,3 +693,16 @@ input[type="datetime-local"] {
   word-break: break-word;
   overflow-wrap: break-word;
 }
+
+.kakao_ad_area {
+  min-width: 50px !important;
+}
+
+.kakao_ad_area>div {
+  min-width: 50px !important;
+}
+
+.kakao_ad_area>div iframe {
+  border-radius: 15px !important;
+  min-width: 50px !important;
+}

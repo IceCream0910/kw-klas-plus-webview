@@ -35,12 +35,6 @@ export default function Feed() {
     setupWindowFunctions(savedExcludeNotStarted);
     fetchData();
 
-    try {
-
-    } catch (e) {
-      console.log('not app')
-    }
-
     return () => {
       delete window.receiveDeadlineData;
       delete window.receiveNoticeData;
@@ -294,7 +288,7 @@ export default function Feed() {
 
       <AppVersion updater={true} />
 
-      <h3><span className='tossface' style={{ position: 'relative', top: '2px' }}>⏰</span> 잊지 말고 챙겨볼까요?
+      <h3 style={{ margin: 'auto 10px' }}><span className='tossface' style={{ position: 'relative', top: '2px' }}>⏰</span> 잊지 말고 챙겨볼까요?
 
         <button type="button" onClick={() => {
           try {
@@ -366,9 +360,36 @@ export default function Feed() {
       </div>
 
       <LectureNotices token={token} />
-      <Spacer y={40} />
 
-      <h3>
+      {process.env.NEXT_PUBLIC_NOTICE_TEXT && (<>
+        <Spacer y={20} />
+
+        <div className="card" style={{ padding: '15px', marginBottom: '40px', borderRadius: '15px' }} onClick={() => {
+          try {
+            Android.openExternalPage("https://klasplus-log.yuntae.in/widget")
+          } catch (e) {
+            toast('앱을 최신버전으로 업데이트 해주세요.');
+          }
+        }}><div style={{ width: '100%', display: 'flex', alignContent: 'center', gap: '5px' }}>
+            <IonIcon name="notifications" style={{ opacity: .7 }} />
+            <b style={{ fontSize: '14px', position: 'relative', top: '1px' }}>{process.env.NEXT_PUBLIC_NOTICE_TEXT}</b>
+            <IonIcon name="chevron-forward-outline" />
+          </div>
+        </div>
+      </>
+      )}
+
+
+      <Spacer y={40} />
+      <div className='adfit' style={{ marginBottom: '40px' }} >
+        <ins class="kakao_ad_area" style={{ display: "none" }}
+          data-ad-unit="DAN-MlQ4i2b2KsKLj9hy"
+          data-ad-width="320"
+          data-ad-height="100"></ins>
+      </div>
+
+
+      <h3 style={{ margin: 'auto 10px' }}>
         오늘의 학식
         <button onClick={() => Android.openPage('https://www.kw.ac.kr/ko/life/facility11.jsp')} style={{ float: "right", width: 'fit-content', marginTop: '-5px' }}>
           <IonIcon name='add-outline' />
@@ -389,7 +410,7 @@ export default function Feed() {
       </div>
       <Spacer y={40} />
 
-      <h3>
+      <h3 style={{ margin: 'auto 10px' }}>
         학사 공지사항
         <button onClick={() => Android.openPage('https://www.kw.ac.kr/ko/life/notice.jsp?srCategoryId=1')} style={{ float: "right", width: 'fit-content', marginTop: '-5px' }}>
           <IonIcon name='add-outline' />
@@ -419,7 +440,7 @@ export default function Feed() {
       </div>
 
       <Spacer y={40} />
-      <h3>책임지도교수</h3>
+      <h3 style={{ margin: 'auto 10px' }}>책임지도교수</h3>
       <Spacer y={15} />
       {advisor ? (
         <div className="card non-anim" style={{ paddingBottom: '20px' }}>

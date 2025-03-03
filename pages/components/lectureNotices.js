@@ -66,7 +66,7 @@ const LectureNotices = ({ token }) => {
         <>
             <div id="notices-section" />
             <Spacer y={40} />
-            <h3>강의 알림</h3>
+            <h3 style={{ margin: 'auto 10px' }}>강의 알림</h3>
             <Spacer y={15} />
             <div className="card non-anim" style={{ paddingBottom: '20px' }}>
                 {notices && expanded ? (
