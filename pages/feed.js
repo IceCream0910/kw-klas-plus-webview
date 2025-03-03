@@ -46,11 +46,10 @@ export default function Feed() {
       scr.src = "https://t1.daumcdn.net/kas/static/ba.min.js";
       ins.setAttribute("data-ad-width", "320");
       ins.setAttribute("data-ad-height", "100");
-      ins.setAttribute("data-ad-unit", "DAN-JYhTpU5uhgBKs7yD");
+      ins.setAttribute("data-ad-unit", "DAN-MlQ4i2b2KsKLj9hy");
       document.querySelector(".adfit1")?.appendChild(ins);
       document.querySelector(".adfit1")?.appendChild(scr);
     }
-
 
     return () => {
       delete window.receiveDeadlineData;
@@ -396,7 +395,21 @@ export default function Feed() {
       </>
       )}
 
-      <div className='adfit1' style={{ margin: '20px 0' }} />
+      <div className='adfit1' style={{ margin: '20px 0', position: 'relative' }}>
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            zIndex: 10,
+            backgroundColor: 'transparent'
+          }}
+          onClick={(e) => e.preventDefault()}
+        />
+      </div>
+
       <Spacer y={30} />
 
       <h3 style={{ margin: 'auto 10px' }}>
