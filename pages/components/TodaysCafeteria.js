@@ -32,8 +32,8 @@ const TodaysCafeteriaMenu = ({ weeklyMenu }) => {
 
   return (
     <div>
-      {Object.entries(menu).map(([section, items]) => (
-        <div style={{ marginBottom: '30px', lineHeight: '0.2' }}>
+      {Object.entries(menu).map(([section, items], key) => (
+        <div key={key} style={{ marginBottom: '30px', lineHeight: '0.2' }}>
           <h5 style={{ marginBottom: '20px' }}>{section}</h5>
           {items.map((item, index) => (
             <p style={{ fontSize: '15px', opacity: .8 }} key={index}>{item}</p>

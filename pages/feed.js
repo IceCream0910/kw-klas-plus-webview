@@ -35,6 +35,23 @@ export default function Feed() {
     setupWindowFunctions(savedExcludeNotStarted);
     fetchData();
 
+    if (!document.querySelector(".adfit1")?.querySelector("ins")) {
+      const ins = document.createElement("ins");
+      const scr = document.createElement("script");
+      ins.className = "kakao_ad_area";
+      ins.style.display = "none";
+      ins.style.width = "100%";
+      scr.async = true;
+      scr.type = "text/javascript";
+      scr.src = "https://t1.daumcdn.net/kas/static/ba.min.js";
+      ins.setAttribute("data-ad-width", "320");
+      ins.setAttribute("data-ad-height", "100");
+      ins.setAttribute("data-ad-unit", "DAN-JYhTpU5uhgBKs7yD");
+      document.querySelector(".adfit1")?.appendChild(ins);
+      document.querySelector(".adfit1")?.appendChild(scr);
+    }
+
+
     return () => {
       delete window.receiveDeadlineData;
       delete window.receiveNoticeData;
@@ -288,7 +305,7 @@ export default function Feed() {
 
       <AppVersion updater={true} />
 
-      <h3 style={{ margin: 'auto 10px' }}><span className='tossface' style={{ position: 'relative', top: '2px' }}>⏰</span> 잊지 말고 챙겨볼까요?
+      <h3><span className='tossface' style={{ position: 'relative', top: '2px' }}>⏰</span> 잊지 말고 챙겨볼까요?
 
         <button type="button" onClick={() => {
           try {
@@ -364,7 +381,7 @@ export default function Feed() {
       {process.env.NEXT_PUBLIC_NOTICE_TEXT && (<>
         <Spacer y={20} />
 
-        <div className="card" style={{ padding: '15px', marginBottom: '40px', borderRadius: '15px' }} onClick={() => {
+        <div className="card" style={{ padding: '15px', borderRadius: '15px' }} onClick={() => {
           try {
             Android.openExternalPage("https://klasplus-log.yuntae.in/widget")
           } catch (e) {
@@ -379,15 +396,8 @@ export default function Feed() {
       </>
       )}
 
-
-      <Spacer y={40} />
-      <div className='adfit' style={{ marginBottom: '40px' }} >
-        <ins class="kakao_ad_area" style={{ display: "none" }}
-          data-ad-unit="DAN-MlQ4i2b2KsKLj9hy"
-          data-ad-width="320"
-          data-ad-height="100"></ins>
-      </div>
-
+      <div className='adfit1' style={{ margin: '20px 0' }} />
+      <Spacer y={30} />
 
       <h3 style={{ margin: 'auto 10px' }}>
         오늘의 학식

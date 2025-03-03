@@ -43,7 +43,7 @@ const LectureNotices = ({ token }) => {
         return (
             <>
                 <Spacer y={40} />
-                <h3>강의 알림</h3>
+                <h3 style={{ margin: 'auto 10px' }}>강의 알림</h3>
                 <Spacer y={15} />
                 <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
                     <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', justifyContent: 'center', marginTop: '10px', opacity: '.3' }}>

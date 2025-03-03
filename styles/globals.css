@@ -694,11 +694,14 @@ input[type="datetime-local"] {
   overflow-wrap: break-word;
 }
 
+
 .kakao_ad_area {
+  box-sizing: border-box;
   min-width: 50px !important;
 }
 
 .kakao_ad_area>div {
+  width: 100% !important;
   min-width: 50px !important;
 }
 
