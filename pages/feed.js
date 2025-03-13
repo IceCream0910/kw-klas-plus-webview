@@ -4,6 +4,7 @@ import IonIcon from '@reacticons/ionicons';
 import AppVersion from './components/appVersion';
 import LectureNotices from './components/lectureNotices';
 import Spacer from './components/spacer';
+import Adfit from './components/adfit';
 import toast, { Toaster } from 'react-hot-toast';
 import { KLAS } from '../lib/klas';
 
@@ -34,22 +35,6 @@ export default function Feed() {
 
     setupWindowFunctions(savedExcludeNotStarted);
     fetchData();
-
-    if (!document.querySelector(".adfit1")?.querySelector("ins")) {
-      const ins = document.createElement("ins");
-      const scr = document.createElement("script");
-      ins.className = "kakao_ad_area";
-      ins.style.display = "none";
-      ins.style.width = "100%";
-      scr.async = true;
-      scr.type = "text/javascript";
-      scr.src = "https://t1.daumcdn.net/kas/static/ba.min.js";
-      ins.setAttribute("data-ad-width", "320");
-      ins.setAttribute("data-ad-height", "100");
-      ins.setAttribute("data-ad-unit", "DAN-MlQ4i2b2KsKLj9hy");
-      document.querySelector(".adfit1")?.appendChild(ins);
-      document.querySelector(".adfit1")?.appendChild(scr);
-    }
 
     return () => {
       delete window.receiveDeadlineData;
@@ -104,7 +89,7 @@ export default function Feed() {
         fetch("/api/crawler/kwNotice").then(res => res.json())
       ]);
 
-      setCafeteria(cafeteriaData.weeklyMenu);
+      setCafeteria(cafeteriaData);
       setKWNotice(kwNoticeData);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -284,7 +269,7 @@ export default function Feed() {
         <div id="current_status">
 
           <h4 id="status_txt" dangerouslySetInnerHTML={{ __html: statusText }}></h4>
-          {showButtons && (
+          {!showButtons && (
             <div id="status_btns">
               <button id="qr_btn" onClick={openLecturePage} style={{ backgroundColor: 'var(--button-background)', color: 'var(--button-text)', width: 'fit-content', padding: '10px 15px', fontSize: '15px' }}>강의 홈</button>
               <button id="qr_btn" onClick={openQRScan} style={{ backgroundColor: 'var(--card-background)', color: 'var(--text-color)', marginLeft: '10px', width: 'fit-content', padding: '10px 15px', fontSize: '15px' }}>
@@ -300,7 +285,27 @@ export default function Feed() {
         </div>
       )}
 
-      <Spacer y={40} />
+      <Spacer y={20} />
+
+
+      {process.env.NEXT_PUBLIC_NOTICE_TEXT && (<>
+
+        <div className="card" style={{ padding: '15px', borderRadius: '15px' }} onClick={() => {
+          try {
+            Android.openExternalPage("https://klasplus-log.yuntae.in/widget")
+          } catch (e) {
+            toast('앱을 최신버전으로 업데이트 해주세요.');
+          }
+        }}><div style={{ width: '100%', display: 'flex', alignContent: 'center', gap: '5px' }}>
+            <IonIcon name="notifications" style={{ opacity: .7 }} />
+            <b style={{ fontSize: '14px', position: 'relative', top: '1px' }}>{process.env.NEXT_PUBLIC_NOTICE_TEXT}</b>
+            <IonIcon name="chevron-forward-outline" />
+          </div>
+        </div>
+
+        <Spacer y={20} />
+      </>
+      )}
 
       <AppVersion updater={true} />
 
@@ -377,38 +382,7 @@ export default function Feed() {
 
       <LectureNotices token={token} />
 
-      {process.env.NEXT_PUBLIC_NOTICE_TEXT && (<>
-        <Spacer y={20} />
-
-        <div className="card" style={{ padding: '15px', borderRadius: '15px' }} onClick={() => {
-          try {
-            Android.openExternalPage("https://klasplus-log.yuntae.in/widget")
-          } catch (e) {
-            toast('앱을 최신버전으로 업데이트 해주세요.');
-          }
-        }}><div style={{ width: '100%', display: 'flex', alignContent: 'center', gap: '5px' }}>
-            <IonIcon name="notifications" style={{ opacity: .7 }} />
-            <b style={{ fontSize: '14px', position: 'relative', top: '1px' }}>{process.env.NEXT_PUBLIC_NOTICE_TEXT}</b>
-            <IonIcon name="chevron-forward-outline" />
-          </div>
-        </div>
-      </>
-      )}
-
-      <div className='adfit1' style={{ margin: '20px 0', position: 'relative' }}>
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            zIndex: 10,
-            backgroundColor: 'transparent'
-          }}
-          onClick={(e) => e.preventDefault()}
-        />
-      </div>
+      <Adfit />
 
       <Spacer y={30} />
 
@@ -428,7 +402,7 @@ export default function Feed() {
             <div className="skeleton" style={{ height: '20px', width: '70%', marginBottom: '20px' }} />
           </>
         ) : (
-          <TodaysCafeteriaMenu weeklyMenu={cafeteria} />
+          <TodaysCafeteriaMenu data={cafeteria} />
         )}
       </div>
       <Spacer y={40} />

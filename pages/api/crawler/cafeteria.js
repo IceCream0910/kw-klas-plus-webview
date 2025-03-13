@@ -27,32 +27,52 @@ async function getHaksik() {
         const table = root.querySelector('table.tbl-list');
 
         if (table) {
+            // Get days and dates from the header
             const headers = table.querySelectorAll('thead th');
-            const menuRow = table.querySelector('tbody tr');
-
-            const weeklyMenu = [];
+            const days = [];
 
             headers.forEach((header, index) => {
-                if (index === 0) return;
+                if (index === 0) return; // Skip the first header (구분)
 
                 const day = header.querySelector('.nowDay')?.text.trim();
                 const date = header.querySelector('.nowDate')?.text.trim();
-                const menu = menuRow.querySelectorAll('td')[index].querySelector('pre')?.text.trim();
+                days.push({ day, date });
+            });
 
-                weeklyMenu.push({
-                    day,
-                    date,
-                    menu
+            // Process each restaurant row
+            const menuRows = table.querySelectorAll('tbody tr');
+            const restaurants = [];
+
+            menuRows.forEach(row => {
+                const restaurantInfo = row.querySelector('td');
+                const restaurantName = restaurantInfo.querySelector('.dietTitle')?.text.trim();
+                const price = restaurantInfo.querySelector('.dietPrice')?.text.trim();
+                const time = restaurantInfo.querySelector('.dietTime')?.text.trim();
+
+                const weeklyMenu = [];
+
+                // Get menu for each day
+                const menuCells = row.querySelectorAll('td');
+                for (let i = 1; i < menuCells.length; i++) {
+                    const menu = menuCells[i].querySelector('pre')?.text.trim();
+                    weeklyMenu.push({
+                        day: days[i - 1].day,
+                        date: days[i - 1].date,
+                        menu
+                    });
+                }
+
+                restaurants.push({
+                    name: restaurantName,
+                    price,
+                    time,
+                    weeklyMenu
                 });
             });
 
-            const restaurantInfo = menuRow.querySelector('td');
-            const restaurantName = restaurantInfo.querySelector('.dietTitle')?.text.trim();
-            const price = restaurantInfo.querySelector('.dietPrice')?.text.trim();
-            const time = restaurantInfo.querySelector('.dietTime')?.text.trim();
-
             return {
-                weeklyMenu
+                restaurants,
+                weeklyMenu: restaurants[0]?.weeklyMenu || [] // Keep backward compatibility
             };
         } else {
             console.log('식단표를 찾을 수 없습니다.');

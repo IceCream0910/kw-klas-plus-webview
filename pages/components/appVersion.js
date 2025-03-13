@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
+import Spacer from './spacer';
 
 const AppVersion = ({ updater }) => {
     const [version, setVersion] = useState("");
@@ -21,7 +22,7 @@ const AppVersion = ({ updater }) => {
             />
             {updater ?
                 <>
-                    {version != process.env.NEXT_PUBLIC_ANDROID_LATEST_VERSION && <>
+                    {version != process.env.NEXT_PUBLIC_ANDROID_LATEST_VERSION ? <>
                         <div className="card" style={{ padding: '15px 15px 0px 15px', marginBottom: '40px', borderRadius: '15px' }} onClick={() => {
                             try {
                                 Android.openExternalPage("https://play.google.com/store/apps/details?id=com.icecream.kwklasplus")
@@ -38,7 +39,7 @@ const AppVersion = ({ updater }) => {
                             </div>
                         </div>
                     </>
-                    }
+                        : <Spacer y={20} />}
                 </>
                 :
                 <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%', fontSize: '13px', opacity: .5 }} >

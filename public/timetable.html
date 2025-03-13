@@ -123,6 +123,7 @@
         var timetableData;
         function receiveTimetableData(data) {
             timetableData = JSON.parse(data);
+            console.log(timetableData);
             createTimetable();
         }
 
@@ -237,7 +238,6 @@
                 console.log(`Clicked: ${title} (${info})`);
             }
         }
-
     </script>
 </body>
 
