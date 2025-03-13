@@ -181,6 +181,7 @@
             Object.values(timetableData).flat().forEach(classItem => {
                 const startHour = parseInt(classItem.startTime.split(':')[0]);
                 const endHour = parseInt(classItem.endTime.split(':')[0]);
+                if (startHour === 0 && endHour === 0) return;
                 minStartHour = Math.min(minStartHour, startHour);
                 maxEndHour = Math.max(maxEndHour, endHour);
             });
@@ -238,6 +239,10 @@
                 console.log(`Clicked: ${title} (${info})`);
             }
         }
+
+        receiveTimetableData(`
+        {"U202413095I000051":[{"title":"융합적사고와글쓰기","day":0,"startTime":"15:0","endTime":"16:15","info":"비402\/정재훈","subj":"U202413095I000051"},{"title":"융합적사고와글쓰기","day":2,"startTime":"16:30","endTime":"17:45","info":"비402\/정재훈","subj":"U202413095I000051"}],"U2024129910000022":[{"title":"자연과학사","day":0,"startTime":"12:0","endTime":"13:15","info":"옥102\/박경순","subj":"U2024129910000022"},{"title":"자연과학사","day":2,"startTime":"13:30","endTime":"14:45","info":"옥102\/박경순","subj":"U2024129910000022"}],"U2024134150000021":[{"title":"대학화학및실험1","day":1,"startTime":"15:0","endTime":"17:45","info":"비517\/이혜정","subj":"U2024134150000021"},{"title":"대학화학및실험1","day":3,"startTime":"16:30","endTime":"17:45","info":"비517-2\/이혜정","subj":"U2024134150000021"}],"U2024174610000021":[{"title":"상상공학과표현","day":3,"startTime":"12:0","endTime":"13:15","info":"비405\/김형국","subj":"U2024174610000021"},{"title":"상상공학과표현","day":1,"startTime":"13:30","endTime":"14:45","info":"비405\/김형국","subj":"U2024174610000021"}],"U2024146250000151":[{"title":"대학수학및연습1","day":2,"startTime":"15:0","endTime":"16:15","info":"비403\/유지현","subj":"U2024146250000151"},{"title":"대학수학및연습1","day":0,"startTime":"16:30","endTime":"17:45","info":"비403\/유지현","subj":"U2024146250000151"}],"U2024181290000011":[{"title":"저작권과스마트폰의이해","day":5,"startTime":"0:0","endTime":"0:0","info":"미지정\/null","subj":"U2024181290000011"}],"U202418998I030011":[{"title":"소프트웨어입문세미나","day":3,"startTime":"13:30","endTime":"14:45","info":"새빛204\/임재한","subj":"U202418998I030011"}],"U2024181280000011":[{"title":"광운인되기","day":5,"startTime":"0:0","endTime":"0:0","info":"미지정\/김정권","subj":"U2024181280000011"}]}
+`)
     </script>
 </body>
 
