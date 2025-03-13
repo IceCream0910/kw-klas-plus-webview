@@ -269,7 +269,7 @@ export default function Feed() {
         <div id="current_status">
 
           <h4 id="status_txt" dangerouslySetInnerHTML={{ __html: statusText }}></h4>
-          {!showButtons && (
+          {showButtons && (
             <div id="status_btns">
               <button id="qr_btn" onClick={openLecturePage} style={{ backgroundColor: 'var(--button-background)', color: 'var(--button-text)', width: 'fit-content', padding: '10px 15px', fontSize: '15px' }}>강의 홈</button>
               <button id="qr_btn" onClick={openQRScan} style={{ backgroundColor: 'var(--card-background)', color: 'var(--text-color)', marginLeft: '10px', width: 'fit-content', padding: '10px 15px', fontSize: '15px' }}>
