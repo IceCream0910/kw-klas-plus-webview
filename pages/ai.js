@@ -240,7 +240,7 @@ export default function AI() {
                                     </button>
                                     <button
                                         onClick={() => {
-                                            const questions = ['학생증 재발급 비용 얼마야?', '우리 학교 총장에 대해서 알려줘', '인공지능융합대학에 대한 정보를 찾아서 요약해줘'];
+                                            const questions = ['학생증 신청 방법 알려줘', '코딩 관련 중앙동아리에는 어떤 게 있어?', '인공지능융합대학에 대한 정보를 찾아서 요약해줘'];
                                             const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
                                             setInput(`${randomQuestion}`);
                                         }}
@@ -291,7 +291,7 @@ export default function AI() {
                                             li: ({ children }) => <>{children}</>,
                                         }}
                                     >
-                                        {item.content}
+                                        {item.content.replaceAll('\n', '\n\n')}
                                     </ReactMarkdown>
                                 </>
 
