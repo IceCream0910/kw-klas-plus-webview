@@ -27,19 +27,17 @@ async function getHaksik() {
         const table = root.querySelector('table.tbl-list');
 
         if (table) {
-            // Get days and dates from the header
             const headers = table.querySelectorAll('thead th');
             const days = [];
 
             headers.forEach((header, index) => {
-                if (index === 0) return; // Skip the first header (구분)
+                if (index === 0) return;
 
                 const day = header.querySelector('.nowDay')?.text.trim();
                 const date = header.querySelector('.nowDate')?.text.trim();
                 days.push({ day, date });
             });
 
-            // Process each restaurant row
             const menuRows = table.querySelectorAll('tbody tr');
             const restaurants = [];
 
@@ -51,7 +49,6 @@ async function getHaksik() {
 
                 const weeklyMenu = [];
 
-                // Get menu for each day
                 const menuCells = row.querySelectorAll('td');
                 for (let i = 1; i < menuCells.length; i++) {
                     const menu = menuCells[i].querySelector('pre')?.text.trim();
@@ -63,7 +60,7 @@ async function getHaksik() {
                 }
 
                 restaurants.push({
-                    name: restaurantName,
+                    name: restaurantName.replace("광운대 함지마루", "").trim(),
                     price,
                     time,
                     weeklyMenu
@@ -72,7 +69,7 @@ async function getHaksik() {
 
             return {
                 restaurants,
-                weeklyMenu: restaurants[0]?.weeklyMenu || [] // Keep backward compatibility
+                weeklyMenu: restaurants[0]?.weeklyMenu || []
             };
         } else {
             console.log('식단표를 찾을 수 없습니다.');
