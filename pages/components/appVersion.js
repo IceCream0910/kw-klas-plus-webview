@@ -4,6 +4,7 @@ import Spacer from './spacer';
 
 const AppVersion = ({ updater }) => {
     const [version, setVersion] = useState("");
+    const [isLatest, setIsLatest] = useState(true);
 
     useEffect(() => {
         const userAgent = navigator.userAgent;
@@ -14,6 +15,12 @@ const AppVersion = ({ updater }) => {
             setVersion("알 수 없음");
         }
     }, []);
+
+    useEffect(() => {
+        if (version.includes('.') && version < process.env.NEXT_PUBLIC_ANDROID_LATEST_VERSION) {
+            setIsLatest(false);
+        }
+    }, [version]);
 
     return (
         <>
