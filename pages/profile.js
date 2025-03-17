@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect } from "react";
 import IonIcon from '@reacticons/ionicons';
 import handleCalculateGPA, { calculateGPA } from "../lib/calculateGPA";
@@ -120,13 +121,19 @@ export default function Home() {
   };
 
   const handleToggleFavorite = (item) => {
-    const newFavorites = favorites.includes(item.url)
-      ? favorites.filter(url => url !== item.url)
-      : [...favorites, item.url];
-
-    setFavorites(newFavorites);
-    localStorage.setItem('favorites', JSON.stringify(newFavorites));
+    setFavorites(prevFavorites => {
+      const isFavorite = prevFavorites.includes(item.url);
+      const newFavorites = isFavorite
+        ? prevFavorites.filter(url => url !== item.url)
+        : [...prevFavorites, item.url];
+      localStorage.setItem('favorites', JSON.stringify(newFavorites));
+      return newFavorites;
+    });
   };
+
+  useEffect(() => {
+    console.log(favorites)
+  }, [favorites])
 
   const menuItems = [
     {
@@ -293,262 +300,265 @@ export default function Home() {
 
   return (
     <main>
-      <AnimatePresence>
-        <div className="profile-card">
-          {data ? <>
-            <motion.div layoutId="card" className="profile-card" onClick={() => setIsCardOpen(true)} style={{ padding: 0, display: 'flex', flexDirection: 'row', justifyContent: "space-between", alignItems: 'center', width: '100%' }}>
-              <div style={{ opacity: .8, fontSize: '14px' }}>
-                <Spacer y={5} />
-                <motion.h3 layoutId="name" style={{ marginBottom: '5px', fontSize: '18px' }}>{data.kname}</motion.h3>
-                <div style={{ display: 'flex', gap: '5px' }}>
-                  <motion.div layoutId="hakgwa">{stdInfo && stdInfo.hakgwa}</motion.div> <motion.div layoutId="number">| {data.hakbun}</motion.div><br />
-                </div>
-                <motion.div layoutId="status" style={{ opacity: .5, fontSize: '12px' }}>{data.hakjukStatu}</motion.div>
+      <div className="profile-card">
+        {data ? <>
+          <motion.div layoutId="card" className="profile-card" onClick={() => setIsCardOpen(true)} style={{ padding: 0, display: 'flex', flexDirection: 'row', justifyContent: "space-between", alignItems: 'center', width: '100%' }}>
+            <div style={{ opacity: .8, fontSize: '14px' }}>
+              <Spacer y={5} />
+              <motion.h3 layoutId="name" style={{ marginBottom: '5px', fontSize: '18px' }}>{data.kname}</motion.h3>
+              <div style={{ display: 'flex', gap: '5px' }}>
+                <motion.div layoutId="hakgwa">{stdInfo && stdInfo.hakgwa}</motion.div> <motion.div layoutId="number">| {data.hakbun}</motion.div><br />
               </div>
-              <IonIcon name="chevron-forward-outline" style={{ position: 'relative', top: '2px', fontSize: '20px' }} />
-            </motion.div>
-            <br />
-            {totGrade &&
-              <div className="profile-card grade-card" style={{ padding: 0, flexDirection: 'row', alignItems: 'space-between', width: '100%' }} onClick={() => showGrades && Android.openPage('https://klasplus.yuntae.in/grade')}>
-                <div style={{ textAlign: 'center', width: '100%' }} onClick={handleGradeClick}>
-                  <span style={{ opacity: .8, fontSize: '12px' }}>취득학점</span>
-                  <h3>{hideGrades && !showGrades ? '??' : totGrade.credit}</h3>
-                </div>
-                <div style={{ textAlign: 'center', width: '100%' }} onClick={handleGradeClick}>
-                  <span style={{ opacity: .8, fontSize: '12px' }}>평균평점</span>
-                  <h3>{hideGrades && !showGrades ? '??' : totGrade.averageGPA.includeF}</h3>
-                </div>
-                <div style={{ textAlign: 'center', width: '100%' }} onClick={handleGradeClick}>
-                  <span style={{ opacity: .8, fontSize: '12px' }}>전공평점</span>
-                  <h3>{hideGrades && !showGrades ? '??' : totGrade.majorGPA.includeF}</h3>
-                </div>
-              </div>}
-          </>
-            :
-            <>
-              <div className="skeleton" style={{ height: '25px', width: '30%' }} />
-              <div className="skeleton" style={{ height: '15px', width: '80%' }} />
-              <div className="skeleton" style={{ height: '10px', width: '60%' }} />
-              <div style={{ marginTop: '15px', display: 'flex', justifyContent: 'center', width: '100%', gap: '20px' }}>
-                <div className="skeleton" style={{ height: '40px', width: '33%' }} />
-                <div className="skeleton" style={{ height: '40px', width: '33%' }} />
-                <div className="skeleton" style={{ height: '40px', width: '33%' }} />
-              </div>
-
-            </>
-          }
-
-        </div>
-
-
-
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', gap: "10px", width: '100%' }}>
-          <div className="search-container">
-            <span className="tossface" style={{ position: 'relative', left: '10px', top: '30px' }}>🔍</span>
-            <input
-              style={{ paddingLeft: '35px' }}
-              placeholder={"메뉴 검색"}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyUp={(e) => {
-                if (e.key === 'Enter') {
-                  e.target.blur();
-                }
-              }
-              }
-            />
-          </div>
-          <button onClick={() => setIsOpenSettingsModal(!isOpenSettingsModal)}
-            style={{ background: 'var(--card-background)', padding: '5px', width: '50px', height: '42px', display: 'flex', justifyContent: 'center', alignItems: 'center', float: 'right', marginTop: '20px' }}>
-            <IonIcon name='sync-outline' />
+              <motion.div layoutId="status" style={{ opacity: .5, fontSize: '12px' }}>{data.hakjukStatu}</motion.div>
+            </div>
+            <IonIcon name="chevron-forward-outline" style={{ position: 'relative', top: '2px', fontSize: '20px' }} />
+          </motion.div>
+          <Spacer y={10} />
+          <button onClick={() => setIsCardOpen(true)}
+            style={{ background: 'var(--notice-hover)', borderRadius: '10px' }}>
+            <span className="tossface">🪪</span>모바일 학생증
+            <IonIcon name="chevron-forward-outline" style={{ position: 'relative', top: '2px' }} />
           </button>
+          <Spacer y={15} />
+          {totGrade &&
+            <div className="profile-card grade-card" style={{ padding: 0, flexDirection: 'row', alignItems: 'space-between', width: '100%' }} onClick={() => showGrades && Android.openPage('https://klasplus.yuntae.in/grade')}>
+              <div style={{ textAlign: 'center', width: '100%' }} onClick={handleGradeClick}>
+                <span style={{ opacity: .8, fontSize: '12px' }}>취득학점</span>
+                <h3>{hideGrades && !showGrades ? '??' : totGrade.credit}</h3>
+              </div>
+              <div style={{ textAlign: 'center', width: '100%' }} onClick={handleGradeClick}>
+                <span style={{ opacity: .8, fontSize: '12px' }}>평균평점</span>
+                <h3>{hideGrades && !showGrades ? '??' : totGrade.averageGPA.includeF}</h3>
+              </div>
+              <div style={{ textAlign: 'center', width: '100%' }} onClick={handleGradeClick}>
+                <span style={{ opacity: .8, fontSize: '12px' }}>전공평점</span>
+                <h3>{hideGrades && !showGrades ? '??' : totGrade.majorGPA.includeF}</h3>
+              </div>
+            </div>}
+        </>
+          :
+          <>
+            <div className="skeleton" style={{ height: '25px', width: '30%' }} />
+            <div className="skeleton" style={{ height: '15px', width: '80%' }} />
+            <div className="skeleton" style={{ height: '10px', width: '60%' }} />
+            <div style={{ marginTop: '15px', display: 'flex', justifyContent: 'center', width: '100%', gap: '20px' }}>
+              <div className="skeleton" style={{ height: '40px', width: '33%' }} />
+              <div className="skeleton" style={{ height: '40px', width: '33%' }} />
+              <div className="skeleton" style={{ height: '40px', width: '33%' }} />
+            </div>
+
+          </>
+        }
+
+      </div>
+
+
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', gap: "10px", width: '100%' }}>
+        <div className="search-container">
+          <span className="tossface" style={{ position: 'relative', left: '10px', top: '30px' }}>🔍</span>
+          <input
+            style={{ paddingLeft: '35px' }}
+            placeholder={"메뉴 검색"}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyUp={(e) => {
+              if (e.key === 'Enter') {
+                e.target.blur();
+              }
+            }
+            }
+          />
         </div>
+        <button onClick={() => setIsOpenSettingsModal(!isOpenSettingsModal)}
+          style={{ background: 'var(--card-background)', padding: '5px', width: '50px', height: '42px', display: 'flex', justifyContent: 'center', alignItems: 'center', float: 'right', marginTop: '20px' }}>
+          <IonIcon name='sync-outline' />
+        </button>
+      </div>
 
-        {favorites.length > 0 && (
-          <div>
-            <h5 style={{ marginLeft: '10px', marginTop: '30px', marginBottom: '10px' }}>즐겨찾기</h5>
-            {menuItems.flatMap(category =>
-              category.items.filter(item => favorites.includes(item.url))
-            ).map((item, index) => (
-              <button key={`favorite-${index}`} onClick={() => Android.openPage(item.url)}>
-                <span className="tossface">{item.icon}</span>
-                <span>{item.name}</span>
-                {item.badge && <span style={{ background: 'var(--button-background)', padding: '3px 5px', borderRadius: '10px', fontSize: '12px', position: 'relative', left: '5px', top: '-1px', opacity: .8 }}>{item.badge}</span>}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleToggleFavorite(item);
-                  }}
-                  style={{
-                    float: 'right',
-                    width: '20px',
-                    height: 'fit-content',
-                    padding: '0',
-                    opacity: .8,
-                    color: 'var(--red)'
-                  }}
-                >
-                  <IonIcon name='star' />
-                </button>
+      {favorites.length > 0 && (
+        <div>
+          <h5 style={{ marginLeft: '10px', marginTop: '30px', marginBottom: '10px' }}>즐겨찾기</h5>
+          {menuItems.flatMap(category =>
+            category.items.filter(item => favorites.includes(item.url))
+          ).map((item, index) => (
+            <button key={item.url} onClick={() => Android.openPage(item.url)}>
+              <span className="tossface">{item.icon}</span>
+              <span>{item.name}</span>
+              {item.badge && <span style={{ background: 'var(--button-background)', padding: '3px 5px', borderRadius: '10px', fontSize: '12px', position: 'relative', left: '5px', top: '-1px', opacity: .8 }}>{item.badge}</span>}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggleFavorite(item);
+                }}
+                style={{
+                  float: 'right',
+                  width: '20px',
+                  height: 'fit-content',
+                  padding: '0',
+                  opacity: .8,
+                  color: 'var(--red)'
+                }}
+              >
+                <IonIcon name='star' />
               </button>
-            ))}
-          </div>
-        )}
+            </button>
+          ))}
+        </div>
+      )}
 
 
-        {filteredMenuItems.map((category, index) => (
-          <div key={index}>
-            {category.title ? <h5 style={{ marginLeft: '10px', marginTop: '30px', marginBottom: '10px' }}>{category.title}</h5> : <Spacer y={15} />}
-            {category.items.map((item, itemIndex) => (
-              <button key={itemIndex} onClick={() => Android.openPage(item.url)}>
-                <span className="tossface">{item.icon}</span>
-                <span>{item.name}</span>
-                {item.badge && <span style={{ background: 'var(--button-background)', padding: '3px 5px', borderRadius: '10px', fontSize: '12px', position: 'relative', left: '5px', top: '-1px', opacity: .8 }}>{item.badge}</span>}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleToggleFavorite(item);
-                  }}
-                  style={{
-                    float: 'right',
-                    width: '20px',
-                    height: 'fit-content',
-                    padding: '0',
-                    opacity: favorites.includes(item.url) ? '.8' : '.5',
-                    color: favorites.includes(item.url) ? 'var(--red)' : 'inherit'
-                  }}
-                >
-                  <IonIcon name={favorites.includes(item.url) ? 'star' : 'star-outline'} />
-                </button>
+      {filteredMenuItems.map((category, index) => (
+        <div key={`category-${index}`}>
+          {category.title ? <h5 style={{ marginLeft: '10px', marginTop: '30px', marginBottom: '10px' }}>{category.title}</h5> : <Spacer y={15} />}
+          {category.items.map((item, itemIndex) => (
+            <button key={`item-${itemIndex}`} onClick={() => Android.openPage(item.url)}>
+              <span className="tossface">{item.icon}</span>
+              <span>{item.name}</span>
+              {item.badge && <span style={{ background: 'var(--button-background)', padding: '3px 5px', borderRadius: '10px', fontSize: '12px', position: 'relative', left: '5px', top: '-1px', opacity: .8 }}>{item.badge}</span>}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggleFavorite(item);
+                }}
+                style={{
+                  float: 'right',
+                  width: '20px',
+                  height: 'fit-content',
+                  padding: '0',
+                  opacity: favorites.includes(item.url) ? '.8' : '.5',
+                  color: favorites.includes(item.url) ? 'var(--red)' : 'inherit'
+                }}
+              >
+                <IonIcon name={favorites.includes(item.url) ? 'star' : 'star-outline'} />
               </button>
-            ))}
-          </div>
-        ))}
+            </button>
+          ))}
+        </div>
+      ))}
 
-        {isCardOpen && (
+      {isCardOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={() => setIsCardOpen(false)}
+          style={{
+            position: 'fixed',
+            top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(0, 0, 0, 0.7)',
+            zIndex: 1100,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setIsCardOpen(false)}
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+            onClick={(e) => e.stopPropagation()}
             style={{
-              position: 'fixed',
-              top: 0, left: 0, right: 0, bottom: 0,
-              background: 'rgba(0, 0, 0, 0.7)',
-              zIndex: 1100,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
+              width: '80%',
+              maxWidth: '400px',
+              height: '65vh',
+              maxHeight: '600px',
+              background: 'var(--card-background)',
+              borderRadius: '15px',
+              boxShadow: '0px 10px 30px rgba(0,0,0,0.2)',
+              padding: '20px',
+              boxSizing: 'border-box',
             }}
           >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-              onClick={(e) => e.stopPropagation()}
+            <img
+              src="https://i.imgur.com/7H10dVS.png"
               style={{
-                width: '80%',
-                maxWidth: '400px',
-                height: '65vh',
-                maxHeight: '600px',
-                background: 'var(--card-background)',
-                borderRadius: '15px',
-                boxShadow: '0px 10px 30px rgba(0,0,0,0.2)',
-                padding: '20px',
-                boxSizing: 'border-box',
+                width: '30px',
+                objectFit: 'contain',
+                position: 'absolute',
+                top: '15px',
+                right: '15px',
+                filter: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'grayscale(100%) brightness(1000%)' : 'none'
               }}
-            >
-              <img
-                src="https://i.imgur.com/7H10dVS.png"
-                style={{
-                  width: '30px',
-                  objectFit: 'contain',
-                  position: 'absolute',
-                  top: '15px',
-                  right: '15px',
-                  filter: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'grayscale(100%) brightness(1000%)' : 'none'
-                }}
-              />
-              {data && stdInfo && (
-                <>
-                  <img src={stdInfo.fileUrl} style={{ width: '40%', objectFit: 'contain', borderRadius: '10px' }} />
-                  <Spacer y={20} />
-                  <motion.h2 layoutId="name" style={{ marginBottom: '5px' }}>{data.kname} <motion.div layoutId="number" style={{ opacity: .4, fontSize: '13px' }}>{data.hakbun}</motion.div></motion.h2>
-                  <Spacer y={5} />
-                  <div style={{ opacity: .8, fontSize: '14px' }}>
-                    광운대학교 {stdInfo.compNm}
-                    <motion.div layoutId="hakgwa">{data.hakgwa}</motion.div>
-                    <Spacer y={10} />
-                    <motion.div layoutId="status">{data.hakjukStatu}</motion.div>
-                  </div>
+            />
+            {data && stdInfo && (
+              <>
+                <img src={stdInfo.fileUrl} style={{ width: '40%', objectFit: 'contain', borderRadius: '10px' }} />
+                <Spacer y={20} />
+                <motion.h2 layoutId="name" style={{ marginBottom: '5px' }}>{data.kname} <motion.div layoutId="number" style={{ opacity: .4, fontSize: '13px' }}>{data.hakbun}</motion.div></motion.h2>
+                <Spacer y={5} />
+                <div style={{ opacity: .8, fontSize: '14px' }}>
+                  광운대학교 {stdInfo.compNm}
+                  <motion.div layoutId="hakgwa">{data.hakgwa}</motion.div>
+                  <Spacer y={10} />
+                  <motion.div layoutId="status">{data.hakjukStatu}</motion.div>
+                </div>
 
-                  <div style={{ position: 'absolute', bottom: '20px', left: '0', width: '100%', padding: '0 15px', boxSizing: 'border-box' }}>
-                    <button onClick={() => Android.openLibraryQR()}
-                      style={{ background: 'var(--background)', borderRadius: '10px', width: '100%' }}>
-                      <IonIcon name="qr-code-outline" style={{ position: 'relative', top: '3px' }} />&nbsp;&nbsp;QR 코드
-                      <IonIcon name="chevron-forward-outline" style={{ position: 'relative', top: '2px', float: 'right' }} />
-                    </button>
-                  </div>
-                </>
-              )}
-            </motion.div>
+                <div style={{ position: 'absolute', bottom: '20px', left: '0', width: '100%', padding: '0 15px', boxSizing: 'border-box' }}>
+                  <button onClick={() => Android.openLibraryQR()}
+                    style={{ background: 'var(--background)', borderRadius: '10px', width: '100%' }}>
+                    <IonIcon name="qr-code-outline" style={{ position: 'relative', top: '3px' }} />&nbsp;&nbsp;QR 코드
+                    <IonIcon name="chevron-forward-outline" style={{ position: 'relative', top: '2px', float: 'right' }} />
+                  </button>
+                </div>
+              </>
+            )}
           </motion.div>
-        )}
+        </motion.div>
+      )}
 
-        <BottomSheet
-          open={isOpenSettingsModal}
-          onDismiss={() => { setIsOpenSettingsModal(false); }}
-          draggable={false}
-        >
-          <div style={{ maxHeight: '100dvh', padding: '20px', overflow: 'hidden' }}>
-            <h2>메뉴 순서 편집</h2>
-            <Spacer y={20} />
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ opacity: .6, fontSize: '15px' }}>메뉴 순서를 드래그하여 변경하세요</span>
-              <button onClick={handleResetMenuOrder} style={{ background: 'var(--card-background)', padding: '0', width: '30px', height: '30px', fontSize: '16px', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '-5px' }}>
-                <IonIcon name='refresh-outline' />
-              </button>
-            </div>
-            <DragDropContext onDragEnd={handleMenuReorder}>
-              <Droppable droppableId="menu-list">
-                {(provided) => (
-                  <ul style={{ padding: 0 }} {...provided.droppableProps} ref={provided.innerRef}>
-                    {menuOrder.map((title, index) => (
-                      <Draggable key={title} draggableId={title} index={index}>
-                        {(provided) => (
-                          <li
-                            className="menu-item-draggable"
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            style={{
-                              ...provided.draggableProps.style
-                            }}
-                          >
-                            <IonIcon name='menu-outline' style={{ marginRight: '10px', opacity: .7 }} />
-                            {title}
-                          </li>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </ul>
-                )}
-              </Droppable>
-            </DragDropContext>
-            <Spacer y={90} />
-
-
+      <BottomSheet
+        open={isOpenSettingsModal}
+        onDismiss={() => { setIsOpenSettingsModal(false); }}
+        draggable={false}
+      >
+        <div style={{ maxHeight: '100dvh', padding: '20px', overflow: 'hidden' }}>
+          <h2>메뉴 순서 편집</h2>
+          <Spacer y={20} />
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ opacity: .6, fontSize: '15px' }}>메뉴 순서를 드래그하여 변경하세요</span>
+            <button onClick={handleResetMenuOrder} style={{ background: 'var(--card-background)', padding: '0', width: '30px', height: '30px', fontSize: '16px', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '-5px' }}>
+              <IonIcon name='refresh-outline' />
+            </button>
           </div>
+          <DragDropContext onDragEnd={handleMenuReorder}>
+            <Droppable droppableId="menu-list">
+              {(provided) => (
+                <ul style={{ padding: 0 }} {...provided.droppableProps} ref={provided.innerRef}>
+                  {menuOrder.map((title, index) => (
+                    <Draggable key={`draggable-${index}`} draggableId={title} index={index}>
+                      {(provided) => (
+                        <li
+                          className="menu-item-draggable"
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          style={{
+                            ...provided.draggableProps.style
+                          }}
+                        >
+                          <IonIcon name='menu-outline' style={{ marginRight: '10px', opacity: .7 }} />
+                          {title}
+                        </li>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </ul>
+              )}
+            </Droppable>
+          </DragDropContext>
+          <Spacer y={90} />
 
 
-          <div className='bottom-sheet-footer'>
-            <button onClick={() => setIsOpenSettingsModal(false)}>확인</button>
-          </div>
-        </BottomSheet>
+        </div>
 
-      </AnimatePresence>
+
+        <div className='bottom-sheet-footer'>
+          <button onClick={() => setIsOpenSettingsModal(false)}>확인</button>
+        </div>
+      </BottomSheet>
     </main >
   );
 }
