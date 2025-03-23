@@ -20,7 +20,7 @@ export default function AI() {
     const [yearHakgi, setYearHakgi] = useState(null);
     const [isInputFocused, setIsInputFocused] = useState(false);
     const pendingToolsRef = useRef([]);
-
+    const [messageToolsMap, setMessageToolsMap] = useState({}); // Add this line to track tools for each message
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -80,8 +80,13 @@ export default function AI() {
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
 
-            setChat(prev => [...prev, { type: 'answer', content: '' }]);
+            // Add new answer message and create a unique ID for it
+            const newAnswerIndex = chat.length;
+            const messageId = Date.now(); // Create a unique ID for this message
+
+            setChat(prev => [...prev, { type: 'answer', content: '', id: messageId }]);
             setActiveTools([]);
+            setMessageToolsMap(prev => ({ ...prev, [messageId]: [] })); // Initialize tools array for this message
 
             while (true) {
                 const { value, done } = await reader.read();
@@ -107,6 +112,7 @@ export default function AI() {
                                 break;
 
                             case 'tool_start':
+                                // Add to active tools
                                 setActiveTools(tools => [
                                     ...tools,
                                     {
@@ -116,14 +122,42 @@ export default function AI() {
                                         status: 'running',
                                     }
                                 ]);
+
+                                // Add to message-specific tools map
+                                setMessageToolsMap(prev => {
+                                    const updatedMap = { ...prev };
+                                    if (!updatedMap[messageId]) updatedMap[messageId] = [];
+                                    updatedMap[messageId].push({
+                                        name: data.tool,
+                                        title: data.name,
+                                        input: data.input,
+                                        status: 'running',
+                                    });
+                                    return updatedMap;
+                                });
                                 break;
 
                             case 'tool_end':
+                                // Update active tools
                                 setActiveTools(tools => tools.map(tool =>
                                     tool.name === data.tool
                                         ? { ...tool, status: 'completed' }
                                         : tool
                                 ));
+
+                                // Update message-specific tools map
+                                setMessageToolsMap(prev => {
+                                    const updatedMap = { ...prev };
+                                    if (updatedMap[messageId]) {
+                                        updatedMap[messageId] = updatedMap[messageId].map(tool =>
+                                            tool.name === data.tool
+                                                ? { ...tool, status: 'completed', output: data.output }
+                                                : tool
+                                        );
+                                    }
+                                    return updatedMap;
+                                });
+
                                 pendingToolsRef.current.push({
                                     type: 'tool',
                                     content: JSON.stringify(data.output)
@@ -260,29 +294,31 @@ export default function AI() {
                                     <LoadingComponent />
                                 </div>
                             )}
-
-                            {index === chat.length - 1 && isLoading && activeTools.length > 0 && (
-                                <div className="tools-status">
-                                    <LoadingComponent />
-                                    {activeTools.map((tool, index) => (
-                                        <div key={index} className="tool-item">
-                                            <div className="tool-header">
-                                                <IonIcon
-                                                    name={tool.status === 'running' ? 'hourglass' : 'checkmark-circle-outline'}
-                                                    style={{ color: tool.status === 'running' ? 'inherit' : 'var(--green)' }}
-                                                />
-                                                <span className="tool-name">{tool.title}</span>
-                                            </div>
-                                            {JSON.stringify(tool.input) > 5 && <span className='tool-description' style={{ fontSize: '12px', opacity: .6, marginLeft: '25px' }}>{JSON.stringify(tool.input)}</span>}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-
                             {item.type === 'question' ?
                                 <div className="me">{item.content}</div>
                                 : item.type != 'tool' &&
                                 <>
+                                    {item.id && messageToolsMap[item.id] && messageToolsMap[item.id].length > 0 && (
+                                        <div className="tools-status">
+                                            {messageToolsMap[item.id].map((tool, toolIndex) => (
+                                                <div key={toolIndex} className="tool-item">
+                                                    <div className="tool-header">
+                                                        <IonIcon
+                                                            name={tool.status === 'running' ? 'hourglass' : 'checkmark-circle-outline'}
+                                                            style={{ color: tool.status === 'running' ? 'inherit' : 'var(--green)' }}
+                                                        />
+                                                        <span className="tool-name">{tool.title}</span>
+                                                    </div>
+                                                    {JSON.stringify(tool.input).length > 5 && (
+                                                        <span className='tool-description' style={{ fontSize: '12px', opacity: .6, marginLeft: '25px' }}>
+                                                            {JSON.stringify(tool.input)}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                    <Spacer y={5} />
                                     <ReactMarkdown
                                         remarkPlugins={[remarkGfm]}
                                         components={{
@@ -352,7 +388,6 @@ export default function AI() {
     .tool-item {
         border: 1px solid var(--border-color);
         border-radius: 8px;
-        margin-left: 30px;
     }
 
     .tool-header {

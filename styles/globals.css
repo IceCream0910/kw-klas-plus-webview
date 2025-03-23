@@ -239,6 +239,10 @@ select {
   overflow-wrap: break-word;
 }
 
+.message p {
+  margin: 0;
+}
+
 .message .me {
   align-self: flex-end;
   background-color: var(--card-background);
