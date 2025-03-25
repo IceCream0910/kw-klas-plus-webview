@@ -66,21 +66,19 @@ async function getKwSitemap() {
                             const subTitle = ddA.text.trim();
                             const subHref = ddA.getAttribute('href');
                             const subLink = getFullUrl(subHref);
-                            const target = ddA.getAttribute('target') || null;
 
                             if (subTitle && subLink) {
                                 subLinks.push({
-                                    title: subTitle,
-                                    link: subLink,
-                                    target: target
+                                    t: subTitle,
+                                    l: subLink
                                 });
                             }
                         });
 
                         categories.push({
-                            title: categoryTitle,
-                            link: categoryLink,
-                            subLinks: subLinks.length > 0 ? subLinks : undefined
+                            t: categoryTitle,
+                            l: categoryLink,
+                            subs: subLinks.length > 0 ? subLinks : undefined
                         });
                     } else {
                         const strongA = li.querySelector('strong a');
@@ -88,13 +86,11 @@ async function getKwSitemap() {
                             const linkTitle = strongA.text.trim();
                             const linkHref = strongA.getAttribute('href');
                             const link = getFullUrl(linkHref);
-                            const target = strongA.getAttribute('target') || null;
 
                             if (linkTitle && link) {
                                 links.push({
-                                    title: linkTitle,
-                                    link: link,
-                                    target: target
+                                    t: linkTitle,
+                                    l: link
                                 });
                             }
                         }
@@ -103,9 +99,8 @@ async function getKwSitemap() {
             }
 
             sections.push({
-                section: title,
-                categories: categories.length > 0 ? categories : undefined,
-                links: links.length > 0 ? links : undefined
+                cat: categories.length > 0 ? categories : undefined,
+                ls: links.length > 0 ? links : undefined
             });
         });
 

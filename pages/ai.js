@@ -20,11 +20,51 @@ export default function AI() {
     const [yearHakgi, setYearHakgi] = useState(null);
     const [isInputFocused, setIsInputFocused] = useState(false);
     const pendingToolsRef = useRef([]);
-    const [messageToolsMap, setMessageToolsMap] = useState({}); // Add this line to track tools for each message
+    const [messageToolsMap, setMessageToolsMap] = useState({});
+    const [remainingQuestions, setRemainingQuestions] = useState(5);
+    const MAX_DAILY_QUESTIONS = process.env.NEXT_PUBLIC_MAX_DAILY_QUESTIONS || 7;
+
+    const checkRemainingQuestions = () => {
+        const today = new Date().toISOString().split('T')[0];
+        const storedData = localStorage.getItem('klasGptQuestionLimit');
+
+        if (!storedData || !storedData.startsWith(today)) {
+            localStorage.setItem('klasGptQuestionLimit', `${today}_0`);
+            setRemainingQuestions(MAX_DAILY_QUESTIONS);
+            return MAX_DAILY_QUESTIONS;
+        } else {
+            const count = parseInt(storedData.split('_')[1], 10);
+            const remaining = Math.max(0, MAX_DAILY_QUESTIONS - count);
+            setRemainingQuestions(remaining);
+            return remaining;
+        }
+    };
+
+    useEffect(() => {
+        checkRemainingQuestions();
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const remaining = checkRemainingQuestions();
+        if (remaining <= 0) {
+            setChat(prevChat => [...prevChat, {
+                type: 'answer',
+                content: '⚠️ 일일 질문 한도인 5회를 모두 사용하셨습니다. 내일 다시 이용해 주세요.',
+                id: Date.now()
+            }]);
+            return;
+        }
+
         if (input.trim()) {
+            const today = new Date().toISOString().split('T')[0];
+            const storedData = localStorage.getItem('klasGptQuestionLimit');
+            const currentCount = storedData ? parseInt(storedData.split('_')[1], 10) : 0;
+            localStorage.setItem('klasGptQuestionLimit', `${today}_${currentCount + 1}`);
+
+            setRemainingQuestions(MAX_DAILY_QUESTIONS - (currentCount + 1));
+
             const newQuestion = { type: 'question', content: input.trim() };
             setChat(prevChat => [...prevChat, newQuestion]);
             setInput('');
@@ -80,13 +120,12 @@ export default function AI() {
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
 
-            // Add new answer message and create a unique ID for it
             const newAnswerIndex = chat.length;
-            const messageId = Date.now(); // Create a unique ID for this message
+            const messageId = Date.now();
 
             setChat(prev => [...prev, { type: 'answer', content: '', id: messageId }]);
             setActiveTools([]);
-            setMessageToolsMap(prev => ({ ...prev, [messageId]: [] })); // Initialize tools array for this message
+            setMessageToolsMap(prev => ({ ...prev, [messageId]: [] }));
 
             while (true) {
                 const { value, done } = await reader.read();
@@ -112,7 +151,6 @@ export default function AI() {
                                 break;
 
                             case 'tool_start':
-                                // Add to active tools
                                 setActiveTools(tools => [
                                     ...tools,
                                     {
@@ -123,7 +161,6 @@ export default function AI() {
                                     }
                                 ]);
 
-                                // Add to message-specific tools map
                                 setMessageToolsMap(prev => {
                                     const updatedMap = { ...prev };
                                     if (!updatedMap[messageId]) updatedMap[messageId] = [];
@@ -138,14 +175,12 @@ export default function AI() {
                                 break;
 
                             case 'tool_end':
-                                // Update active tools
                                 setActiveTools(tools => tools.map(tool =>
                                     tool.name === data.tool
                                         ? { ...tool, status: 'completed' }
                                         : tool
                                 ));
 
-                                // Update message-specific tools map
                                 setMessageToolsMap(prev => {
                                     const updatedMap = { ...prev };
                                     if (updatedMap[messageId]) {
@@ -339,32 +374,53 @@ export default function AI() {
             </main>
 
             <form onSubmit={handleSubmit} className='chat-input-container'>
-                {chat.length === 0 &&
-                    <span style={{ fontSize: '12px', opacity: .4 }}>AI는 틀린 답변을 제공할 수 있습니다. <span style={{ fontSize: '12px', opacity: .5, marginTop: '5px' }}><a href="https://blog.yuntae.in/11cfc9b9-3eca-8078-96a0-c41c4ca9cb8f" target='_blank' style={{ color: 'inherit' }}>개인정보 처리방침</a></span>
-                    </span>}
+                {chat.length === 0 && <>
+                    <span style={{ fontSize: '12px', opacity: .4 }}>민감한 개인정보를 입력하지 말고, 답변을 재검토하세요.</span>
+                    <span style={{ fontSize: '12px', opacity: .5, marginTop: '-5px' }}><a href="https://blog.yuntae.in/11cfc9b9-3eca-8078-96a0-c41c4ca9cb8f" target='_blank' style={{ color: 'inherit' }}>개인정보 처리방침</a></span>
+
+                </>
+                }
                 <input
                     type="text"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    placeholder="메시지를 입력하세요"
-                    disabled={isLoading}
+                    placeholder={remainingQuestions > 0 ? "메시지를 입력하세요" : "일일 질문 한도를 모두 사용했습니다"}
+                    disabled={isLoading || remainingQuestions <= 0}
                     className='chat-input'
                     onFocus={() => setIsInputFocused(true)}
                     onBlur={() => setIsInputFocused(false)}
                 />
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', width: '100%' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <button
+                            type="button"
+                            disabled={isLoading}
+                            onClick={() => [setChat([]), setInput('')]}
+                            style={{ background: 'var(--card-background)', left: '20px' }}
+                        >
+                            <IonIcon name="add-outline" /> 새 채팅
+                        </button>
 
-                    <button type="button" disabled={isLoading} onClick={() => [setChat([]), setInput('')]} style={{ background: 'var(--card-background)', left: '20px' }}>
-                        <IonIcon name="add-outline" /> 새 채팅
-                    </button>
+                        <div className="question-limit-badge">
+                            오늘 남은 질문 {remainingQuestions}개
+                        </div>
+                    </div>
 
                     {isLoading ? (
-                        <button type="button" style={{ width: '30px', height: '30px', padding: 0, background: 'var(--card-background)' }} onClick={handleStopResponse}>
+                        <button
+                            type="button"
+                            style={{ width: '30px', height: '30px', padding: 0, background: 'var(--card-background)' }}
+                            onClick={handleStopResponse}
+                        >
                             <IonIcon name="stop" />
                         </button>
                     ) : (
-                        <button style={{ width: '30px', height: '30px', padding: 0 }} type="submit">
+                        <button
+                            style={{ width: '30px', height: '30px', padding: 0 }}
+                            type="submit"
+                            disabled={remainingQuestions <= 0}
+                        >
                             <IonIcon name="send" />
                         </button>
                     )}
@@ -396,6 +452,18 @@ export default function AI() {
         gap: 10px;
         font-size: 14px;
         opacity: .8;
+    }
+
+    .question-limit-badge {
+        display: flex;
+        align-items: center;
+        font-size: 13px;
+        background: var(--card-background);
+        padding: 7px 10px;
+        border-radius: 20px;
+        opacity: 0.8;
+        color: ${remainingQuestions <= 1 ? '#ff6b6b' : 'inherit'};
+        transition: color 0.3s ease;
     }
 `}</style>
         </div >
