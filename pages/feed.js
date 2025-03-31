@@ -265,11 +265,11 @@ export default function Feed() {
       <Toaster
         position="top-center"
       />
-      {!statusText ? (
+      {statusText ? (
         <div id="current_status">
 
           <h4 id="status_txt" dangerouslySetInnerHTML={{ __html: statusText }}></h4>
-          {!showButtons && (
+          {showButtons && (
             <div id="status_btns">
               <button id="qr_btn" onClick={openLecturePage} style={{ backgroundColor: 'var(--button-background)', color: 'var(--button-text)', width: 'fit-content', padding: '10px 15px', fontSize: '15px' }}>강의 홈</button>
               <button id="qr_btn" onClick={openQRScan} style={{ backgroundColor: 'var(--card-background)', color: 'var(--text-color)', marginLeft: '10px', width: 'fit-content', padding: '10px 15px', fontSize: '15px' }}>
@@ -277,7 +277,7 @@ export default function Feed() {
               </button>
               <button id="qr_btn" onClick={() => {
                 try {
-                  Android.openExternalPage("https://klasplus-log.yuntae.in/widget")
+                  Android.openPage("https://klasplus.yuntae.in/portal")
                 } catch (e) {
                   toast('앱을 최신버전으로 업데이트 해주세요.');
                 }
@@ -313,7 +313,7 @@ export default function Feed() {
 
       <div className="card" style={{ padding: '15px', borderRadius: '15px' }} onClick={() => {
         try {
-          Android.openExternalPage("https://")
+          Android.openPage("https://klasplus.yuntae.in/portal")
         } catch (e) {
           toast('앱을 최신버전으로 업데이트 해주세요.');
         }

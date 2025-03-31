@@ -682,33 +682,13 @@ const Page = () => {
         <p style={{ fontSize: '1.4rem', maxWidth: '80%', textAlign: 'center', wordBreak: 'keep-all', fontWeight: '600', marginBottom: '3rem', color: '#000' }}>
           <span style={{ opacity: .6 }}>KLAS+는 KLAS의 </span>UI/UX를 개선하고 편의 기능을 추가한 앱<span style={{ opacity: .6 }}>입니다. 순간 이동 기능을 지원하지는 않지만, 학우 분들의 </span>학교 생활이 더 편리해지길 바라는 마음<span style={{ opacity: .6 }}>에서 만들었습니다.</span>
         </p>
-
-        <button
-          onClick={() => {
-            try {
-              Android.openExternalPage("https://play.google.com/store/apps/details?id=com.icecream.kwklasplus")
-            } catch (e) {
-              alert('지원되지 않는 링크입니다. 최신버전으로 업데이트 해주세요.');
-            }
-          }}
-          style={{
-            width: 'fit-content',
-            padding: '10px 20px',
-            fontSize: '0.8rem',
-            backgroundColor: '#0088ff',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '25px',
-            cursor: 'pointer'
-          }}
-        >
-          KLAS+ 앱 다운로드
-        </button>
       </section>
 
       <section style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', color: '#fff', textAlign: 'center', height: 'auto', position: 'relative', padding: '60px 20px', overflow: 'hidden' }}>
         <p style={{ fontSize: '0.8rem', maxWidth: '100%', textAlign: 'left', wordBreak: 'keep-all', marginBottom: '3rem', opacity: .6 }}>
-          <b>- 이 페이지는 만우절을 기념해서 제작된 것으로, 실제 KLAS+의 기능이 아닙니다.</b> 왜 만들었냐고요? 음.. 심심했습니다. 휴학 중이거든요.<br /><br />
+          <b>- 이 페이지는 만우절을 기념해서 제작된 것으로, 실제 KLAS+의 기능이 아닙니다.</b> 왜 만들었냐고요? 음.. 심심했습니다. 휴학 중이거든요.<br />
+          - 페이지에 사용된 이미지는 모두 AI를 사용해 생성되었습니다.<br />
+          <br />
           - KLAS+ 앱은 Android 10 이상에서 지원됩니다. iOS는 지원하지 않습니다.<br />
           - KLAS+는 학교의 공식 앱이 아닙니다. 현재 학교의 공식 앱인 '광운대학교' 앱이 Play 스토어에서 내려간 상태입니다. 'KLAS 웹사이트 {'>'} KLAS 앱 다운로드' 를 통해 공식 앱을 설치한 후, KLAS+는 보조 역할로 사용해주시기 바랍니다. 해당 앱을 불법적인 목적으로 사용 시 발생하는 불이익에 대해서 개발자는 어떠한 책임도 지지 않음을 밝힙니다.
         </p>
