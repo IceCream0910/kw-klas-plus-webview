@@ -283,7 +283,7 @@ const Page = () => {
           transition={{ duration: 0.8 }}
           style={{ fontSize: '1.4rem', opacity: .8, marginBottom: '3rem' }}
         >
-          대학 생활의 혁신.
+          강의실로 순간 이동.
         </motion.p>
 
         <motion.div
@@ -551,7 +551,7 @@ const Page = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.1 }}
           style={{
-            fontSize: '3rem',
+            fontSize: '2.3rem',
             position: 'relative',
             marginTop: '1rem',
             textAlign: 'start',
@@ -647,7 +647,7 @@ const Page = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.3 }}
           style={{
-            fontSize: '2.5rem',
+            fontSize: '2.1rem',
             position: 'relative',
             marginTop: '2rem',
             textAlign: 'start',

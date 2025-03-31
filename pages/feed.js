@@ -298,6 +298,7 @@ export default function Feed() {
                 border: '2px solid transparent'
               }}>
                 <IonIcon name="infinite" style={{ position: 'relative', top: '2px' }} />
+                <span style={{ fontSize: '15px', position: 'relative', top: '-2px' }}> 순간이동</span>
               </button>
             </div>
           )}
