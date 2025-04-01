@@ -275,31 +275,6 @@ export default function Feed() {
               <button id="qr_btn" onClick={openQRScan} style={{ backgroundColor: 'var(--card-background)', color: 'var(--text-color)', marginLeft: '10px', width: 'fit-content', padding: '10px 15px', fontSize: '15px' }}>
                 QR 출석
               </button>
-              <button id="qr_btn" onClick={() => {
-                try {
-                  Android.openPage("https://klasplus.yuntae.in/portal")
-                } catch (e) {
-                  toast('앱을 최신버전으로 업데이트 해주세요.');
-                }
-              }} style={{
-                backgroundColor: 'var(--card-background)',
-                color: 'var(--text-color)',
-                marginLeft: '10px',
-                position: 'relative',
-                top: '1px',
-                width: 'fit-content',
-                padding: '8px 12px',
-                fontSize: '18px',
-                borderRadius: '15px',
-                background: `
-                  linear-gradient(var(--card-background), var(--card-background)) padding-box,
-                  linear-gradient(to right, #4facfe, #00f2fe) border-box
-                `,
-                border: '2px solid transparent'
-              }}>
-                <IonIcon name="infinite" style={{ position: 'relative', top: '2px' }} />
-                <span style={{ fontSize: '15px', position: 'relative', top: '-2px' }}> 순간이동</span>
-              </button>
             </div>
           )}
         </div>
@@ -311,20 +286,6 @@ export default function Feed() {
       )}
 
       <Spacer y={30} />
-
-      <div className="card" style={{ padding: '15px', borderRadius: '15px' }} onClick={() => {
-        try {
-          Android.openPage("https://klasplus.yuntae.in/portal")
-        } catch (e) {
-          toast('앱을 최신버전으로 업데이트 해주세요.');
-        }
-      }}><div style={{ width: '100%', display: 'flex', alignContent: 'center', gap: '5px' }}>
-          <IonIcon name="notifications" style={{ opacity: .7 }} />
-          <b style={{ fontSize: '14px', position: 'relative', top: '1px' }}>새로운 기능, Portal을 소개합니다.</b>
-          <IonIcon name="chevron-forward-outline" />
-        </div>
-      </div>
-      <Spacer y={10} />
 
       {process.env.NEXT_PUBLIC_NOTICE_TEXT && (<>
 
