@@ -1,12 +1,14 @@
 import { parse } from 'node-html-parser';
 
 export default async function handler(req, res) {
+    const srCategoryId = req.query.srCategoryId || "";
+
     if (req.method !== 'GET') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
     try {
-        const data = await getKWNoticeList();
+        const data = await getKWNoticeList(srCategoryId);
         if (!data) {
             return res.status(500).json({ error: 'Failed to fetch data' });
         }
@@ -19,9 +21,9 @@ export default async function handler(req, res) {
 }
 
 
-async function getKWNoticeList() {
+async function getKWNoticeList(srCategoryId) {
     try {
-        const response = await fetch('https://www.kw.ac.kr/ko/life/notice.jsp?srCategoryId=1');
+        const response = await fetch('https://www.kw.ac.kr/ko/life/notice.jsp?srCategoryId=' + srCategoryId);
         const html = await response.text();
 
         const root = parse(html);

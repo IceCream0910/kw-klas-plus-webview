@@ -24,6 +24,7 @@ export default function Feed() {
   const [showToggle, setShowToggle] = useState(false);
   const [filteredDeadlines, setFilteredDeadlines] = useState(null);
   const [advisor, setAdvisor] = useState(null);
+  const [kwNoticeTab, setKwNoticeTab] = useState("");
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -86,7 +87,7 @@ export default function Feed() {
     try {
       const [cafeteriaData, kwNoticeData] = await Promise.all([
         fetch("/api/crawler/cafeteria").then(res => res.json()),
-        fetch("/api/crawler/kwNotice").then(res => res.json())
+        fetch("/api/crawler/kwNotice?srCategoryId=" + kwNoticeTab).then(res => res.json())
       ]);
 
       setCafeteria(cafeteriaData);
@@ -96,6 +97,11 @@ export default function Feed() {
     }
   };
 
+  useEffect(() => {
+    if (kwNoticeTab != null) {
+      fetchData();
+    }
+  }, [kwNoticeTab]);
 
   const processDeadlineData = (data) => {
     const hasStartDate = data.some(item =>
@@ -407,8 +413,10 @@ export default function Feed() {
       <Spacer y={40} />
 
       <h3 style={{ margin: 'auto 10px' }}>
-        학사 공지사항
-        <button onClick={() => Android.openPage('https://www.kw.ac.kr/ko/life/notice.jsp?srCategoryId=1')} style={{ float: "right", width: 'fit-content', marginTop: '-5px' }}>
+        <span onClick={() => setKwNoticeTab("")} style={{ opacity: `${kwNoticeTab === "" ? 1 : 0.5}` }}>전체 </span>
+        <span onClick={() => setKwNoticeTab("1")} style={{ opacity: `${kwNoticeTab === "1" ? 1 : 0.5}` }}>학사 </span>
+        공지사항
+        <button onClick={() => Android.openPage('https://www.kw.ac.kr/ko/life/notice.jsp')} style={{ float: "right", width: 'fit-content', marginTop: '-5px' }}>
           <IonIcon name='add-outline' />
         </button>
       </h3>
