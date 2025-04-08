@@ -45,7 +45,9 @@ export default function Home() {
 
     const savedMenuOrder = localStorage.getItem('menuOrder');
     if (savedMenuOrder) {
-      setMenuOrder(JSON.parse(savedMenuOrder));
+      const parsedMenuOrder = JSON.parse(savedMenuOrder).filter(title => !title.includes("KLAS+"));
+      setMenuOrder(parsedMenuOrder);
+      localStorage.setItem('menuOrder', JSON.stringify(parsedMenuOrder));
     } else {
       setMenuOrder(menuItems.map(item => item.title));
     }
@@ -140,9 +142,9 @@ export default function Home() {
       title: "수강관리",
       items: [
         { name: "수업시간표", icon: "📅", url: "https://klas.kw.ac.kr/std/cps/atnlc/TimetableStdPage.do" },
-        { name: "출석관리(KW출첵)", icon: "✅", url: "https://klas.kw.ac.kr/std/ads/admst/KwAttendStdPage.do" },
+        { name: "출석 현황", icon: "✅", url: "https://klas.kw.ac.kr/std/ads/admst/KwAttendStdPage.do" },
         { name: "강의계획서 조회", icon: "📚", url: "https://klasplus.yuntae.in/searchLecturePlan", badge: "KLAS+" },
-        { name: "수강신청 프로그램", icon: "🖥️", url: "https://klas.kw.ac.kr/std/cps/atnlc/LctreReqstNewProgPage.do" },
+        { name: "공식 KLAS 앱 다운로드", icon: "📱", url: "https://klas.kw.ac.kr/std/cps/atnlc/AppDownloadPage.do" },
         { name: "수강포기 신청", icon: "🚫", url: "https://klas.kw.ac.kr/std/cps/atnlc/GiveupStdPage.do" },
         { name: "교류 학점 신청", icon: "🔄", url: "https://klas.kw.ac.kr/std/cps/atnlc/ExchgHakjumStdPage.do" },
         { name: "CDP 출석내역", icon: "📊", url: "https://klas.kw.ac.kr/std/cps/atnlc/CdpAtendStdPage.do" },
@@ -158,7 +160,8 @@ export default function Home() {
         { name: "석차 조회", icon: "🏆", url: "https://klasplus.yuntae.in/ranking", badge: "KLAS+" },
         { name: "어학성적 조회", icon: "🌐", url: "https://klas.kw.ac.kr/std/cps/inqire/ToeicStdPage.do" },
         { name: "장학 조회", icon: "💰", url: "https://klasplus.yuntae.in/janghak", badge: "KLAS+" },
-        { name: "학생 개인별 포트폴리오 관리", icon: "📁", url: "https://klas.kw.ac.kr/std/cps/inqire/IndividualPortfolio.do" }
+        { name: "학생 개인별 포트폴리오 관리", icon: "📁", url: "https://klas.kw.ac.kr/std/cps/inqire/IndividualPortfolio.do" },
+        { name: "취득학점 포기 신청", icon: "🗑", url: "https://klas.kw.ac.kr/std/cps/inqire/DelHakjumStdPage.do" }
       ]
     },
     {
@@ -186,7 +189,7 @@ export default function Home() {
         { name: "토론참여", icon: "💬", url: "https://klas.kw.ac.kr/std/lis/evltn/DscsnStdPage.do" },
         { name: "설문참여", icon: "📊", url: "https://klas.kw.ac.kr/std/lis/sport/QustnrStdPage.do" },
         { name: "학습현황 조회", icon: "📈", url: "https://klas.kw.ac.kr/std/lis/evltn/LrnSttusStdPage.do" },
-        { name: "수업평가", icon: "🗳️", url: "https://klas.kw.ac.kr/mst/cps/inqire/LctreEvlMstPage.do" }
+        { name: "수업평가", icon: "🗳️", url: "https://klas.kw.ac.kr/std/cps/inqire/LctreEvlStdPage.do" }
       ]
     },
     {
@@ -227,10 +230,10 @@ export default function Home() {
       title: "등록관리",
       items: [
         { name: "등록금 고지서출력", icon: "💰", url: "https://klas.kw.ac.kr/std/hak/erollmnt/TutionNtPage.do" },
-        { name: "등록금/교육비 증명서", icon: "📄", url: "https://klas.kw.ac.kr/std/hak/erollmnt/PreSeterPage.do" },
-        { name: "이전학기 등록내역 조회", icon: "🔍", url: "https://klas.kw.ac.kr/std/hak/erollmnt/TutionEduPage.do" },
         { name: "계절수업고지서 출력", icon: "🖨️", url: "https://klas.kw.ac.kr/std/hak/erollmnt/SenalClNtPage.do" },
-        { name: "분할납부 고지서 출력", icon: "💳", url: "https://klas.kw.ac.kr/std/hak/erollmnt/PartPayNhtPage.do" }
+        { name: "분할납부 고지서 출력", icon: "💳", url: "https://klas.kw.ac.kr/std/hak/erollmnt/PartPayNhtPage.do" },
+        { name: "등록금/교육비 증명서", icon: "📄", url: "https://klas.kw.ac.kr/std/hak/erollmnt/PreSeterPage.do" },
+        { name: "이전학기 등록내역 조회", icon: "🔍", url: "https://klas.kw.ac.kr/std/hak/erollmnt/TutionEduPage.do" }
       ]
     },
     {
@@ -239,7 +242,8 @@ export default function Home() {
         { name: "광운역량이력서 입력", icon: "📈", url: "https://klas.kw.ac.kr/std/hak/cnslt/KwAbilUpStdPage.do" },
         { name: "학생포트폴리오 입력", icon: "📁", url: "https://kwjob.kw.ac.kr" },
         { name: "소속학과 교수 상담시간 조회", icon: "🕒", url: "https://klas.kw.ac.kr/std/hak/cnslt/CnsltTimeStdPage.do" },
-        { name: "상담만족도 조사", icon: "📊", url: "https://klas.kw.ac.kr/std/hak/cnslt/CnsltStsfdgRsrchStdPage.do" }
+        { name: "상담만족도 조사", icon: "📊", url: "https://klas.kw.ac.kr/std/hak/cnslt/CnsltStsfdgRsrchStdPage.do" },
+        { name: "교수상담예약", icon: "👥", url: "https://klas.kw.ac.kr/std/hak/cnslt/UdCnsAplyStdPage.do" },
       ]
     },
     {
@@ -255,15 +259,6 @@ export default function Home() {
         { name: "모바일 학생증(QR)", icon: "📱", url: "https://klas.kw.ac.kr/std/sys/optrn/MyNumberQrStdPage.do" },
         { name: "K-MOOC", icon: "🎓", url: "https://www.kmooc.kr/view/search/%EA%B4%91%EC%9A%B4%EB%8C%80%ED%95%99%EA%B5%90" },
         { name: "전화번호 검색", icon: "📞", url: "https://klas.kw.ac.kr/mst/ads/admst/SklgrndTelNoMstPage.do" },
-      ]
-    },
-    {
-      title: "KLAS+",
-      items: [
-        { name: "서비스 공지사항", icon: "🔔", url: "https://klasplus-log.yuntae.in/widget" },
-        { name: "자주 묻는 질문(FAQ)", icon: "❓", url: "https://blog.yuntae.in/23363fe4-f23d-4677-8f71-7f33e502b13a" },
-        { name: "개인정보 처리방침", icon: "🔒", url: "https://blog.yuntae.in/11cfc9b9-3eca-8078-96a0-c41c4ca9cb8f" },
-        { name: "오픈소스 라이선스", icon: "🔧", url: "https://blog.yuntae.in/11cfc9b9-3eca-802c-8c10-ebbccc3b2811" },
       ]
     }
   ];

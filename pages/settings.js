@@ -97,6 +97,10 @@ export default function Settings() {
         <span className="tossface">🔔</span>
         <span>공지사항</span>
       </button>
+      <button onClick={() => Android.openExternalLink("https://status.klasplus.yuntae.in")}>
+        <span className="tossface">📶</span>
+        <span>서비스 상태</span>
+      </button>
       <button onClick={() => Android.openExternalLink("https://blog.yuntae.in/23363fe4-f23d-4677-8f71-7f33e502b13a")}>
         <span className="tossface">❓</span>
         <span>자주 묻는 질문(FAQ)</span>
