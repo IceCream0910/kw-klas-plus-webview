@@ -36,9 +36,11 @@ export function KLAS(url: string, token: string, body: any): Promise<any> {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
+            fetch('/api/heartbeats?status=ok')
             return response.json();
         })
         .catch((error) => {
+            fetch('/api/heartbeats?status=fail')
             console.error('Error fetching KLAS data:', error);
             throw error;
         });
