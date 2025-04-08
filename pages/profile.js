@@ -256,7 +256,7 @@ export default function Home() {
         { name: "교직적성인성검사", icon: "✍️", url: "https://klas.kw.ac.kr/std/ads/admst/SklstfAptdExamStdPage.do" },
         { name: "일정관리", icon: "📅", url: "https://klas.kw.ac.kr/std/ads/admst/MySchdulPage.do" },
         { name: "Office 365", icon: "💻", url: "https://www.kw.ac.kr/ko/life/notice.jsp?BoardMode=view&DUID=21819" },
-        { name: "모바일 학생증(QR)", icon: "📱", url: "https://klas.kw.ac.kr/std/sys/optrn/MyNumberQrStdPage.do" },
+        { name: "모바일 학생증", icon: "💳", url: "https://klas.kw.ac.kr/std/sys/optrn/MyNumberQrStdPage.do", badge: "공식" },
         { name: "K-MOOC", icon: "🎓", url: "https://www.kmooc.kr/view/search/%EA%B4%91%EC%9A%B4%EB%8C%80%ED%95%99%EA%B5%90" },
         { name: "전화번호 검색", icon: "📞", url: "https://klas.kw.ac.kr/mst/ads/admst/SklgrndTelNoMstPage.do" },
       ]

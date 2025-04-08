@@ -93,11 +93,11 @@ export default function Settings() {
       <Spacer y={20} />
       <h3 style={{ margin: '10px' }}>링크</h3>
 
-      <button onClick={() => Android.openExternalLink("https://klasplus-log.yuntae.in/widget")}>
+      <button onClick={() => Android.openExternalLink("https://blog.klasplus.yuntae.in")}>
         <span className="tossface">🔔</span>
         <span>공지사항</span>
       </button>
-      <button onClick={() => Android.openExternalLink("https://status.klasplus.yuntae.in")}>
+      <button onClick={() => Android.openExternalLink("https://status.klasplus.yuntae.in/ko")}>
         <span className="tossface">📶</span>
         <span>서비스 상태</span>
       </button>

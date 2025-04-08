@@ -297,7 +297,7 @@ export default function Feed() {
 
         <div className="card" style={{ padding: '15px', borderRadius: '15px' }} onClick={() => {
           try {
-            Android.openExternalPage("https://klasplus-log.yuntae.in/widget")
+            Android.openExternalPage("https://blog.klasplus.yuntae.in")
           } catch (e) {
             toast('앱을 최신버전으로 업데이트 해주세요.');
           }
