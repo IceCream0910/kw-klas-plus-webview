@@ -3,6 +3,7 @@ import { useEffect } from "react";
 
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
+    console.log('App mounted');
     try {
       Android.completePageLoad();
     } catch (error) {

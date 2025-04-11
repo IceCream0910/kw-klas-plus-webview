@@ -231,7 +231,7 @@ export default function CalendarPage() {
     };
 
     return (
-        <main style={{ padding: '15px 5px 20px 5px' }}>
+        <main style={{ padding: '0px 5px 20px 5px' }}>
             <div style={styles.header}>
 
                 <h2 style={{ marginBottom: '20px', marginTop: '20px' }}>{currentMonth.format('MM월')}

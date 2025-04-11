@@ -7,6 +7,8 @@ import Spacer from './components/spacer';
 import Adfit from './components/adfit';
 import toast, { Toaster } from 'react-hot-toast';
 import { KLAS } from '../lib/klas';
+import Image from 'next/image';
+import Header from './components/header';
 
 export default function Feed() {
   const [yearHakgi, setYearHakgi] = useState(null);
@@ -25,6 +27,7 @@ export default function Feed() {
   const [filteredDeadlines, setFilteredDeadlines] = useState(null);
   const [advisor, setAdvisor] = useState(null);
   const [kwNoticeTab, setKwNoticeTab] = useState("");
+  const [policyAgreeDate, setPolicyAgreeDate] = useState(null);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -34,8 +37,20 @@ export default function Feed() {
     const savedExcludeNotStarted = JSON.parse(localStorage.getItem('excludeNotStarted') || 'false');
     setExcludeNotStarted(savedExcludeNotStarted);
 
+    const savedPolicyAgreeDate = localStorage.getItem('policyAgreeDate');
+    setPolicyAgreeDate(savedPolicyAgreeDate);
+
     setupWindowFunctions(savedExcludeNotStarted);
     fetchData();
+
+    const latestPolicyDate = process.env.NEXT_PUBLIC_LATEST_POLICY_DATE;
+    if (!savedPolicyAgreeDate || savedPolicyAgreeDate !== latestPolicyDate) {
+      try {
+        Android.openCustomBottomSheet("http://192.168.219.100:3000/modal/agreePolicy", false);
+      } catch (e) {
+        console.error('Failed to open policy bottom sheet:', e);
+      }
+    }
 
     return () => {
       delete window.receiveDeadlineData;
@@ -271,6 +286,8 @@ export default function Feed() {
       <Toaster
         position="top-center"
       />
+      <Header title={<Image src="/klasplus_icon_foreground_red.png" alt="Logo" width={40} height={40} style={{ borderRadius: '50%', marginLeft: '-5px' }} />} />
+
       {statusText ? (
         <div id="current_status">
 
@@ -291,7 +308,7 @@ export default function Feed() {
         </div>
       )}
 
-      <Spacer y={30} />
+      <Spacer y={20} />
 
       {process.env.NEXT_PUBLIC_NOTICE_TEXT && (<>
 

@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import IonIcon from '@reacticons/ionicons';
 import handleCalculateGPA, { calculateGPA } from "../lib/calculateGPA";
-import AppVersion from "./components/appVersion";
+import Header from "./components/header";
 import Spacer from "./components/spacer";
 import { BottomSheet } from 'react-spring-bottom-sheet';
 import 'react-spring-bottom-sheet/dist/style.css';
@@ -295,9 +295,15 @@ export default function Home() {
 
   return (
     <main>
+      <Header title={<h2>전체</h2>} />
+
       <div className="profile-card">
         {data ? <>
-          <motion.div layoutId="card" className="profile-card" onClick={() => setIsCardOpen(true)} style={{ padding: 0, display: 'flex', flexDirection: 'row', justifyContent: "space-between", alignItems: 'center', width: '100%' }}>
+          <motion.div layoutId="card" className="profile-card" onClick={() => {
+            try {
+              Android.openCustomBottomSheet("http://192.168.219.100:3000/modal/idCard", true)
+            } catch (e) { setIsCardOpen(true) }
+          }} style={{ padding: 0, display: 'flex', flexDirection: 'row', justifyContent: "space-between", alignItems: 'center', width: '100%' }}>
             <div style={{ opacity: .8, fontSize: '14px' }}>
               <Spacer y={5} />
               <motion.h3 layoutId="name" style={{ marginBottom: '5px', fontSize: '18px' }}>{data.kname}</motion.h3>
@@ -309,7 +315,11 @@ export default function Home() {
             <IonIcon name="chevron-forward-outline" style={{ position: 'relative', top: '2px', fontSize: '20px' }} />
           </motion.div>
           <Spacer y={10} />
-          <button onClick={() => setIsCardOpen(true)}
+          <button onClick={() => {
+            try {
+              Android.openCustomBottomSheet("http://192.168.219.100:3000/modal/idCard", true)
+            } catch (e) { setIsCardOpen(true) }
+          }}
             style={{ background: 'var(--notice-hover)', borderRadius: '10px' }}>
             <span className="tossface">🪪</span>모바일 학생증
             <IonIcon name="chevron-forward-outline" style={{ position: 'relative', top: '2px' }} />

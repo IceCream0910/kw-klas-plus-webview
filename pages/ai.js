@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import IonIcon from '@reacticons/ionicons';
 import LoadingComponent from './components/loader';
 import Spacer from './components/spacer';
+import Header from './components/header';
 import remarkGfm from 'remark-gfm'
 
 export default function AI() {
@@ -256,6 +257,8 @@ export default function AI() {
                 <title>KLAS GPT</title>
                 <link rel="icon" href="/favicon.ico" />
             </Head>
+
+            <Header title={<h2>KLAS AI</h2>} />
 
             <main>
                 <div className='messages-container' ref={scrollRef}>
