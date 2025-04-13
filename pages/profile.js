@@ -301,7 +301,7 @@ export default function Home() {
         {data ? <>
           <motion.div layoutId="card" className="profile-card" onClick={() => {
             try {
-              Android.openCustomBottomSheet("http://192.168.219.100:3000/modal/idCard", true)
+              Android.openCustomBottomSheet("https://klasplus.yuntae.in/modal/idCard", true)
             } catch (e) { setIsCardOpen(true) }
           }} style={{ padding: 0, display: 'flex', flexDirection: 'row', justifyContent: "space-between", alignItems: 'center', width: '100%' }}>
             <div style={{ opacity: .8, fontSize: '14px' }}>
@@ -317,7 +317,7 @@ export default function Home() {
           <Spacer y={10} />
           <button onClick={() => {
             try {
-              Android.openCustomBottomSheet("http://192.168.219.100:3000/modal/idCard", true)
+              Android.openCustomBottomSheet("https://klasplus.yuntae.in/modal/idCard", true)
             } catch (e) { setIsCardOpen(true) }
           }}
             style={{ background: 'var(--notice-hover)', borderRadius: '10px' }}>

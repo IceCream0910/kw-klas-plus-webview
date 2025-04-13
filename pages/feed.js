@@ -46,7 +46,7 @@ export default function Feed() {
     const latestPolicyDate = process.env.NEXT_PUBLIC_LATEST_POLICY_DATE;
     if (!savedPolicyAgreeDate || savedPolicyAgreeDate !== latestPolicyDate) {
       try {
-        Android.openCustomBottomSheet("http://192.168.219.100:3000/modal/agreePolicy", false);
+        Android.openCustomBottomSheet("https://klasplus.yuntae.in/modal/agreePolicy", false);
       } catch (e) {
         console.error('Failed to open policy bottom sheet:', e);
       }

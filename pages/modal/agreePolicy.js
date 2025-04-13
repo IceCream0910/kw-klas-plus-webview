@@ -18,12 +18,7 @@ export default function IdCard() {
 
             <div className="bottom-sheet" style={{ padding: 0, marginBottom: 0 }}>
                 <button style={{ background: 'var(--button-background)', height: '50px' }} onClick={() => {
-                    const date = new Date();
-                    const year = date.getFullYear();
-                    const month = String(date.getMonth() + 1).padStart(2, '0');
-                    const day = String(date.getDate()).padStart(2, '0');
-                    const formattedDate = `${year}${month}${day}`; // YYYYMMDD
-                    localStorage.setItem("policyAgreeDate", formattedDate);
+                    localStorage.setItem("policyAgreeDate", process.env.NEXT_PUBLIC_LATEST_POLICY_DATE);
                     Android.closeModal();
                 }}>동의</button>
             </div>
@@ -31,7 +26,7 @@ export default function IdCard() {
             <style jsx global>{`
             body {
                 background: transparent;
-                padding: 0.3em 1.3em 2em 1.3em;
+                padding: 0.3em 1.3em 1.3em 1.3em;
                 margin:0;
                 overflow: hidden;
                 width: 90dvw;
