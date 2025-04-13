@@ -12,11 +12,9 @@ const AdSense = ({ adClient, adSlot, format = "auto", responsive = "true" }) => 
     return (
         <ins
             className="adsbygoogle"
-            style={{ display: "block", width: '100%', maxHeight: '100px', borderRadius: '15px' }}
+            style={{ display: "block", width: '300px', maxHeight: '100px', borderRadius: '15px' }}
             data-ad-client={adClient}
             data-ad-slot={adSlot}
-            data-ad-format={format}
-            data-full-width-responsive={responsive}
         ></ins>
     );
 };
