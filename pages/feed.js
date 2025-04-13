@@ -9,6 +9,9 @@ import toast, { Toaster } from 'react-hot-toast';
 import { KLAS } from '../lib/klas';
 import Image from 'next/image';
 import Header from './components/header';
+import dynamic from 'next/dynamic';
+
+const AdSense = dynamic(() => import('./components/adSense'), { ssr: false });
 
 export default function Feed() {
   const [yearHakgi, setYearHakgi] = useState(null);
@@ -404,7 +407,10 @@ export default function Feed() {
 
       <LectureNotices token={token} />
 
-      <Adfit />
+      <Spacer y={30} />
+      <div style={{ width: '100%', height: '100px', maxHeight: '200px', display: 'flex', justifyContent: 'center' }}>
+        <AdSense adClient="ca-pub-7178712602934912" adSlot="8415533910" />
+      </div>
 
       <Spacer y={30} />
 
@@ -460,7 +466,11 @@ export default function Feed() {
         )}
       </div>
 
-      <Spacer y={40} />
+      <Spacer y={20} />
+
+      <Adfit />
+      <Spacer y={20} />
+
       <h3 style={{ margin: 'auto 10px' }}>책임지도교수</h3>
       <Spacer y={15} />
       {advisor ? (
