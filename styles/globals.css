@@ -263,7 +263,7 @@ select {
   flex-direction: column;
   gap: 10px;
   overflow-y: auto;
-  height: calc(100dvh - 140px);
+  height: calc(100dvh - 190px);
 }
 
 .spinner {
