@@ -35,7 +35,7 @@ const Adfit = () => {
             <div className='adfit1' style={{ margin: '20px 0', position: 'relative' }}>
                 <div
                     style={{
-                        display: `${!version.includes(".") && version > process.env.NEXT_PUBLIC_ANDROID_LATEST_VERSION ? 'none' : 'block'}`,
+                        display: `${!version.includes(".") && version >= process.env.NEXT_PUBLIC_ANDROID_LATEST_VERSION ? 'none' : 'block'}`,
                         position: 'absolute',
                         top: 0,
                         left: 0,
