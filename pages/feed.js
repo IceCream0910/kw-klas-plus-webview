@@ -468,9 +468,6 @@ export default function Feed() {
 
       <Spacer y={20} />
 
-      <Adfit />
-      <Spacer y={20} />
-
       <h3 style={{ margin: 'auto 10px' }}>책임지도교수</h3>
       <Spacer y={15} />
       {advisor ? (
