@@ -299,7 +299,7 @@ export default function Home() {
 
       <div className="profile-card">
         {data ? <>
-          <motion.div layoutId="card" className="profile-card" onClick={() => {
+          <motion.div layoutId="card" onClick={() => {
             try {
               Android.openCustomBottomSheet("https://klasplus.yuntae.in/modal/idCard", true)
             } catch (e) { setIsCardOpen(true) }
@@ -326,7 +326,7 @@ export default function Home() {
           </button>
           <Spacer y={15} />
           {totGrade &&
-            <div className="profile-card grade-card" style={{ padding: 0, flexDirection: 'row', alignItems: 'space-between', width: '100%' }} onClick={() => showGrades && Android.openPage('https://klasplus.yuntae.in/grade')}>
+            <div className="grade-card" style={{ padding: 0, flexDirection: 'row', alignItems: 'space-between', width: '100%', backgroundColor: 'none !important' }} onClick={() => showGrades && Android.openPage('https://klasplus.yuntae.in/grade')}>
               <div style={{ textAlign: 'center', width: '100%' }} onClick={handleGradeClick}>
                 <span style={{ opacity: .8, fontSize: '12px' }}>취득학점</span>
                 <h3>{hideGrades && !showGrades ? '??' : totGrade.credit}</h3>

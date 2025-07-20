@@ -92,21 +92,19 @@ export default function Feed() {
         try { Android.reload(); }
         catch (e) { console.error(e); }
       },
-      refreshTimeout: 2000,
       distThreshold: 70,
       distMax: 80,
       distReload: 70,
-      instructionsPullToRefresh: '당겨서 새로고침',
-      instructionsReleaseToRefresh: '이제 놓으세요',
+      instructionsPullToRefresh: ' ',
+      instructionsReleaseToRefresh: '새로고침하려면 놓기',
       instructionsRefreshing: '새로운 정보를 불러오는 중'
     });
-
-    const observer = new MutationObserver((mutations) => {
-      const ptrElement = document.querySelector('.ptr--release');
+    const observer = new MutationObserver(() => {
+      const ptrRelease = document.querySelector('.ptr--release');
+      const ptrRefreshing = document.querySelector('.ptr--refresh');
       const area = document.querySelector('.pull-to-swipe-area');
-      console.log('Observer triggered:', ptrElement, area);
       if (area) {
-        area.style.opacity = ptrElement ? '0.3' : '1';
+        area.style.opacity = (ptrRelease || ptrRefreshing) ? '0.3' : '1';
       }
     });
     observer.observe(document.body, { childList: true, subtree: true });
@@ -456,7 +454,7 @@ export default function Feed() {
 
         <LectureNotices token={token} />
 
-        <Spacer y={15} />
+        <Spacer y={20} />
         <div className="card non-anim" style={{ padding: '10px 0' }}>
           <div style={{
             position: 'absolute',
@@ -476,7 +474,7 @@ export default function Feed() {
 
 
 
-        <Spacer y={15} />
+        <Spacer y={20} />
 
         <div className="card non-anim" style={{ paddingBottom: '0.1em' }}>
           <div className='card-title'>
@@ -498,7 +496,7 @@ export default function Feed() {
             )}
           </div>
         </div>
-        <Spacer y={15} />
+        <Spacer y={20} />
 
         <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
           <div className='card-title' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -569,7 +567,7 @@ export default function Feed() {
           </div>
         </div>
 
-        <Spacer y={15} />
+        <Spacer y={20} />
 
         {
           advisor ? (
