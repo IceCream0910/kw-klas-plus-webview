@@ -732,7 +732,6 @@ input[type="datetime-local"] {
 
 .ptr--ptr {
   box-shadow: none !important;
-  margin-bottom: 20px;
   opacity: 0.6;
 }
 
