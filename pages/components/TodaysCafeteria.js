@@ -33,12 +33,12 @@ const TodaysCafeteriaMenu = ({ data }) => {
       {todaysMenus.map((restaurant, index) => (
         <div key={index}>
           <h5>{restaurant.name}</h5>
-          <span style={{ fontSize: '13px', opacity: .7 }}>
+          <span style={{ fontSize: '13px', opacity: .4 }}>
             {restaurant.price} • {restaurant.time}</span>
           <Spacer y={10} />
 
           {formatMenu(restaurant.todayMenu.menu).map((item, idx) => (
-            <span>{item}{idx < formatMenu(restaurant.todayMenu.menu).length - 1 && ", "}</span>
+            <span style={{ opacity: .6 }}>{item}{idx < formatMenu(restaurant.todayMenu.menu).length - 1 && ", "}</span>
           ))}
 
           <Spacer y={10} />

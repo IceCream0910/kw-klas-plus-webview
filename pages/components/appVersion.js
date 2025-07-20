@@ -29,8 +29,8 @@ const AppVersion = ({ updater }) => {
             />
             {updater ?
                 <>
-                    {version != process.env.NEXT_PUBLIC_ANDROID_LATEST_VERSION ? <>
-                        <div className="card" style={{ padding: '15px 15px 0px 15px', marginBottom: '40px', borderRadius: '15px' }} onClick={() => {
+                    {process.env.NEXT_PUBLIC_DEVELOPMENT != 'true' && version != process.env.NEXT_PUBLIC_ANDROID_LATEST_VERSION ? <>
+                        <Spacer y={20} /> <div className="card" style={{ padding: '15px 15px 0px 15px', borderRadius: '15px' }} onClick={() => {
                             try {
                                 Android.openExternalPage("https://play.google.com/store/apps/details?id=com.icecream.kwklasplus")
                             } catch (e) {
@@ -46,7 +46,7 @@ const AppVersion = ({ updater }) => {
                             </div>
                         </div>
                     </>
-                        : <Spacer y={20} />}
+                        : <Spacer y={10} />}
                 </>
                 :
                 <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%', fontSize: '13px', opacity: .5 }} >

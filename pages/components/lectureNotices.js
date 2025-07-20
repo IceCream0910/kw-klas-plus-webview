@@ -11,11 +11,58 @@ const LectureNotices = ({ token }) => {
     const fetchNotices = async (fetchAll = false) => {
         setLoading(true);
         try {
-            const response = await fetch("/api/lectureNotice", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token, all: fetchAll }),
-            });
+            let response;
+            if (process.env.NEXT_PUBLIC_DEVELOPMENT === 'true') {
+                // 더미 데이터 생성
+                response = {
+                    json: async () => ({
+                        notices: [
+                            {
+                                pushSeq: 1,
+                                title: "더미 알림 제목 1",
+                                body: "더미 알림 내용 1",
+                                registDt: "2024-06-01 12:00"
+                            },
+                            {
+                                pushSeq: 2,
+                                title: "더미 알림 제목 2",
+                                body: "더미 알림 내용 2",
+                                registDt: "2024-06-02 13:00"
+                            },
+                            {
+                                pushSeq: 3,
+                                title: "더미 알림 제목 3",
+                                body: "더미 알림 내용 3",
+                                registDt: "2024-06-03 14:00"
+                            },
+                            {
+                                pushSeq: 4,
+                                title: "더미 알림 제목 4",
+                                body: "더미 알림 내용 4",
+                                registDt: "2024-06-04 15:00"
+                            },
+                            {
+                                pushSeq: 5,
+                                title: "더미 알림 제목 5",
+                                body: "더미 알림 내용 5",
+                                registDt: "2024-06-05 16:00"
+                            },
+                            {
+                                pushSeq: 6,
+                                title: "더미 알림 제목 6",
+                                body: "더미 알림 내용 6",
+                                registDt: "2024-06-06 17:00"
+                            }
+                        ]
+                    })
+                };
+            } else {
+                response = await fetch("/api/lectureNotice", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ token, all: fetchAll }),
+                });
+            }
             const data = await response.json();
             setNotices(data.notices);
         } catch (error) {
@@ -42,12 +89,13 @@ const LectureNotices = ({ token }) => {
     if (!loading && (!notices || notices.length === 0)) {
         return (
             <>
-                <Spacer y={40} />
-                <h3>강의 알림</h3>
-                <Spacer y={15} />
-                <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
+                <Spacer y={20} />
+                <div className="card non-anim" id="notices" style={{ paddingBottom: '30px' }}>
+                    <div className='card-title'>
+                        <span>강의 알림</span>
+                    </div>
                     <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', justifyContent: 'center', marginTop: '10px', opacity: '.3' }}>
-                        <svg width="64" height="41" viewBox="0 0 64 41" xmlns="http://www.w3.org/2000/svg">
+                        <svg width="64" height="41" viewBox="0 0 64 41" xmlns="http://www.w3.org/2000/svg" style={{ marginBottom: '5px' }}>
                             <g transform="translate(0 1)" fill="none" fillRule="evenodd">
                                 <g fillRule="nonzero" stroke="var(--text-color)">
                                     <path d="M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z"></path>
@@ -55,9 +103,9 @@ const LectureNotices = ({ token }) => {
                                 </g>
                             </g>
                         </svg>
-                        <span>최근 공지사항이 없습니다!</span>
-                    </div>
-                </div>
+                        <span>최근 받은 알림이 없어요</span>
+                    </div >
+                </div >
             </>
         );
     }
@@ -65,55 +113,58 @@ const LectureNotices = ({ token }) => {
     return (
         <>
             <div id="notices-section" />
-            <Spacer y={40} />
-            <h3 style={{ margin: 'auto 10px' }}>강의 알림</h3>
-            <Spacer y={15} />
+            <Spacer y={20} />
             <div className="card non-anim" style={{ paddingBottom: '20px' }}>
-                {notices && expanded ? (
-                    notices.map((notice, index) => (
-                        <div key={index} className="notice-item" onClick={() => typeof Android !== 'undefined' && Android.openPage(`https://klas.kw.ac.kr/?redirectUrl=/mst/cmn/login/PushLinkForm.do?pushSeq=${notice.pushSeq}`)}>
-                            <span>{notice.title} · <span><b>{notice.body}</b></span></span><br />
-                            <span style={{ opacity: 0.6, fontSize: '12px' }}>{notice.registDt}</span>
-                            {index !== (expanded ? notices.length : 5) - 1 && index !== notices.length - 1 && <hr style={{ opacity: 0.3 }} />}
+                <div className='card-title'>
+                    <span>강의 알림</span>
+                </div>
 
-                        </div>
-                    ))
-                )
-                    : (
-                        notices.slice(0, Math.min(5, notices.length)).map((notice, index) => (
+                <div className='card-content'>
+                    {notices && expanded ? (
+                        notices.map((notice, index) => (
                             <div key={index} className="notice-item" onClick={() => typeof Android !== 'undefined' && Android.openPage(`https://klas.kw.ac.kr/?redirectUrl=/mst/cmn/login/PushLinkForm.do?pushSeq=${notice.pushSeq}`)}>
                                 <span>{notice.title} · <span><b>{notice.body}</b></span></span><br />
                                 <span style={{ opacity: 0.6, fontSize: '12px' }}>{notice.registDt}</span>
-                                {index !== (expanded ? notices.length : 5) - 1 && index !== notices.length - 1 && <hr style={{ opacity: 0.3 }} />}
+                                {index !== (expanded ? notices.length : 5) - 1 && index !== notices.length - 1 && <hr />}
+
                             </div>
                         ))
                     )
-                }
+                        : (
+                            notices.slice(0, Math.min(5, notices.length)).map((notice, index) => (
+                                <div key={index} className="notice-item" onClick={() => typeof Android !== 'undefined' && Android.openPage(`https://klas.kw.ac.kr/?redirectUrl=/mst/cmn/login/PushLinkForm.do?pushSeq=${notice.pushSeq}`)}>
+                                    <span>{notice.title} · <span><b>{notice.body}</b></span></span><br />
+                                    <span style={{ opacity: 0.6, fontSize: '12px' }}>{notice.registDt}</span>
+                                    {index !== (expanded ? notices.length : 5) - 1 && index !== notices.length - 1 && <hr />}
+                                </div>
+                            ))
+                        )
+                    }
 
 
-                {loading && (
-                    <div className="card non-anim" id="notices" style={{ paddingTop: '20px', paddingBottom: '20px' }}>
+                    {loading && (<>
                         <div className="skeleton" style={{ height: '50px', width: '100%', marginBottom: '15px' }} />
                         <div className="skeleton" style={{ height: '50px', width: '100%', marginBottom: '15px' }} />
                         <div className="skeleton" style={{ height: '50px', width: '100%' }} />
-                    </div>
-                )}
+                    </>
+                    )}
 
-                {
-                    <div style={{ textAlign: 'center', marginTop: '20px' }}>
-                        <button
-                            onClick={handleShowMore}
-                            disabled={loading}
-                            style={{ width: '100%', padding: '10px 0 0 0', textAlign: 'center', opacity: '.7', border: 'none', cursor: 'pointer', fontSize: '13px' }}
-                        >
-                            {loading ? '로딩 중...' : expanded ? <>
-                                <IonIcon name='chevron-up-outline' style={{ position: 'relative', top: '2px' }} /><br />접기
-                            </> : <>
-                                <IonIcon name='chevron-down-outline' style={{ position: 'relative', top: '2px' }} /><br />더보기
-                            </>}
-                        </button>
-                    </div>
-                }
+                    {
+                        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                            <button
+                                onClick={handleShowMore}
+                                disabled={loading}
+                                style={{ width: '100%', padding: '10px 0 0 0', textAlign: 'center', opacity: '.7', border: 'none', cursor: 'pointer', fontSize: '13px' }}
+                            >
+                                {loading ? '로딩 중...' : expanded ? <>
+                                    <IonIcon name='chevron-up-outline' style={{ position: 'relative', top: '2px' }} /><br />접기
+                                </> : <>
+                                    <IonIcon name='chevron-down-outline' style={{ position: 'relative', top: '2px' }} /><br />더보기
+                                </>}
+                            </button>
+                        </div>
+                    }
+                </div>
             </div>
         </>
     );

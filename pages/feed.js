@@ -10,6 +10,7 @@ import { KLAS } from '../lib/klas';
 import Image from 'next/image';
 import Header from './components/header';
 import dynamic from 'next/dynamic';
+import PullToRefresh from 'pulltorefreshjs';
 
 const AdSense = dynamic(() => import('./components/adSense'), { ssr: false });
 
@@ -46,6 +47,36 @@ export default function Feed() {
     setupWindowFunctions(savedExcludeNotStarted);
     fetchData();
 
+    // 더미데이터
+    if (process.env.NEXT_PUBLIC_DEVELOPMENT === 'true') {
+      const dummyDeadlines = [
+        {
+          name: 'Dummy Course 1',
+          subj: 'CS101',
+          onlineLecture: [{ hourGap: 10, startDate: null }],
+          task: [],
+          teamTask: []
+        },
+        {
+          name: 'Dummy Course 2',
+          subj: 'MA102',
+          onlineLecture: [{ hourGap: 20, startDate: null }],
+          task: [{ hourGap: 20, startDate: null }],
+          teamTask: [{ hourGap: 20, startDate: null }]
+        }
+      ];
+      window.receiveDeadlineData(JSON.stringify(dummyDeadlines));
+
+      const dummyTimetable = {
+        0: [
+          { day: 0, title: 'Dummy Class', subj: 'CS101', startTime: '09:00', endTime: '10:00', info: 'Prof. X' }
+        ],
+        1: [], 2: [], 3: [], 4: [], 5: [], 6: []
+      };
+      window.receiveTimetableData(JSON.stringify(dummyTimetable));
+    }
+    //
+
     const latestPolicyDate = process.env.NEXT_PUBLIC_LATEST_POLICY_DATE;
     if (!savedPolicyAgreeDate || savedPolicyAgreeDate !== latestPolicyDate) {
       try {
@@ -55,7 +86,34 @@ export default function Feed() {
       }
     }
 
+    const ptr = PullToRefresh.init({
+      mainElement: '.pull-to-swipe-area',
+      onRefresh() {
+        try { Android.reload(); }
+        catch (e) { console.error(e); }
+      },
+      refreshTimeout: 2000,
+      distThreshold: 70,
+      distMax: 80,
+      distReload: 70,
+      instructionsPullToRefresh: '당겨서 새로고침',
+      instructionsReleaseToRefresh: '이제 놓으세요',
+      instructionsRefreshing: '새로운 정보를 불러오는 중'
+    });
+
+    const observer = new MutationObserver((mutations) => {
+      const ptrElement = document.querySelector('.ptr--release');
+      const area = document.querySelector('.pull-to-swipe-area');
+      console.log('Observer triggered:', ptrElement, area);
+      if (area) {
+        area.style.opacity = ptrElement ? '0.3' : '1';
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
     return () => {
+      ptr.destroy();
+      observer.disconnect();
       delete window.receiveDeadlineData;
       delete window.receiveNoticeData;
       delete window.receiveTimetableData;
@@ -284,235 +342,287 @@ export default function Feed() {
     return 'var(--green)';
   };
 
+
   return (
     <div style={{ padding: '5px' }}>
-      <Toaster
-        position="top-center"
-      />
+      <Toaster position="top-center" />
       <Header title={<Image src="/klasplus_icon_foreground_red.png" alt="Logo" width={40} height={40} style={{ borderRadius: '50%', marginLeft: '-5px' }} />} />
 
-      {statusText ? (
-        <div id="current_status">
+      <div className='pull-to-swipe-area'>
 
-          <h4 id="status_txt" dangerouslySetInnerHTML={{ __html: statusText }}></h4>
-          {showButtons && (
-            <div id="status_btns">
-              <button id="qr_btn" onClick={openLecturePage} style={{ backgroundColor: 'var(--button-background)', color: 'var(--button-text)', width: 'fit-content', padding: '10px 15px', fontSize: '15px' }}>강의 홈</button>
-              <button id="qr_btn" onClick={openQRScan} style={{ backgroundColor: 'var(--card-background)', color: 'var(--text-color)', marginLeft: '10px', width: 'fit-content', padding: '10px 15px', fontSize: '15px' }}>
-                QR 출석
-              </button>
+
+        {statusText ? (
+          <div id="current_status">
+            <h4 id="status_txt" dangerouslySetInnerHTML={{ __html: statusText }}></h4>
+            {showButtons && (
+              <div id="status_btns">
+                <button id="qr_btn" onClick={openLecturePage} style={{ backgroundColor: 'var(--button-background)', color: 'var(--button-text)', width: 'fit-content', padding: '10px 15px', fontSize: '15px' }}>강의 홈</button>
+                <button id="qr_btn" onClick={openQRScan} style={{ backgroundColor: 'var(--card-background)', color: 'var(--text-color)', marginLeft: '10px', width: 'fit-content', padding: '10px 15px', fontSize: '15px' }}>
+                  QR 출석
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div id="current_status">
+            <div className="skeleton" style={{ height: '30px', width: '30%', marginBottom: '10px' }} />
+            <div className="skeleton" style={{ height: '20px', width: '60%' }} />
+          </div>
+        )}
+
+        <Spacer y={10} />
+
+        {process.env.NEXT_PUBLIC_NOTICE_TEXT && (<>
+          <div className="card" style={{ padding: '15px', borderRadius: '15px' }} onClick={() => {
+            try {
+              Android.openExternalPage("https://blog.klasplus.yuntae.in")
+            } catch (e) {
+              toast('앱을 최신버전으로 업데이트 해주세요.');
+            }
+          }}>
+            <div style={{ width: '100%', display: 'flex', alignContent: 'center', gap: '5px' }}>
+              <IonIcon name="notifications" style={{ opacity: .7 }} />
+              <b style={{ fontSize: '14px', position: 'relative', top: '1px' }}>{process.env.NEXT_PUBLIC_NOTICE_TEXT}</b>
+              <IonIcon name="chevron-forward-outline" />
+            </div>
+          </div>
+          <Spacer y={20} />
+        </>
+        )}
+
+        <AppVersion updater={true} />
+
+        {showToggle && (
+          <>
+            <Spacer y={5} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ opacity: .7, fontSize: '14px' }}>아직 시작일이 되지 않은 항목 숨기기</span>
+              <label className="switch" style={{ transform: 'scale(0.8)' }}>
+                <input
+                  type="checkbox"
+                  checked={excludeNotStarted}
+                  onChange={handleToggleChange}
+                />
+                <span className="slider"></span>
+              </label>
+            </div>
+          </>
+        )}
+
+        <Spacer y={15} />
+        <div id="remaining-deadline">
+          {filteredDeadlines ? (
+            filteredDeadlines.length === 0 ? (
+              <div className="card non-anim" id="notices" style={{ paddingBottom: '30px' }}>
+                <div className='card-title'>
+                  <span>남은 할 일</span>
+                </div>
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', justifyContent: 'center', marginTop: '10px', opacity: '.3' }}>
+                  <IonIcon name="checkmark-circle" style={{ fontSize: '50px', marginBottom: '5px' }} />
+                  <span>할 일을 모두 끝냈어요!</span>
+                </div>
+              </div>
+            ) : (
+              filteredDeadlines.map((item, index) => (
+                <div key={index} className="card" style={{ paddingBottom: '15px' }}>
+                  <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignContent: 'center' }}>
+                    <b style={{ fontSize: '15px' }}>{item.name}</b>
+                    <div style={{ position: 'relative', top: '-8px', right: '-5px' }}>
+                      <button style={{ width: 'fit-content', background: 'var(--background)', fontSize: '12px', padding: '8px 10px' }}
+                        onClick={() => typeof Android !== 'undefined' && Android.openLectureActivity(item.subj, item.name)}>강의 홈</button>
+                    </div>
+                  </div>
+
+                  <div onClick={() => typeof Android !== 'undefined' && Android.evaluate('/std/lis/evltn/OnlineCntntsStdPage.do', yearHakgi, item.subj)}>
+                    {renderDeadlineContent('온라인 강의', item.onlineLecture)}
+                  </div>
+                  <div onClick={() => typeof Android !== 'undefined' && Android.evaluate('/std/lis/evltn/TaskStdPage.do', yearHakgi, item.subj)}>
+                    {renderDeadlineContent('과제', item.task)}
+                  </div>
+                  <div onClick={() => typeof Android !== 'undefined' && Android.evaluate('/std/lis/evltn/PrjctStdPage.do', yearHakgi, item.subj)}>
+                    {renderDeadlineContent('팀 프로젝트', item.teamTask)}
+                  </div>
+                </div>
+              ))
+            )
+          ) : (
+            <div>
+              <div className="skeleton" style={{ height: '80px', width: '100%', marginBottom: '10px' }} />
+              <div className="skeleton" style={{ height: '80px', width: '100%', marginBottom: '10px' }} />
+              <div className="skeleton" style={{ height: '80px', width: '100%', marginBottom: '10px' }} />
             </div>
           )}
         </div>
-      ) : (
-        <div id="current_status">
-          <div className="skeleton" style={{ height: '30px', width: '30%', marginBottom: '10px' }} />
-          <div className="skeleton" style={{ height: '20px', width: '60%' }} />
-        </div>
-      )}
 
-      <Spacer y={20} />
+        <LectureNotices token={token} />
 
-      {process.env.NEXT_PUBLIC_NOTICE_TEXT && (<>
-
-        <div className="card" style={{ padding: '15px', borderRadius: '15px' }} onClick={() => {
-          try {
-            Android.openExternalPage("https://blog.klasplus.yuntae.in")
-          } catch (e) {
-            toast('앱을 최신버전으로 업데이트 해주세요.');
-          }
-        }}><div style={{ width: '100%', display: 'flex', alignContent: 'center', gap: '5px' }}>
-            <IonIcon name="notifications" style={{ opacity: .7 }} />
-            <b style={{ fontSize: '14px', position: 'relative', top: '1px' }}>{process.env.NEXT_PUBLIC_NOTICE_TEXT}</b>
-            <IonIcon name="chevron-forward-outline" />
+        <Spacer y={15} />
+        <div className="card non-anim" style={{ padding: '0px' }}>
+          <div style={{
+            position: 'absolute',
+            zIndex: 100,
+            top: '10px',
+            right: '10px',
+            background: 'var(--background)',
+            borderRadius: '15px',
+            fontSize: '12px',
+            opacity: 0.5,
+            padding: '5px 10px'
+          }}>광고</div>
+          <div style={{ width: '100%', height: '100px', maxWidth: '100%', display: 'flex', justifyContent: 'center' }}>
+            <AdSense adClient="ca-pub-7178712602934912" adSlot="8415533910" />
           </div>
         </div>
 
-        <Spacer y={20} />
-      </>
-      )}
-
-      <AppVersion updater={true} />
-
-      <h3><span className='tossface' style={{ position: 'relative', top: '2px' }}>⏰</span> 잊지 말고 챙겨볼까요?
-
-        <button type="button" onClick={() => {
-          try {
-            Android.reload();
-          } catch (e) {
-            toast.error('현재 버전에서 지원되지 않는 기능입니다. 앱을 최신 버전으로 업데이트 해주세요.');
-            console.error(e);
-          }
-        }} style={{ background: 'var(--card-background)', padding: '5px', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', justifyContent: 'center', alignItems: 'center', float: 'right', marginTop: '-5px' }}>
-          <IonIcon name="refresh" />
-        </button>
-
-      </h3>
-
-      <Spacer y={5} />
 
 
-      {showToggle && (
-        <>
-          <Spacer y={5} />
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ opacity: .7, fontSize: '14px' }}>아직 시작일이 되지 않은 항목 숨기기</span>
-            <label className="switch" style={{ transform: 'scale(0.8)' }}>
-              <input
-                type="checkbox"
-                checked={excludeNotStarted}
-                onChange={handleToggleChange}
-              />
-              <span className="slider"></span>
-            </label>
+        <Spacer y={15} />
+
+        <div className="card non-anim" style={{ paddingBottom: '0.1em' }}>
+          <div className='card-title'>
+            <span>오늘의 학식</span>
+            <button onClick={() => Android.openPage('https://www.kw.ac.kr/ko/life/facility11.jsp')} style={{ float: "right", width: 'fit-content', marginTop: '-12px' }}>
+              <IonIcon name='add-outline' />
+            </button>
           </div>
-        </>
-      )}
-
-      <Spacer y={15} />
-      <div id="remaining-deadline">
-        {filteredDeadlines ? (
-          filteredDeadlines.length === 0 ? (<span style={{ opacity: .5 }}>남아있는 강의 및 과제가 없습니다!</span>) : (
-            filteredDeadlines.map((item, index) => (
-              <div key={index} className="card" style={{ paddingBottom: '15px' }}>
-                <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignContent: 'center' }}>
-                  <b style={{ fontSize: '15px' }}>{item.name}</b>
-                  <div style={{ position: 'relative', top: '-8px', right: '-5px' }}>
-                    <button style={{ width: 'fit-content', background: 'var(--background)', fontSize: '12px', padding: '8px 10px' }}
-                      onClick={() => typeof Android !== 'undefined' && Android.openLectureActivity(item.subj, item.name)}>강의 홈</button>
-                  </div>
-                </div>
-
-                <div onClick={() => typeof Android !== 'undefined' && Android.evaluate('/std/lis/evltn/OnlineCntntsStdPage.do', yearHakgi, item.subj)}>
-                  {renderDeadlineContent('온라인 강의', item.onlineLecture)}
-                </div>
-                <div onClick={() => typeof Android !== 'undefined' && Android.evaluate('/std/lis/evltn/TaskStdPage.do', yearHakgi, item.subj)}>
-                  {renderDeadlineContent('과제', item.task)}
-                </div>
-                <div onClick={() => typeof Android !== 'undefined' && Android.evaluate('/std/lis/evltn/PrjctStdPage.do', yearHakgi, item.subj)}>
-                  {renderDeadlineContent('팀 프로젝트', item.teamTask)}
-                </div>
-              </div>
-            ))
-          )
-        ) : (
-          <div>
-            <div className="skeleton" style={{ height: '80px', width: '100%', marginBottom: '10px' }} />
-            <div className="skeleton" style={{ height: '80px', width: '100%', marginBottom: '10px' }} />
-            <div className="skeleton" style={{ height: '80px', width: '100%', marginBottom: '10px' }} />
-
+          <div className="card-content">
+            {!cafeteria ? (
+              <>
+                <div className="skeleton" style={{ height: '20px', width: '30%', marginBottom: '10px', marginTop: '-10px' }} />
+                <div className="skeleton" style={{ height: '20px', width: '50%', marginBottom: '10px' }} />
+                <div className="skeleton" style={{ height: '20px', width: '40%', marginBottom: '10px' }} />
+                <div className="skeleton" style={{ height: '20px', width: '70%', marginBottom: '20px' }} />
+              </>
+            ) : (
+              <TodaysCafeteriaMenu data={cafeteria} />
+            )}
           </div>
-        )}
-      </div>
+        </div>
+        <Spacer y={15} />
 
-      <LectureNotices token={token} />
-
-      <Spacer y={30} />
-      <div style={{ width: '100%', height: '100px', maxWidth: '100%', display: 'flex', justifyContent: 'center' }}>
-        <AdSense adClient="ca-pub-7178712602934912" adSlot="8415533910" />
-      </div>
-
-      <Spacer y={30} />
-
-      <h3 style={{ margin: 'auto 10px' }}>
-        오늘의 학식
-        <button onClick={() => Android.openPage('https://www.kw.ac.kr/ko/life/facility11.jsp')} style={{ float: "right", width: 'fit-content', marginTop: '-5px' }}>
-          <IonIcon name='add-outline' />
-        </button>
-      </h3>
-      <Spacer y={15} />
-      <div className="card non-anim" style={{ paddingTop: '1.5em', paddingBottom: '0.1em' }}>
-        {!cafeteria ? (
-          <>
-            <div className="skeleton" style={{ height: '20px', width: '30%', marginBottom: '10px', marginTop: '-10px' }} />
-            <div className="skeleton" style={{ height: '20px', width: '50%', marginBottom: '10px' }} />
-            <div className="skeleton" style={{ height: '20px', width: '40%', marginBottom: '10px' }} />
-            <div className="skeleton" style={{ height: '20px', width: '70%', marginBottom: '20px' }} />
-          </>
-        ) : (
-          <TodaysCafeteriaMenu data={cafeteria} />
-        )}
-      </div>
-      <Spacer y={40} />
-
-      <h3 style={{ margin: 'auto 10px' }}>
-        <span onClick={() => setKwNoticeTab("")} style={{ opacity: `${kwNoticeTab === "" ? 1 : 0.5}` }}>전체 </span>
-        <span onClick={() => setKwNoticeTab("1")} style={{ opacity: `${kwNoticeTab === "1" ? 1 : 0.5}` }}>학사 </span>
-        공지사항
-        <button onClick={() => Android.openPage('https://www.kw.ac.kr/ko/life/notice.jsp')} style={{ float: "right", width: 'fit-content', marginTop: '-5px' }}>
-          <IonIcon name='add-outline' />
-        </button>
-      </h3>
-      <Spacer y={15} />
-      <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
-        {!kwNotice ? (
-          <>
-            <div className="skeleton" style={{ height: '50px', width: '100%', marginBottom: '15px' }} />
-            <div className="skeleton" style={{ height: '50px', width: '100%', marginBottom: '15px' }} />
-            <div className="skeleton" style={{ height: '50px', width: '100%' }} />
-          </>
-        ) : kwNotice.length === 0 ? (
-          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', justifyContent: 'center', opacity: '.5' }}>
-            <span>최근 공지사항이 없습니다!</span>
+        <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
+          <div className='card-title' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ display: 'flex', alignItems: 'center', fontWeight: 600 }}>
+              공지사항
+            </span>
           </div>
-        ) : (
-          kwNotice.slice(0, 6).map((notice, index) => (
-            <div key={index} className="notice-item" onClick={() => Android.openPage(`${notice.link}`)}>
-              <span><b>{notice.title.replace("신규게시글", "").replace("Attachment", "")}</b></span><br />
-              <span style={{ opacity: 0.6, fontSize: '12px' }}>{notice.createdDate} · {notice.author}</span>
-              {index !== 5 && <hr style={{ opacity: 0.3 }} />}
+          <div style={{
+            display: 'flex',
+            position: 'absolute',
+            top: '10px',
+            right: '10px',
+            background: 'var(--background)',
+            borderRadius: '15px',
+            overflow: 'hidden',
+            padding: '5px'
+          }}>
+            <div
+              onClick={() => setKwNoticeTab("")}
+              style={{
+                padding: '6px 18px',
+                borderRadius: '10px',
+                cursor: 'pointer',
+                background: kwNoticeTab === "" ? 'var(--button-background)' : 'transparent',
+                color: kwNoticeTab === "" ? 'var(--button-text)' : 'var(--text-color)',
+                fontSize: '12px',
+                transition: 'background 0.2s'
+              }}
+            >
+              전체
             </div>
-          ))
-        )}
-      </div>
-
-      <Spacer y={20} />
-
-      <h3 style={{ margin: 'auto 10px' }}>책임지도교수</h3>
-      <Spacer y={15} />
-      {advisor ? (
-        <div className="card non-anim" style={{ paddingBottom: '20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
-            <span style={{ fontSize: '18px', fontWeight: 'bold' }}>{advisor.kname}</span>
+            <div
+              onClick={() => setKwNoticeTab("1")}
+              style={{
+                padding: '6px 18px',
+                borderRadius: '10px',
+                cursor: 'pointer',
+                background: kwNoticeTab === "1" ? 'var(--button-background)' : 'transparent',
+                color: kwNoticeTab === "1" ? 'var(--button-text)' : 'var(--text-color)',
+                fontSize: '12px',
+                transition: 'background 0.2s'
+              }}
+            >
+              학사
+            </div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {advisor.email && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <IonIcon name="mail-outline" style={{ opacity: 0.7 }} />
-                <a style={{ fontSize: '14.4px', textDecoration: 'none', color: 'inherit' }}>{advisor.email}</a>
+
+          <div className='card-content'>
+            {!kwNotice ? (
+              <>
+                <div className="skeleton" style={{ height: '50px', width: '100%', marginBottom: '15px' }} />
+                <div className="skeleton" style={{ height: '50px', width: '100%', marginBottom: '15px' }} />
+                <div className="skeleton" style={{ height: '50px', width: '100%' }} />
+              </>
+            ) : kwNotice.length === 0 ? (
+              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', justifyContent: 'center', opacity: '.5' }}>
+                <span>최근 공지사항이 없습니다!</span>
               </div>
-            )}
-            {advisor.telNum && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <IonIcon name="call-outline" style={{ opacity: 0.7 }} />
-                <a style={{ fontSize: '14.4px', textDecoration: 'none', color: 'inherit' }}>{advisor.telNum}</a>
-              </div>
-            )}
-            {advisor.labLocation && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <IonIcon name="location-outline" style={{ opacity: 0.7 }} />
-                <span>{advisor.labLocation}</span>
-              </div>
-            )}
-            {advisor.counselTime && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <IonIcon name="time-outline" style={{ opacity: 0.7 }} />
-                <span>상담시간: {advisor.counselTime}</span>
-              </div>
-            )}
-            {advisor.homepage && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <IonIcon name="globe-outline" style={{ opacity: 0.7 }} />
-                <span onClick={() => Android.openPage(advisor.homepage)}>{advisor.homepage}</span>
-              </div>
+            ) : (
+              kwNotice.slice(0, 6).map((notice, index) => (
+                <div key={index} className="notice-item" onClick={() => Android.openPage(`${notice.link}`)}>
+                  <span><b>{notice.title.replace("신규게시글", "").replace("Attachment", "")}</b></span><br />
+                  <span style={{ opacity: 0.6, fontSize: '12px' }}>{notice.createdDate} · {notice.author}</span>
+                  {index !== 5 && <hr style={{ opacity: 0.3 }} />}
+                </div>
+              ))
             )}
           </div>
         </div>
-      ) : (
-        <div className="skeleton" style={{ height: '150px', width: '100%' }} />
-      )}
-      <br /> <br />
-      <br />
-    </div>
+
+        <Spacer y={15} />
+
+        {
+          advisor ? (
+            <div className="card non-anim" style={{ paddingBottom: '20px' }}>
+              <div className='card-title'>
+                <span>책임지도교수</span>
+              </div>
+
+              <div className='card-content'>
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
+                  <span style={{ fontSize: '18px', fontWeight: 'bold' }}>{advisor.kname || '정보 없음'}</span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {advisor.email && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <IonIcon name="mail-outline" style={{ opacity: 0.7 }} />
+                      <a style={{ fontSize: '14.4px', textDecoration: 'none', color: 'inherit' }}>{advisor.email}</a>
+                    </div>
+                  )}
+                  {advisor.telNum && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <IonIcon name="call-outline" style={{ opacity: 0.7 }} />
+                      <a style={{ fontSize: '14.4px', textDecoration: 'none', color: 'inherit' }}>{advisor.telNum}</a>
+                    </div>
+                  )}
+                  {advisor.labLocation && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <IonIcon name="location-outline" style={{ opacity: 0.7 }} />
+                      <span>{advisor.labLocation}</span>
+                    </div>
+                  )}
+                  {advisor.counselTime && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <IonIcon name="time-outline" style={{ opacity: 0.7 }} />
+                      <span>상담시간: {advisor.counselTime}</span>
+                    </div>
+                  )}
+                  {advisor.homepage && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <IonIcon name="globe-outline" style={{ opacity: 0.7 }} />
+                      <span onClick={() => Android.openPage(advisor.homepage)}>{advisor.homepage}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="skeleton" style={{ height: '150px', width: '100%' }} />
+          )
+        }
+        <br /> <br />
+        <br />
+      </div>
+    </div >
   );
 }

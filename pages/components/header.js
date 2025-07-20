@@ -25,11 +25,22 @@ function Header({ title }) {
         console.log(isCompatible);
     }, [isCompatible]);
 
-    if (!isCompatible) return null;
+    if (!isCompatible && process.env.NEXT_PUBLIC_DEVELOPMENT !== 'true') return null;
 
     return (
         <>
-            <div style={{ position: 'fixed', top: 0, left: 0, width: 'calc(100% - 40px)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 20px 0 20px', background: 'var(--background)', zIndex: 1000 }}>
+            <div style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: 'calc(100% - 40px)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '10px 20px 20px 20px',
+                background: 'linear-gradient(to bottom, var(--background) 65%, transparent 100%)',
+                zIndex: 1000
+            }}>
                 {title}
                 <button style={{ width: 'fit-content' }} onClick={() => Android.openOptionsMenu()}>
                     <IonIcon name='ellipsis-vertical' style={{ fontSize: '20px', color: 'var(--text-color)', position: 'relative', top: '2px' }} />
@@ -38,7 +49,6 @@ function Header({ title }) {
 
             <Spacer y={50} />
         </>
-
     );
 
 }

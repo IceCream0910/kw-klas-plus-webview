@@ -2,7 +2,7 @@
   --background: #fff8f7;
   --text-color: #000000;
   --text-color-transparent: rgba(0, 0, 0, 0.45);
-  --card-background: #f5e8e8;
+  --card-background: #f5e8e87b;
   --card-border: #e0e0e0;
   --button-background: #ffd2d2;
   --button-text: #c70000;
@@ -19,7 +19,7 @@
     --background: #211e1e;
     --text-color: rgb(224, 224, 224);
     --text-color-transparent: rgba(224, 244, 244, 0.45);
-    --card-background: #3a3434;
+    --card-background: #3a343478;
     --card-border: #464646;
     --button-background: #72333c;
     --button-text: #eee;
@@ -377,7 +377,7 @@ select {
 .skeleton {
   -webkit-animation: skeleton-gradient 1s infinite ease-in-out;
   animation: skeleton-gradient 1s infinite ease-in-out;
-  border-radius: 10px;
+  border-radius: 15px;
   margin-bottom: 10px;
 }
 
@@ -471,6 +471,24 @@ h6 {
   -o-transform: none;
 }
 
+.card-title {
+  font-size: 14px;
+  opacity: 0.6;
+  margin: 0 0px 25px 5px !important;
+}
+
+.card-content {
+  margin: 5px;
+}
+
+hr {
+  border: none;
+  height: 1px;
+  opacity: 0.2;
+  color: var(--text-color);
+  background-color: var(--text-color);
+}
+
 .notice-item {
   transition: transform .5s ease;
   -o-transition: transform .5s ease;
@@ -504,8 +522,6 @@ h6 {
 }
 
 .card div {
-  margin: 0;
-  padding: 0;
   line-height: 0.9;
 }
 
@@ -712,4 +728,20 @@ input[type="datetime-local"] {
 .kakao_ad_area>div iframe {
   border-radius: 15px !important;
   min-width: 50px !important;
+}
+
+.ptr--ptr {
+  box-shadow: none !important;
+  margin-bottom: 20px;
+  opacity: 0.6;
+}
+
+.ptr--icon {
+  color: var(--text-color) !important;
+  font-size: 20px;
+}
+
+.ptr--text {
+  color: var(--text-color) !important;
+  font-size: 14px;
 }
