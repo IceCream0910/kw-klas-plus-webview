@@ -457,7 +457,7 @@ export default function Feed() {
         <LectureNotices token={token} />
 
         <Spacer y={15} />
-        <div className="card non-anim" style={{ padding: '0px' }}>
+        <div className="card non-anim" style={{ padding: '10px 0' }}>
           <div style={{
             position: 'absolute',
             zIndex: 100,
