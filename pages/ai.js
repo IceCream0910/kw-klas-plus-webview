@@ -470,20 +470,20 @@ export default function AI() {
     .skeleton-line {
         height:12px;
         border-radius:6px;
-        background: linear-gradient(90deg,
-            rgba(255,255,255,0.05) 0%,
-            rgba(255,255,255,0.15) 40%,
-            rgba(255,255,255,0.05) 80%);
-        animation: shimmer 1.4s infinite;
+        background: linear-gradient(
+            90deg,
+            var(--skeleton-base) 0%,
+            var(--skeleton-mid) 40%,
+            var(--skeleton-highlight) 55%,
+            var(--skeleton-base) 70%
+        );
+        background-size: 250% 100%;
+        animation: shimmer 1.05s ease-in-out infinite;
     }
     @keyframes shimmer {
-        0% { background-position: -200px 0; }
-        100% { background-position: 200px 0; }
+        0% { background-position: 100% 0; }
+        100% { background-position: -100% 0; }
     }
-    .skeleton-line {
-        background-size: 400px 100%;
-    }
-
     .tools-status {
         display: flex;
         flex-direction: column;

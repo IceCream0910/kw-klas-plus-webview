@@ -54,124 +54,136 @@ export default async function handler(req) {
   }
 }
 
-async function runChatWithTools({ model, tools, messages, callFunction, sendChunk }) {
+async function runChatWithTools({ tools, messages, callFunction, sendChunk, maxIterations = 8 }) {
   const baseHeaders = {
     Authorization: `Bearer ${apiKey}`,
     "Content-Type": "application/json",
   };
   const toolLoopMessages = [...messages];
 
-  while (true) {
+  for (let iter = 0; iter < maxIterations; iter++) {
     const resp = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: baseHeaders,
       body: JSON.stringify({
-        model,
+        model: "gpt-5-nano",
+        reasoning_effort: "low",
+        verbosity: "low",
         messages: toolLoopMessages,
         tools,
         tool_choice: "auto",
-        stream: false
+        stream: true
       })
     });
 
     if (!resp.ok) {
       const text = await resp.text().catch(() => "");
-      throw new Error(`OpenAI chat.completions failed (${resp.status}): ${text}`);
+      throw new Error(`OpenAI streaming failed (${resp.status}): ${text}`);
     }
 
-    const json = await resp.json();
-    const choice = json.choices?.[0];
-    const toolCalls = choice?.message?.tool_calls || [];
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    let done = false;
+    let finishReason = null;
 
-    if (toolCalls.length === 0) {
-      break; // 툴 호출 더 이상 없음
+    let assistantContentParts = [];
+    const toolCallAcc = new Map(); // id -> { id, name, arguments }
+
+    while (!done) {
+      const { value, done: readerDone } = await reader.read();
+      if (value) buffer += decoder.decode(value, { stream: !readerDone });
+      if (readerDone) done = true;
+
+      let lines = buffer.split(/\r?\n/);
+      buffer = lines.pop() || "";
+
+      for (const line of lines) {
+        if (!line.startsWith("data:")) continue;
+        const payload = line.replace(/^data:\s*/, "");
+        if (payload === "[DONE]") {
+          done = true;
+          break;
+        }
+        try {
+          const parsed = JSON.parse(payload);
+          const choices = parsed.choices || [];
+          for (const c of choices) {
+            const delta = c.delta || {};
+
+            if (delta.content) {
+              assistantContentParts.push(delta.content);
+              sendChunk && sendChunk({ type: 'content', message: delta.content });
+            }
+
+            if (delta.tool_calls) {
+              for (const tc of delta.tool_calls) {
+                const id = tc.id || tc.index?.toString() || `tc_${toolCallAcc.size}`;
+                const existing = toolCallAcc.get(id) || { id, name: "", arguments: "" };
+                if (tc.function?.name) existing.name = tc.function.name;
+                if (tc.function?.arguments) existing.arguments += tc.function.arguments;
+                toolCallAcc.set(id, existing);
+              }
+            }
+
+            if (c.finish_reason) finishReason = c.finish_reason;
+          }
+        } catch (e) {
+        }
+      }
     }
 
-    toolLoopMessages.push({
-      role: "assistant",
-      content: choice.message.content || null,
-      tool_calls: toolCalls
-    });
+    if (finishReason === "tool_calls" && toolCallAcc.size > 0) {
+      const toolCallsForMessage = [...toolCallAcc.values()]
+        .filter(tc => tc.name && tc.name.trim() !== "")
+        .map(tc => ({
+          id: tc.id,
+          type: "function",
+          function: { name: tc.name, arguments: tc.arguments }
+        }));
 
-    for (const tc of toolCalls) {
-      const fnName = tc.function?.name;
-      let argsObj = {};
-      try { argsObj = tc.function?.arguments ? JSON.parse(tc.function.arguments) : {}; } catch { argsObj = {}; }
-
-      sendChunk && sendChunk({
-        type: 'tool_start',
-        tool: fnName,
-        name: toolKoreanNames[fnName],
-        input: argsObj
-      });
-
-      const result = await callFunction(fnName, argsObj);
-
-      sendChunk && sendChunk({
-        type: 'tool_end',
-        tool: fnName,
-        name: toolKoreanNames[fnName],
-        output: result
-      });
-
-      toolLoopMessages.push({
-        role: "tool",
-        tool_call_id: tc.id,
-        name: fnName,
-        content: typeof result === "string" ? result : JSON.stringify(result)
-      });
-    }
-  }
-
-  // 최종 답변 스트리밍
-  const streamResp = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: baseHeaders,
-    body: JSON.stringify({
-      model,
-      messages: toolLoopMessages,
-      stream: true
-    })
-  });
-
-  if (!streamResp.ok) {
-    const text = await streamResp.text().catch(() => "");
-    throw new Error(`OpenAI streaming failed (${streamResp.status}): ${text}`);
-  }
-
-  const reader = streamResp.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-  let done = false;
-
-  while (!done) {
-    const { value, done: readerDone } = await reader.read();
-    if (value) buffer += decoder.decode(value, { stream: !readerDone });
-    if (readerDone) done = true;
-
-    let lines = buffer.split(/\r?\n/);
-    buffer = lines.pop() || "";
-
-    for (const line of lines) {
-      if (!line.startsWith("data:")) continue;
-      const payload = line.replace(/^data:\s*/, "");
-      if (payload === "[DONE]") {
-        done = true;
+      if (toolCallsForMessage.length === 0) {
         break;
       }
-      try {
-        const parsed = JSON.parse(payload);
-        const deltas = parsed.choices || [];
-        for (const d of deltas) {
-          const delta = d.delta || {};
-          if (delta.content) {
-            sendChunk && sendChunk({ type: 'content', message: delta.content });
-          }
-        }
-      } catch (e) {
-        console.log('에러 발생:', e.message);
+
+      toolLoopMessages.push({
+        role: "assistant",
+        content: assistantContentParts.length ? assistantContentParts.join("") : null,
+        tool_calls: toolCallsForMessage
+      });
+
+
+      for (const tc of toolCallsForMessage) {
+        let argsObj = {};
+        try { argsObj = tc.function.arguments ? JSON.parse(tc.function.arguments) : {}; } catch { argsObj = {}; }
+
+        sendChunk && sendChunk({
+          type: 'tool_start',
+          tool: tc.function.name,
+          name: toolKoreanNames[tc.function.name],
+          input: argsObj
+        });
+
+        const result = await callFunction(tc.function.name, argsObj);
+
+        sendChunk && sendChunk({
+          type: 'tool_end',
+          tool: tc.function.name,
+          name: toolKoreanNames[tc.function.name],
+          output: result
+        });
+
+        toolLoopMessages.push({
+          role: "tool",
+          tool_call_id: tc.id,
+          name: tc.function.name,
+          content: typeof result === "string" ? result : JSON.stringify(result)
+        });
       }
+      continue;
     }
+
+    break;
   }
 }
 
@@ -181,6 +193,7 @@ const processChatRequest = async (conversation, subjList, controller, encoder) =
       role: "system",
       content: `
 You are KLAS GPT, an AI chatbot designed to assist students of 광운대학교 (Kwangwoon University). You are based on GPT-5 and provide accurate university information up to October 2024. Your task is to respond to user queries in their language while maintaining a natural conversation flow.
+Markdown 형식으로 답변 생성할 것.
 
 Core Capabilities:
 1. Course Support:
@@ -240,7 +253,6 @@ Error Handling:
 - For potentially outdated information, note "2023년 10월 기준" and suggest verification
 
 Important: When you use getHomepageSitemap to find a relevant menu item, you MUST follow up with a getContentFromUrl call to read the content of that page. This ensures you have the most up-to-date and detailed information.
-
 Provide your response in the user's language, maintaining a natural conversation flow.
 
 <subject_list>
@@ -358,7 +370,6 @@ Current Date: ${new Date().toLocaleDateString()}\
   ];
 
   await runChatWithTools({
-    model: "gpt-5-nano",
     tools,
     messages,
     callFunction: async (name, args) => {

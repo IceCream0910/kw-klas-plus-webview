@@ -12,6 +12,10 @@
   --red: rgb(233, 93, 93);
   --orange: rgb(232, 138, 30);
   --blue: rgb(86, 136, 255);
+  /* skeleton 색상 (라이트) */
+  --skeleton-base: rgba(0, 0, 0, 0.06);
+  --skeleton-mid: rgba(0, 0, 0, 0.12);
+  --skeleton-highlight: rgba(0, 0, 0, 0.18);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -29,6 +33,10 @@
     --red: rgb(255, 161, 161);
     --orange: rgb(255, 205, 111);
     --blue: rgb(34, 83, 172);
+    /* skeleton 색상 (다크) */
+    --skeleton-base: rgba(255, 255, 255, 0.07);
+    --skeleton-mid: rgba(255, 255, 255, 0.14);
+    --skeleton-highlight: rgba(255, 255, 255, 0.25);
   }
 }
 
