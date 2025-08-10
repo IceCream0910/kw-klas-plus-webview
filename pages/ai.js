@@ -327,50 +327,64 @@ export default function AI() {
                     )}
                     {chat.map((item, index) => (
                         <div key={index} className={`message`}>
-                            {index === chat.length - 1 && isLoading && activeTools.length <= 0 && (
-                                <div style={{ marginTop: '20px' }}>
-                                    <LoadingComponent />
-                                </div>
-                            )}
-                            {item.type === 'question' ?
-                                <div className="me">{item.content}</div>
-                                : item.type != 'tool' &&
-                                <>
-                                    {item.id && messageToolsMap[item.id] && messageToolsMap[item.id].length > 0 && (
-                                        <div className="tools-status">
-                                            {messageToolsMap[item.id].map((tool, toolIndex) => (
-                                                <div key={toolIndex} className="tool-item">
-                                                    <div className="tool-header">
-                                                        <IonIcon
-                                                            name={tool.status === 'running' ? 'hourglass' : 'checkmark-circle-outline'}
-                                                            style={{ color: tool.status === 'running' ? 'inherit' : 'var(--green)' }}
-                                                        />
-                                                        <span className="tool-name">{tool.title}</span>
+                            {/* 기존 단순 로딩 컴포넌트 제거 및 skeleton/스피너 논리 추가 */}
+                            {item.type === 'question'
+                                ? <div className="me">{item.content}</div>
+                                : item.type !== 'tool' && (
+                                    <>
+                                        {item.id && messageToolsMap[item.id] && messageToolsMap[item.id].length > 0 && (
+                                            <div className="tools-status">
+                                                {messageToolsMap[item.id].map((tool, toolIndex) => (
+                                                    <div key={toolIndex} className="tool-item">
+                                                        <div className="tool-header">
+                                                            {tool.status === 'running'
+                                                                ? <div className="spinner" aria-label="loading" />
+                                                                : <IonIcon
+                                                                    name='checkmark-circle-outline'
+                                                                    style={{ color: 'var(--green)' }}
+                                                                />
+                                                            }
+                                                            <span className="tool-name">{tool.title}</span>
+                                                        </div>
+                                                        {JSON.stringify(tool.input).length > 5 && (
+                                                            <span className='tool-description' style={{ fontSize: '12px', opacity: .6, marginLeft: '25px' }}>
+                                                                {JSON.stringify(tool.input)}
+                                                            </span>
+                                                        )}
                                                     </div>
-                                                    {JSON.stringify(tool.input).length > 5 && (
-                                                        <span className='tool-description' style={{ fontSize: '12px', opacity: .6, marginLeft: '25px' }}>
-                                                            {JSON.stringify(tool.input)}
-                                                        </span>
-                                                    )}
+                                                ))}
+                                            </div>
+                                        )}
+                                        <Spacer y={5} />
+                                        {/* 답변 스켈레톤: 아직 내용이 비어 있고 스트리밍 진행 중일 때 */}
+                                        {item.type === 'answer'
+                                            && item.content === ''
+                                            && isLoading
+                                            && index === chat.length - 1 && (
+                                                <div className="answer-skeleton">
+                                                    <div className="skeleton-line" style={{ width: '80%' }} />
+                                                    <div className="skeleton-line" style={{ width: '95%' }} />
+                                                    <div className="skeleton-line" style={{ width: '90%' }} />
+                                                    <div className="skeleton-line" style={{ width: '70%' }} />
                                                 </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                    <Spacer y={5} />
-                                    <ReactMarkdown
-                                        remarkPlugins={[remarkGfm]}
-                                        components={{
-                                            ol: ({ children }) => <>{children}</>,
-                                            ul: ({ children }) => <>{children}</>,
-                                            li: ({ children }) => <>{children}</>,
-                                        }}
-                                    >
-                                        {item.content.replaceAll('\n', '\n\n')}
-                                    </ReactMarkdown>
-                                </>
-
+                                            )
+                                        }
+                                        {/* 실제 스트리밍 콘텐츠 */}
+                                        {!(item.content === '' && isLoading && index === chat.length - 1) && (
+                                            <ReactMarkdown
+                                                remarkPlugins={[remarkGfm]}
+                                                components={{
+                                                    ol: ({ children }) => <>{children}</>,
+                                                    ul: ({ children }) => <>{children}</>,
+                                                    li: ({ children }) => <>{children}</>,
+                                                }}
+                                            >
+                                                {item.content.replaceAll('\n', '\n\n')}
+                                            </ReactMarkdown>
+                                        )}
+                                    </>
+                                )
                             }
-
                         </div>
                     ))}
                 </div>
@@ -434,10 +448,46 @@ export default function AI() {
             </form>
 
             <style jsx>{`
+    .spinner {
+        width:16px;
+        height:16px;
+        border:2px solid rgba(255,255,255,0.25);
+        border-top-color: var(--primary, #4b8bff);
+        border-radius:50%;
+        animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .answer-skeleton {
+        display:flex;
+        flex-direction:column;
+        gap:10px;
+        padding:8px 0 4px;
+    }
+    .skeleton-line {
+        height:12px;
+        border-radius:6px;
+        background: linear-gradient(90deg,
+            rgba(255,255,255,0.05) 0%,
+            rgba(255,255,255,0.15) 40%,
+            rgba(255,255,255,0.05) 80%);
+        animation: shimmer 1.4s infinite;
+    }
+    @keyframes shimmer {
+        0% { background-position: -200px 0; }
+        100% { background-position: 200px 0; }
+    }
+    .skeleton-line {
+        background-size: 400px 100%;
+    }
+
     .tools-status {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
         padding: 15px;
         background: var(--card-background);
         border-radius: 12px;
@@ -447,6 +497,20 @@ export default function AI() {
     .tool-item {
         border: 1px solid var(--border-color);
         border-radius: 8px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .tool-item.running::after {
+        content:"";
+        position:absolute;
+        left:0; top:0; right:0; bottom:0;
+        background:linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+        animation: tool-shimmer 1.2s infinite;
+    }
+    @keyframes tool-shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
     }
 
     .tool-header {

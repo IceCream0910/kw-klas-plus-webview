@@ -7,6 +7,17 @@ export const config = {
   runtime: "edge",
 };
 
+const toolKoreanNames = {
+  searchCourseInfo: "강의 정보 조회",
+  searchTaskList: "과제 목록 조회",
+  getKWNoticeList: "학교 홈페이지에서 최근 공지사항 목록 조회",
+  searchKWNoticeList: "학교 홈페이지에서 공지사항 검색",
+  getSchedules: "학사 일정 조회",
+  getHaksik: "학식 메뉴 조회",
+  getHomepageSitemap: "질문과 관련된 링크 찾기",
+  getContentFromUrl: "URL 내용 확인",
+};
+
 export default async function handler(req) {
   if (req.method === 'POST') {
     const { conversation, subjList, token, yearHakgi } = await req.json();
@@ -43,12 +54,133 @@ export default async function handler(req) {
   }
 }
 
+async function runChatWithTools({ model, tools, messages, callFunction, sendChunk }) {
+  const baseHeaders = {
+    Authorization: `Bearer ${apiKey}`,
+    "Content-Type": "application/json",
+  };
+  const toolLoopMessages = [...messages];
+
+  while (true) {
+    const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: baseHeaders,
+      body: JSON.stringify({
+        model,
+        messages: toolLoopMessages,
+        tools,
+        tool_choice: "auto",
+        stream: false
+      })
+    });
+
+    if (!resp.ok) {
+      const text = await resp.text().catch(() => "");
+      throw new Error(`OpenAI chat.completions failed (${resp.status}): ${text}`);
+    }
+
+    const json = await resp.json();
+    const choice = json.choices?.[0];
+    const toolCalls = choice?.message?.tool_calls || [];
+
+    if (toolCalls.length === 0) {
+      break; // 툴 호출 더 이상 없음
+    }
+
+    toolLoopMessages.push({
+      role: "assistant",
+      content: choice.message.content || null,
+      tool_calls: toolCalls
+    });
+
+    for (const tc of toolCalls) {
+      const fnName = tc.function?.name;
+      let argsObj = {};
+      try { argsObj = tc.function?.arguments ? JSON.parse(tc.function.arguments) : {}; } catch { argsObj = {}; }
+
+      sendChunk && sendChunk({
+        type: 'tool_start',
+        tool: fnName,
+        name: toolKoreanNames[fnName],
+        input: argsObj
+      });
+
+      const result = await callFunction(fnName, argsObj);
+
+      sendChunk && sendChunk({
+        type: 'tool_end',
+        tool: fnName,
+        name: toolKoreanNames[fnName],
+        output: result
+      });
+
+      toolLoopMessages.push({
+        role: "tool",
+        tool_call_id: tc.id,
+        name: fnName,
+        content: typeof result === "string" ? result : JSON.stringify(result)
+      });
+    }
+  }
+
+  // 최종 답변 스트리밍
+  const streamResp = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: baseHeaders,
+    body: JSON.stringify({
+      model,
+      messages: toolLoopMessages,
+      stream: true
+    })
+  });
+
+  if (!streamResp.ok) {
+    const text = await streamResp.text().catch(() => "");
+    throw new Error(`OpenAI streaming failed (${streamResp.status}): ${text}`);
+  }
+
+  const reader = streamResp.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let done = false;
+
+  while (!done) {
+    const { value, done: readerDone } = await reader.read();
+    if (value) buffer += decoder.decode(value, { stream: !readerDone });
+    if (readerDone) done = true;
+
+    let lines = buffer.split(/\r?\n/);
+    buffer = lines.pop() || "";
+
+    for (const line of lines) {
+      if (!line.startsWith("data:")) continue;
+      const payload = line.replace(/^data:\s*/, "");
+      if (payload === "[DONE]") {
+        done = true;
+        break;
+      }
+      try {
+        const parsed = JSON.parse(payload);
+        const deltas = parsed.choices || [];
+        for (const d of deltas) {
+          const delta = d.delta || {};
+          if (delta.content) {
+            sendChunk && sendChunk({ type: 'content', message: delta.content });
+          }
+        }
+      } catch (e) {
+        console.log('에러 발생:', e.message);
+      }
+    }
+  }
+}
+
 const processChatRequest = async (conversation, subjList, controller, encoder) => {
   const messages = [
     {
       role: "system",
       content: `
-You are KLAS GPT, an AI chatbot designed to assist students of 광운대학교 (Kwangwoon University). You are based on GPT-4 and provide accurate university information up to October 2023. Your task is to respond to user queries in their language while maintaining a natural conversation flow.
+You are KLAS GPT, an AI chatbot designed to assist students of 광운대학교 (Kwangwoon University). You are based on GPT-5 and provide accurate university information up to October 2024. Your task is to respond to user queries in their language while maintaining a natural conversation flow.
 
 Core Capabilities:
 1. Course Support:
@@ -128,212 +260,112 @@ Current Date: ${new Date().toLocaleDateString()}\
     controller.enqueue(encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`));
   };
 
-  let shouldContinue = true;
-  let iterationCount = 0;
-
-  const toolKoreanNames = {
-    searchCourseInfo: "강의 정보 조회",
-    searchTaskList: "과제 목록 조회",
-    getKWNoticeList: "학교 홈페이지에서 최근 공지사항 목록 조회",
-    searchKWNoticeList: "학교 홈페이지에서 공지사항 검색",
-    getSchedules: "학사 일정 조회",
-    getHaksik: "학식 메뉴 조회",
-    getHomepageSitemap: "질문과 관련된 링크 찾기",
-    getContentFromUrl: "URL 내용 확인",
-  };
-
-  while (shouldContinue && iterationCount < 5) {
-    iterationCount++;
-    const response = await callChatCompletion(messages, sendChunk);
-
-    if (response.choices[0].finish_reason === "function_call") {
-      const functionCall = response.choices[0].message.function_call;
-      console.log('함수 호출 감지:', functionCall.name, '인수:', functionCall.arguments);
-
-      sendChunk({
-        type: 'tool_start',
-        tool: functionCall.name,
-        name: toolKoreanNames[functionCall.name],
-        input: JSON.parse(functionCall.arguments)
-      });
-
-      const functionResponse = await executeFunctionCall(functionCall);
-      console.log('함수 실행 결과:', functionCall.name, functionResponse);
-
-      sendChunk({
-        type: 'tool_end',
-        tool: functionCall.name,
-        name: toolKoreanNames[functionCall.name],
-        output: functionResponse
-      });
-
-      messages.push({
-        role: "function",
-        name: functionCall.name,
-        content: JSON.stringify(functionResponse),
-      });
-    } else {
-      shouldContinue = false;
-    }
-  }
-};
-
-const callChatCompletion = async (messages, sendChunk) => {
-  console.log('API 호출:', messages.slice(-1)[0].content.substring(0, 50) + '...');
-
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
+  const tools = [
+    {
+      type: "function",
+      function: {
+        name: 'searchCourseInfo',
+        description: '해당 강의의 출석 현황(O:출석, X:결석, L:지각, A:공결), 최근 공지사항(최대 4개), 온라인 강의 리스트, 과제 개수 등 조회. 출석정보(atendSubList, 회차는 pgr1, pgr2..로 표시), 최근 공지사항(noticeList), 온라인 강의 리스트(cntntList), 과제 개수(taskCnt)',
+        parameters: {
+          type: 'object',
+          properties: {
+            courseName: { type: 'string' },
+            courseLabel: { type: 'string' },
+            courseCode: { type: 'string' },
+          },
+          required: ['courseCode', 'courseName', 'courseLabel'],
+          additionalProperties: false
+        }
+      }
     },
-    body: JSON.stringify({
-      model: "gpt-5-nano",
-      messages: messages,
-      functions: [
-        {
-          name: 'searchCourseInfo',
-          description: '해당 강의의 출석 현황(O:출석, X:결석, L:지각, A:공결), 최근 공지사항(최대 4개), 온라인 강의 리스트, 과제 개수 등 조회. 출석정보(atendSubList, 회차는 pgr1, pgr2..로 표시), 최근 공지사항(noticeList), 온라인 강의 리스트(cntntList), 과제 개수(taskCnt)',
-          parameters: {
-            type: 'object',
-            properties: {
-              courseName: { type: 'string' },
-              courseLabel: { type: 'string' },
-              courseCode: { type: 'string' },
-            },
-            required: ['courseCode', 'courseName', 'courseLabel'],
+    {
+      type: "function",
+      function: {
+        name: 'searchTaskList',
+        description: '해당 강의의 과제 목록 조회. 각 과제에 대해 제출 상태, 마감 기한, 과제 제목 조회 가능',
+        parameters: {
+          type: 'object',
+          properties: {
+            courseName: { type: 'string' },
+            courseLabel: { type: 'string' },
+            courseCode: { type: 'string' },
           },
-        },
-        {
-          name: 'searchTaskList',
-          description: '해당 강의의 과제 목록 조회. 각 과제에 대해 제출 상태, 마감 기한, 과제 제목 조회 가능',
-          parameters: {
-            type: 'object',
-            properties: {
-              courseName: { type: 'string' },
-              courseLabel: { type: 'string' },
-              courseCode: { type: 'string' },
-            },
-            required: ['courseCode', 'courseName', 'courseLabel'],
-          },
-        },
-        {
-          name: 'getKWNoticeList',
-          description: '학교 홈페이지에서 최근 공지사항 목록 조회',
-          parameters: {
-            type: 'object',
-            properties: {},
-            required: [],
-          },
-        },
-        {
-          name: 'searchKWNoticeList',
-          description: '학교 홈페이지에서 공지사항 검색. 검색어를 입력하면 해당 검색어가 포함된 공지사항 목록을 반환. 답변 시 되도록 많은 공지사항 목록을 포함해.',
-          parameters: {
-            type: 'object',
-            properties: {
-              query: { type: 'string' },
-            },
-            required: ['query'],
-          },
-        },
-        {
-          name: 'getSchedules',
-          description: '학교 홈페이지에서 올해 학사일정 조회',
-          parameters: {
-            type: 'object',
-            properties: {},
-            required: [],
-          },
-        },
-        {
-          name: 'getHaksik',
-          description: '이번 주 학식(함지마루 복지관 학생식당) 메뉴 조회',
-          parameters: {
-            type: 'object',
-            properties: {},
-            required: [],
-          },
-        },
-        {
-          name: 'getHomepageSitemap',
-          description: '학교 홈페이지 사이트맵.',
-          parameters: {
-            type: 'object',
-            properties: {},
-            required: [],
-          },
-        },
-        {
-          name: 'getContentFromUrl',
-          description: '해당 URL의 콘텐츠를 가져옴',
-          parameters: {
-            type: 'object',
-            properties: {
-              urls: {
-                type: 'array',
-                items: { type: 'string' },
-              },
-            },
-            required: ['urls'],
-          },
-        },
-      ],
-      stream: true,
-    }),
-  });
-
-  const reader = response.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = '';
-  let result = { choices: [{ finish_reason: null, message: { content: '', function_call: null } }] };
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-
-    buffer += decoder.decode(value, { stream: true });
-    const lines = buffer.split('\n');
-    buffer = lines.pop();
-
-    for (const line of lines) {
-      if (!line.startsWith('data: ')) continue;
-
-      const dataStr = line.slice(6);
-      if (dataStr === '[DONE]') break;
-
-      try {
-        const data = JSON.parse(dataStr);
-        const delta = data.choices[0].delta;
-
-        // 콘텐츠 스트리밍
-        if (delta?.content) {
-          result.choices[0].message.content += delta.content;
-          sendChunk({ type: 'content', message: delta.content });
+          required: ['courseCode', 'courseName', 'courseLabel'],
+          additionalProperties: false
         }
-
-        // 함수 호출 정보 수집
-        if (delta?.function_call) {
-          result.choices[0].message.function_call = result.choices[0].message.function_call || { name: '', arguments: '' };
-          if (delta.function_call.name) {
-            result.choices[0].message.function_call.name += delta.function_call.name;
-          }
-          if (delta.function_call.arguments) {
-            result.choices[0].message.function_call.arguments += delta.function_call.arguments;
-          }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: 'getKWNoticeList',
+        description: '학교 홈페이지에서 최근 공지사항 목록 조회',
+        parameters: { type: 'object', properties: {}, required: [] }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: 'searchKWNoticeList',
+        description: '학교 홈페이지에서 공지사항 검색. 검색어를 입력하면 해당 검색어가 포함된 공지사항 목록을 반환. 답변 시 되도록 많은 공지사항 목록을 포함해.',
+        parameters: {
+          type: 'object',
+          properties: { query: { type: 'string' } },
+          required: ['query'],
+          additionalProperties: false
         }
-
-        // 완료 이유 업데이트
-        if (data.choices[0].finish_reason) {
-          result.choices[0].finish_reason = data.choices[0].finish_reason;
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: 'getSchedules',
+        description: '학교 홈페이지에서 올해 학사일정 조회',
+        parameters: { type: 'object', properties: {}, required: [] }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: 'getHaksik',
+        description: '이번 주 학식(함지마루 복지관 학생식당) 메뉴 조회',
+        parameters: { type: 'object', properties: {}, required: [] }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: 'getHomepageSitemap',
+        description: '학교 홈페이지 사이트맵.',
+        parameters: { type: 'object', properties: {}, required: [] }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: 'getContentFromUrl',
+        description: '해당 URL의 콘텐츠를 가져옴',
+        parameters: {
+          type: 'object',
+          properties: {
+            urls: { type: 'array', items: { type: 'string' } }
+          },
+          required: ['urls'],
+          additionalProperties: false
         }
-      } catch (error) {
-        console.error('JSON 파싱 오류:', error);
       }
     }
-  }
+  ];
 
-  return result;
+  await runChatWithTools({
+    model: "gpt-5-nano",
+    tools,
+    messages,
+    callFunction: async (name, args) => {
+      return await executeFunctionCall({ name, arguments: JSON.stringify(args) });
+    },
+    sendChunk
+  });
 };
 
 const executeFunctionCall = async (functionCall) => {
