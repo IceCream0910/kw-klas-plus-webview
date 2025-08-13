@@ -500,8 +500,8 @@ export default function Feed() {
 
         <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
           <div className='card-title' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ display: 'flex', alignItems: 'center', fontWeight: 600 }}>
-              공지사항
+            <span style={{ display: 'flex', alignItems: 'center', fontWeight: 600 }} onClick={() => Android.openPage('https://www.kw.ac.kr/ko/life/notice.jsp?srCategoryId=&mode=list&searchKey=1&searchVal=')}>
+              공지사항 <IonIcon name="chevron-forward" />
             </span>
           </div>
           <div style={{
