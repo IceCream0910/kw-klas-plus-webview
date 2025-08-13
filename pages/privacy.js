@@ -7,7 +7,7 @@ const PrivacyPolicy = () => {
     paddingRight: '1rem',
     paddingTop: '2rem',
     paddingBottom: '2rem',
-    maxWidth: '80%', // Added for better readability on large screens
+    maxWidth: '80%',
   };
 
   const heading1Style = {
@@ -18,7 +18,7 @@ const PrivacyPolicy = () => {
 
   const paragraphStyle = {
     marginBottom: '1rem',
-    lineHeight: '1.6', // Added for better readability
+    lineHeight: '1.6',
   };
 
   const heading2Style = {

@@ -52,7 +52,7 @@ export default function AI() {
         if (remaining <= 0) {
             setChat(prevChat => [...prevChat, {
                 type: 'answer',
-                content: '⚠️ 일일 질문 한도인 5회를 모두 사용하셨습니다. 내일 다시 이용해 주세요.',
+                content: '⚠️ 일일 질문 한도를 모두 사용하셨습니다. 내일 다시 이용해 주세요.',
                 id: Date.now()
             }]);
             return;
@@ -201,6 +201,22 @@ export default function AI() {
                                 break;
 
                             case 'complete':
+                                setMessageToolsMap(prev => {
+                                    const updatedMap = { ...prev };
+                                    if (updatedMap[messageId]) {
+                                        updatedMap[messageId] = updatedMap[messageId].map(tool => ({
+                                            ...tool,
+                                            status: 'completed'
+                                        }));
+                                    }
+                                    return updatedMap;
+                                });
+
+                                setActiveTools(tools => tools.map(tool => ({
+                                    ...tool,
+                                    status: 'completed'
+                                })));
+
                                 if (pendingToolsRef.current.length > 0) {
                                     console.log("Pending tools:", pendingToolsRef.current);
                                     setTimeout(() => {

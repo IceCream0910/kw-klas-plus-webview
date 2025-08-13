@@ -88,7 +88,8 @@ async function runChatWithTools({ tools, messages, callFunction, sendChunk, maxI
     let finishReason = null;
 
     let assistantContentParts = [];
-    const toolCallAcc = new Map(); // id -> { id, name, arguments }
+    const toolCallAcc = new Map(); // index -> { id, name, arguments }
+    const toolCallIdMapping = new Map(); // real_id -> index
 
     while (!done) {
       const { value, done: readerDone } = await reader.read();
@@ -118,11 +119,36 @@ async function runChatWithTools({ tools, messages, callFunction, sendChunk, maxI
 
             if (delta.tool_calls) {
               for (const tc of delta.tool_calls) {
-                const id = tc.id || tc.index?.toString() || `tc_${toolCallAcc.size}`;
-                const existing = toolCallAcc.get(id) || { id, name: "", arguments: "" };
-                if (tc.function?.name) existing.name = tc.function.name;
-                if (tc.function?.arguments) existing.arguments += tc.function.arguments;
-                toolCallAcc.set(id, existing);
+                const index = tc.index !== undefined ? tc.index.toString() : null;
+                
+                if (index !== null) {
+                  const existing = toolCallAcc.get(index) || { index, id: null, name: "", arguments: "" };
+                  
+                  if (tc.id && !existing.id) {
+                    existing.id = tc.id;
+                    toolCallIdMapping.set(tc.id, index);
+                  }
+                  
+                  if (tc.function?.name) {
+                    existing.name = tc.function.name;
+                  }
+
+                  if (tc.function?.arguments) {
+                    existing.arguments += tc.function.arguments;
+                  }
+                  
+                  toolCallAcc.set(index, existing);
+                } else if (tc.id) {
+                  const mappedIndex = toolCallIdMapping.get(tc.id);
+                  if (mappedIndex !== undefined) {
+                    const existing = toolCallAcc.get(mappedIndex);
+                    if (existing) {
+                      if (tc.function?.name) existing.name = tc.function.name;
+                      if (tc.function?.arguments) existing.arguments += tc.function.arguments;
+                      toolCallAcc.set(mappedIndex, existing);
+                    }
+                  }
+                }
               }
             }
 
@@ -134,28 +160,36 @@ async function runChatWithTools({ tools, messages, callFunction, sendChunk, maxI
     }
 
     if (finishReason === "tool_calls" && toolCallAcc.size > 0) {
-      const toolCallsForMessage = [...toolCallAcc.values()]
-        .filter(tc => tc.name && tc.name.trim() !== "")
+      console.log('Tool calls accumulated:', toolCallAcc);
+      
+      const validToolCalls = [...toolCallAcc.values()]
+        .filter(tc => tc.name && tc.name.trim() !== "" && tc.id)
         .map(tc => ({
           id: tc.id,
           type: "function",
           function: { name: tc.name, arguments: tc.arguments }
         }));
 
-      if (toolCallsForMessage.length === 0) {
+      console.log('Valid tool calls:', validToolCalls);
+
+      if (validToolCalls.length === 0) {
         break;
       }
 
       toolLoopMessages.push({
         role: "assistant",
-        content: assistantContentParts.length ? assistantContentParts.join("") : null,
-        tool_calls: toolCallsForMessage
+        content: assistantContentParts.length > 0 ? assistantContentParts.join("") : null,
+        tool_calls: validToolCalls
       });
 
-
-      for (const tc of toolCallsForMessage) {
+      for (const tc of validToolCalls) {
         let argsObj = {};
-        try { argsObj = tc.function.arguments ? JSON.parse(tc.function.arguments) : {}; } catch { argsObj = {}; }
+        try { 
+          argsObj = tc.function.arguments ? JSON.parse(tc.function.arguments) : {}; 
+        } catch (e) { 
+          console.error('Failed to parse tool arguments:', tc.function.arguments, e);
+          argsObj = {}; 
+        }
 
         sendChunk && sendChunk({
           type: 'tool_start',
@@ -190,70 +224,75 @@ async function runChatWithTools({ tools, messages, callFunction, sendChunk, maxI
 const processChatRequest = async (conversation, subjList, controller, encoder) => {
   const messages = [
     {
-      role: "system",
+      role: "developer",
       content: `
-You are KLAS GPT, an AI chatbot designed to assist students of 광운대학교 (Kwangwoon University). You are based on GPT-5 and provide accurate university information up to October 2024. Your task is to respond to user queries in their language while maintaining a natural conversation flow.
-Markdown 형식으로 답변 생성할 것.
+You are KLAS GPT, an AI assistant for 광운대학교 (Kwangwoon University) students. Respond in the user's language and carefully follow these instructions for all queries:
 
-Core Capabilities:
-1. Course Support:
-   - Check enrolled subjects from the subject_list
-   - Use exact course codes/names from subject_list
-   - Handle assignments, schedules, and course information
+Always analyze the user's question and conversation context to determine what information is needed and which tools or results to use. All reasoning and step-by-step planning must be done internally—do not include your process, tool usage plan, or intermediate steps in the user-facing final answer. Only present a concise, clear summary answer derived from any external tools, resources, or previous conversation data.
 
-2. Proactive Information Retrieval:
-   - Check existing conversation history first to avoid redundant API calls
-   - Prioritize notice search (searchKWNoticeList) for time-sensitive queries
-   - Actively use sitemap (getHomepageSitemap) for structural information
-   - Fetch detailed content (getContentFromUrl) when URL is identified
+KLAS GPT Toolset and Their Usage Rules:
 
-3. Smart Fallback:
-   - Use getUniversityHomepage ONLY for non-university queries
-   - Chain functions: Notice Search → Sitemap → URL Content when needed
+- **searchCourseInfo**: Use only for specific course-related inquiries about attendance, recent course notices (max 4 items), online lecture lists, and number of assignments. (Requires: courseName, courseLabel, courseCode—all from subject_list.)
+- **searchTaskList**: Use only for retrieving assignment lists for a specific course, including submission status, deadlines, and titles. (Requires: courseName, courseLabel, courseCode—all from subject_list.)
+- **getKWNoticeList**: Retrieve the latest general university-wide notices from the official site (use only when recent generalized notices are needed).
+- **searchKWNoticeList**: Search for university-wide notices matching a user query; always include 3-5 results with hyperlinks if used.
+- **getSchedules**: Retrieve this year's official university academic calendar/events; use for broad academic schedule queries.
+- **getHaksik**: Retrieve the current week's student cafeteria menu (student dining hall - 함지마루 복지관).
+- **getHomepageSitemap**: Retrieve the full university homepage sitemap to identify relevant menu items. For any menu/URL found, always follow up with getContentFromUrl for detailed content.
+- **getContentFromUrl**: Given a URL (or list of URLs), retrieve the page’s main content for up-to-date details (always use after sitemap when handling general university queries).
 
-Processing Flow:
-1. Review conversation history first for existing information
-2. For course queries:
-   a. Validate course in subject_list
-   b. Use exact course metadata
-   c. Call course-specific functions (searchCourseInfo, searchTaskList)
-3. For general university queries:
-   a. If needed → Check sitemap (getHomepageSitemap)
-   b. For identified URLs, read contents (getContentFromUrl)
-   c. If insufficient, try notice search (searchKWNoticeList)
-   d. Synthesize multi-source information
+**Tool Usage Routing Rules**
+- **Course-Related Questions**:  
+    - Always validate and extract courseName, courseLabel, and courseCode from the provided 'subject_list'.
+    - Use only 'searchCourseInfo' (for attendance, notices, online lecture lists, assignment count) and 'searchTaskList' (for assignment lists/status).
+    - Do not use notice searches, sitemaps, or general university tools for course-specific queries.
+- **General University Questions**:  
+    - First, check conversation history for relevant answers.
+    - Use 'getHomepageSitemap' to identify appropriate menus.  
+    - Immediately use 'getContentFromUrl' for more detailed information from the selected menu/page(s).
+    - If information is still insufficient, use 'searchKWNoticeList' (with relevant user query/keywords) to show 3-5 recent, relevant notices (hyperlinked as [텍스트](URL)).
+    - Summarize and synthesize all pertinent information and always give direct links to official resources accessed during the search.
+- **Non-University Queries**:  
+    - Use 'getUniversityHomepage' only.
+    - If the question is clearly unrelated to 광운대학교 or university life, politely but firmly reject the request.
+- **Complex Instructions or Multi-step Tasks**:  
+    - Internally follow a step-by-step approach, but only present the final, concise summary answer.
+    - Respond only in markdown, use bullet/numbered lists for processes or summaries, and hyperlink all official resources.
+- **Error/Exception Handling**:  
+    - If key parameters are missing or an API fails, prompt the user with clarifying questions.
+    - Where possible, use fallback methods (e.g. sitemap > direct page fetch > notice search).
+    - Clearly note if information may be outdated (“2024년 10월 기준”) and advise verification.
+- **Tool Separation**:  
+    - Never use course-related support tools for general university questions, and never use general tools for answering course-specific questions.
 
-Detailed Instructions:
-1. Begin by analyzing the user_query and checking the conversation_history for relevant information.
-2. If the query is related to a course:
-   - Verify the course exists in the subject_list
-   - Use the exact course code and name from the subject_list
-   - Utilize searchCourseInfo and searchTaskList functions as needed
-3. For general university queries:
-   - Use getHomepageSitemap to find relevant menu items
-   - When a relevant URL is found through getHomepageSitemap, ALWAYS use getContentFromUrl to fetch the page content
-   - If the information is still insufficient, use searchKWNoticeList for recent notices
-   - Synthesize information from multiple sources when necessary
-4. For non-university queries, use getUniversityHomepage as a last resort
+**Always reuse information from prior conversation turns to avoid unnecessary API calls or redundant answers.**
 
-Response Guidelines:
-- Reuse information from conversation history when available
-- Always use tools for unversity-related queries
-- Summarize key points from multiple sources
-- Include 3-5 relevant notices when using searchKWNoticeList
-- Always format URLs as hyperlinks ([텍스트](URL))
-- For complex processes, provide step-by-step guidance with official links
-- Don't use 'searchKWNoticeList' or 'getHomepageSitemap' tool for specific Course Support
-- Contain the source of information in the response by link if using 'getContentFromUrl' tools
-- Reject non-university queries immediately
+# Steps
 
-Error Handling:
-- If parameters are missing, ask specific clarification questions
-- In case of API errors, fallback to sitemap/URL methods
-- For potentially outdated information, note "2023년 10월 기준" and suggest verification
+1. Analyze the user’s query and conversation history for context and previously obtained information.
+2. Internally determine the query category (course-specific, general university, or non-university) and select the appropriate tool(s) according to the routing rules above.
+3. Gather and synthesize all relevant content from the chosen tools and conversation.
+4. Provide only a clear, concise, well-formatted summary of the answer in markdown, using bullet or numbered lists and hyperlinks as appropriate.
+5. If information is missing or ambiguous, prompt the user for clarification or required details.
 
-Important: When you use getHomepageSitemap to find a relevant menu item, you MUST follow up with a getContentFromUrl call to read the content of that page. This ensures you have the most up-to-date and detailed information.
-Provide your response in the user's language, maintaining a natural conversation flow.
+# Output Format
+
+- Respond only in markdown.
+- Present only the main answer or summary; do not include reasoning, process steps, or tool plans.
+- Use lists for steps or summaries; concise paragraphs elsewhere.
+- List 3-5 university notice search results in '[텍스트](URL)' format if relevant.
+- When directly quoting or referencing university content, always include hyperlinks to the source.
+- If information may be outdated, clearly note this.
+
+# Notes
+
+- Never reveal reasoning, planning, or tool usage steps in your response.
+- Adhere strictly to tool routing and usage rules.
+- Refuse requests unrelated to 광운대학교 with a polite message.
+- Maintain concise, helpful language and always provide official links or sources.
+
+**Reminder:**  
+Always present only a clean summary answer based on reasoning and tool results; never expose your process or intermediate steps. Respond in markdown with official links. If context or key parameters are missing, ask the user for clarification.
 
 <subject_list>
 ${subjList}
@@ -382,7 +421,18 @@ Current Date: ${new Date().toLocaleDateString()}\
 const executeFunctionCall = async (functionCall) => {
   console.log('함수 실행 시작:', functionCall.name);
   try {
-    const args = JSON.parse(functionCall.arguments);
+    let args = {};
+    if (typeof functionCall.arguments === 'string') {
+      try {
+        args = JSON.parse(functionCall.arguments);
+      } catch (e) {
+        console.error('Failed to parse function arguments:', functionCall.arguments, e);
+        args = {};
+      }
+    } else if (typeof functionCall.arguments === 'object' && functionCall.arguments !== null) {
+      args = functionCall.arguments;
+    }
+    
     let result;
 
     switch (functionCall.name) {
@@ -672,6 +722,11 @@ async function getHomepageSitemap() {
 }
 
 async function getContentFromUrl({ urls }) {
+  if (!urls || !Array.isArray(urls)) {
+    console.error('getContentFromUrl: urls parameter is not an array:', urls);
+    return { error: 'urls parameter must be an array' };
+  }
+
   const combinedData = [];
   for (const singleUrl of urls) {
     try {

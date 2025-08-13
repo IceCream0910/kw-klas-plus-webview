@@ -7,7 +7,6 @@ const TodaysCafeteriaMenu = ({ data }) => {
   const now = new Date();
   const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
-  // Find today's menu for each restaurant
   const todaysMenus = data.restaurants.map(restaurant => {
     const todayMenu = restaurant.weeklyMenu.find(item => item.date === today || item.day === now.toLocaleDateString('ko-KR', { weekday: 'long' }));
     return {
@@ -22,7 +21,6 @@ const TodaysCafeteriaMenu = ({ data }) => {
     </div>;
   }
 
-  // Function to format menu items
   const formatMenu = (menuString) => {
     if (!menuString) return [];
     return menuString.split('\r\n').filter(item => item.trim() !== '');
