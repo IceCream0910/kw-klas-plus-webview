@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^0.0.33",
+    "@ai-sdk/openai": "^2.0.24",
     "@langchain/core": "^0.3.33",
     "@langchain/google-genai": "^0.1.6",
     "@reacticons/ionicons": "^7.1.0",
