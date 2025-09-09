@@ -149,6 +149,7 @@ function GradualBlur(props) {
                 WebkitMaskImage: `linear-gradient(${direction}, ${gradient})`,
                 backdropFilter: `blur(${blurValue.toFixed(3)}rem)`,
                 WebkitBackdropFilter: `blur(${blurValue.toFixed(3)}rem)`,
+                background: `linear-gradient(${direction}, transparent ${p1}%, var(--background-transparent) ${p2}%)`,
                 opacity: config.opacity,
                 transition:
                     config.animated && config.animated !== 'scroll'
