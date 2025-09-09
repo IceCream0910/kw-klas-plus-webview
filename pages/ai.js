@@ -2,6 +2,8 @@ import { useState, useEffect, useRef, use } from 'react';
 import Head from 'next/head';
 import ReactMarkdown from 'react-markdown';
 import IonIcon from '@reacticons/ionicons';
+import { getStoredData, setStoredData } from '../lib/storageUtils';
+import { openKlasPage } from '../lib/androidBridge';
 import LoadingComponent from './components/loader';
 import Spacer from './components/spacer';
 import Header from './components/header';
@@ -27,10 +29,10 @@ export default function AI() {
 
     const checkRemainingQuestions = () => {
         const today = new Date().toISOString().split('T')[0];
-        const storedData = localStorage.getItem('klasGptQuestionLimit');
+        const storedData = getStoredData('klasGptQuestionLimit');
 
         if (!storedData || !storedData.startsWith(today)) {
-            localStorage.setItem('klasGptQuestionLimit', `${today}_0`);
+            setStoredData('klasGptQuestionLimit', `${today}_0`);
             setRemainingQuestions(MAX_DAILY_QUESTIONS);
             return MAX_DAILY_QUESTIONS;
         } else {
@@ -60,9 +62,9 @@ export default function AI() {
 
         if (input.trim()) {
             const today = new Date().toISOString().split('T')[0];
-            const storedData = localStorage.getItem('klasGptQuestionLimit');
+            const storedData = getStoredData('klasGptQuestionLimit');
             const currentCount = storedData ? parseInt(storedData.split('_')[1], 10) : 0;
-            localStorage.setItem('klasGptQuestionLimit', `${today}_${currentCount + 1}`);
+            setStoredData('klasGptQuestionLimit', `${today}_${currentCount + 1}`);
 
             setRemainingQuestions(MAX_DAILY_QUESTIONS - (currentCount + 1));
 

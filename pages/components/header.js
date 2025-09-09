@@ -1,31 +1,44 @@
 import { useEffect, useState } from "react";
 import IonIcon from "@reacticons/ionicons";
 import Spacer from "../components/spacer";
+import { openOptionsMenu } from "../../lib/androidBridge";
+
+/**
+ * 앱 버전 체크 유틸리티
+ */
+const checkAppCompatibility = (version) => {
+    if (!version) return false;
+    if (!version.includes('.') && version >= 21) {
+        return true;
+    }
+    return false;
+};
+
+/**
+ * 사용자 에이전트에서 앱 버전 추출
+ */
+const getAppVersionFromUserAgent = () => {
+    const userAgent = navigator.userAgent;
+    const version = userAgent.split('AndroidApp_v')[1];
+    return version ? version.trim() : null;
+};
 
 function Header({ title }) {
     const [version, setVersion] = useState("");
     const [isCompatible, setIsCompatible] = useState(false);
 
     useEffect(() => {
-        const userAgent = navigator.userAgent;
-        const version = userAgent.split('AndroidApp_v')[1];
-        if (version) {
-            setVersion(version.trim());
+        const appVersion = getAppVersionFromUserAgent();
+        if (appVersion) {
+            setVersion(appVersion);
+            setIsCompatible(checkAppCompatibility(appVersion));
         }
     }, []);
 
-    useEffect(() => {
-        if (!version) return;
-        if (!version.includes('.') && version >= 21) {
-            setIsCompatible(true);
-        }
-    }, [version]);
-
-    useEffect(() => {
-        console.log(isCompatible);
-    }, [isCompatible]);
-
-    if (!isCompatible && process.env.NEXT_PUBLIC_DEVELOPMENT !== 'true') return null;
+    // 개발 모드가 아니고 호환되지 않는 버전인 경우 렌더링하지 않음
+    if (!isCompatible && process.env.NEXT_PUBLIC_DEVELOPMENT !== 'true') {
+        return null;
+    }
 
     return (
         <>
@@ -42,15 +55,26 @@ function Header({ title }) {
                 zIndex: 1000
             }}>
                 {title}
-                <button style={{ width: 'fit-content' }} onClick={() => Android.openOptionsMenu()}>
-                    <IonIcon name='ellipsis-vertical' style={{ fontSize: '20px', color: 'var(--text-color)', position: 'relative', top: '2px' }} />
+                <button
+                    style={{ width: 'fit-content' }}
+                    onClick={openOptionsMenu}
+                    aria-label="메뉴 열기"
+                >
+                    <IonIcon
+                        name='ellipsis-vertical'
+                        style={{
+                            fontSize: '20px',
+                            color: 'var(--text-color)',
+                            position: 'relative',
+                            top: '2px'
+                        }}
+                    />
                 </button>
             </div>
 
             <Spacer y={50} />
         </>
     );
-
 }
 
 export default Header;

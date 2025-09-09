@@ -161,10 +161,6 @@ select {
   border-radius: 15px;
 }
 
-.grade-card div:not(:last-child) {
-  border-right: 1px solid var(--card-border);
-}
-
 .chat-input-container {
   display: flex;
   flex-direction: column;

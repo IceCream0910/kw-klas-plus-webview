@@ -7,6 +7,11 @@ import 'react-spring-bottom-sheet/dist/style.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import IonIcon from '@reacticons/ionicons';
 import { KLAS } from "../lib/klas";
+import { formatCalendarEvents, getEventsForDate, getDefaultSelectedDate, getEventStyle } from '../lib/calendarUtils';
+import { openWebViewBottomSheet, closeWebViewBottomSheet } from '../lib/androidBridge';
+import { useCalendar } from '../lib/hooks/useCalendar';
+import EventItem from './components/EventItem';
+
 const localizer = momentLocalizer(moment);
 var yearHakgi;
 
@@ -25,188 +30,58 @@ const TouchCellWrapper = ({ children, value, onSelectSlot }) =>
 
 
 export default function CalendarPage() {
-    const [token, setToken] = useState(null);
-    const [events, setEvents] = useState([]);
-    const [selectedDate, setSelectedDate] = useState(moment().toDate());
-    const [selectedEvent, setSelectedEvent] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isAddingEvent, setIsAddingEvent] = useState(false);
-    const [selectedDayEvents, setSelectedDayEvents] = useState([]);
-    const [currentMonth, setCurrentMonth] = useState(moment());
-
-    useEffect(() => {
-        window.receiveToken = function (receivedToken) {
-            if (!receivedToken) return;
-            setToken(receivedToken);
-        };
-
-        window.closeWebViewBottomSheet = function () {
-            setIsModalOpen(false);
-        };
-
-        const urlParams = new URLSearchParams(window.location.search);
-        yearHakgi = urlParams.get('yearHakgi');
-
-
-    }, []);
-
-    useEffect(() => {
-        if (!token) return;
-        fetchEvents();
-    }, [token, currentMonth]);
-
-    useEffect(() => {
-        const today = moment();
-        if (today.isSame(currentMonth, 'month')) {
-            setSelectedDate(today.toDate());
-            updateSelectedDayEvents(today.toDate());
-        } else {
-            const firstDayOfMonth = currentMonth.clone().startOf('month').toDate();
-            setSelectedDate(firstDayOfMonth);
-            updateSelectedDayEvents(firstDayOfMonth);
-        }
-    }, [currentMonth, events]);
-
-    useEffect(() => {
-        try {
-            if (isModalOpen) Android.openWebViewBottomSheet()
-            else Android.closeWebViewBottomSheet()
-        } catch (e) {
-            console.error(e);
-        }
-    }, [isModalOpen]);
-
-
-    const updateSelectedDayEvents = (date) => {
-        const dayStart = moment(date).startOf('day');
-        const dayEnd = moment(date).endOf('day');
-        const filteredEvents = events.filter(event =>
-            moment(event.start).isBefore(dayEnd) &&
-            moment(event.end).isAfter(dayStart)
-        );
-        setSelectedDayEvents(filteredEvents);
-    };
-
-    const fetchEvents = () => {
-        KLAS("https://klas.kw.ac.kr/std/ads/admst/MySchdulMonthTableList.do", token, {
-            start: currentMonth.clone().startOf('month').format('YYYY-MM-DD'),
-            end: currentMonth.clone().endOf('month').format('YYYY-MM-DD'),
-        })
-            .then(data => {
-                const formattedEvents = data.map(event => ({
-                    ...event,
-                    start: event.typeNm === "과제"
-                        ? moment(event.ended, "YYYYMMDDHHmm").startOf('day').toDate()
-                        : moment(event.started, "YYYYMMDDHHmm").toDate(),
-                    end: moment(event.ended, "YYYYMMDDHHmm").toDate(),
-                    title: event.title.replace("[개인일정] ", "").replace("[학사일정] ", ""),
-                    place: event.typeNm === "과제" ? `${event.subj}` : event.place
-                }));
-                setEvents(formattedEvents);
-            })
-            .catch(error => {
-                console.error('Error fetching events:', error);
-            });
-    };
+    const {
+        token,
+        events,
+        selectedDate,
+        selectedEvent,
+        isModalOpen,
+        isAddingEvent,
+        selectedDayEvents,
+        currentMonth,
+        setToken,
+        handleSlotSelect,
+        handleEventSelect,
+        handleNavigate,
+        openAddEventModal,
+        closeModal,
+        updateSelectedDayEvents,
+        fetchEvents,
+        handleSaveEvent,
+        handleDeleteEvent,
+        formatEventForForm
+    } = useCalendar();
 
     const handleSelectSlot = (slotInfo) => {
-        setSelectedDate(slotInfo.start);
-        setSelectedEvent(null);
-        updateSelectedDayEvents(slotInfo.start);
-        setIsAddingEvent(false);
+        handleSlotSelect(slotInfo);
     };
 
     const handleSelectEvent = (selectedEvent) => {
-        setSelectedEvent(selectedEvent);
-        setIsAddingEvent(false);
-        setIsModalOpen(true);
-    };
-
-    const handleSaveEvent = async (eventData) => {
-        const body = {
-            gubun: "10",
-            grcodeList: [],
-            yearhakgiList: [],
-            subjList: [],
-            selectGrcode: null,
-            selectYearhakgi: ",",
-            selectSubj: null,
-            title: eventData.title,
-            weightgubun: "M",
-            place: eventData.place || null,
-            sdate: eventData.sdate,
-            stimeHour: eventData.stimeHour,
-            stimeMin: eventData.stimeMin,
-            edate: eventData.edate,
-            etimeHour: eventData.etimeHour,
-            etimeMin: eventData.etimeMin,
-            contents: null,
-            schdulId: eventData.schdulId,
-            schdulColor: eventData.schdulColor,
-            token: token
-        };
-
-        await KLAS("https://klas.kw.ac.kr/std/ads/admst/MySchdulSave.do", token, body)
-        fetchEvents();
-        setIsModalOpen(false);
-        setIsAddingEvent(false);
-    };
-
-    const handleDeleteEvent = async (eventData) => {
-        const body = {
-            gubun: "10",
-            grcodeList: [],
-            yearhakgiList: [],
-            subjList: [],
-            selectGrcode: null,
-            selectYearhakgi: ",",
-            selectSubj: null,
-            title: eventData.title,
-            weightgubun: "M",
-            place: eventData.place,
-            sdate: eventData.sdate,
-            stimeHour: eventData.stimeHour,
-            stimeMin: eventData.stimeMin,
-            edate: eventData.edate,
-            etimeHour: eventData.etimeHour,
-            etimeMin: eventData.etimeMin,
-            contents: null,
-            schdulId: eventData.schdulId,
-            schdulColor: eventData.schdulColor,
-            token: token
-        };
-
-        if (confirm('정말 이 일정을 삭제할까요?')) {
-            await KLAS("https://klas.kw.ac.kr/std/ads/admst/MySchdulDelete.do", token, body)
-            fetchEvents();
-            setIsModalOpen(false);
-        }
+        handleEventSelect(selectedEvent);
     };
 
     const handlePrevMonth = () => {
-        setCurrentMonth(prev => prev.clone().subtract(1, 'months'));
+        handleNavigate(currentMonth.clone().subtract(1, 'months').toDate());
     };
 
     const handleNextMonth = () => {
-        setCurrentMonth(prev => prev.clone().add(1, 'months'));
+        handleNavigate(currentMonth.clone().add(1, 'months').toDate());
     };
 
     const handleNextDay = () => {
         const nextDay = moment(selectedDate).add(1, 'day').toDate();
-        setSelectedDate(nextDay);
-        updateSelectedDayEvents(nextDay);
+        handleSlotSelect({ start: nextDay });
     };
 
     const handlePrevDay = () => {
         const prevDay = moment(selectedDate).subtract(1, 'day').toDate();
-        setSelectedDate(prevDay);
-        updateSelectedDayEvents(prevDay);
+        handleSlotSelect({ start: prevDay });
     };
 
     const moveToToday = () => {
-        setCurrentMonth(moment());
-        setSelectedDate(moment().toDate());
-        updateSelectedDayEvents(moment().toDate());
+        const today = moment().toDate();
+        handleNavigate(today);
+        handleSlotSelect({ start: today });
     };
 
     const eventStyleGetter = (event) => {
@@ -310,13 +185,13 @@ export default function CalendarPage() {
             )}
             <Spacer y={5} />
             <button style={{ background: 'var(--card-background)' }} onClick={() => {
-                setIsAddingEvent(true); setIsModalOpen(true);
+                openAddEventModal();
             }}>
                 + 일정 추가
             </button>
             <BottomSheet
                 open={isModalOpen}
-                onDismiss={() => { setIsModalOpen(false); setIsAddingEvent(false); }}
+                onDismiss={() => { closeModal(); }}
             >
                 <EventForm
                     event={isAddingEvent ? {
@@ -327,7 +202,7 @@ export default function CalendarPage() {
                     date={selectedDate}
                     onSave={handleSaveEvent}
                     onDelete={handleDeleteEvent}
-                    onClose={() => { setIsModalOpen(false); setIsAddingEvent(false); }}
+                    onClose={() => { closeModal(); }}
                 />
             </BottomSheet>
         </main>

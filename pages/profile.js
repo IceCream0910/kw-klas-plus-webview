@@ -2,8 +2,12 @@
 import { useState, useEffect } from "react";
 import IonIcon from '@reacticons/ionicons';
 import handleCalculateGPA, { calculateGPA } from "../lib/calculateGPA";
+import { processGradeData } from '../lib/gradeUtils';
+import { openKlasPage, openWebViewBottomSheet, closeWebViewBottomSheet, openCustomBottomSheet } from '../lib/androidBridge';
+import { getStoredData, setStoredData } from '../lib/storageUtils';
 import Header from "./components/header";
 import Spacer from "./components/spacer";
+import Card from "./components/Card";
 import { BottomSheet } from 'react-spring-bottom-sheet';
 import 'react-spring-bottom-sheet/dist/style.css';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
@@ -36,25 +40,25 @@ export default function Home() {
       setIsCardOpen(false);
     }
 
-    const savedHideGrades = localStorage.getItem('hideGrades');
+    const savedHideGrades = getStoredData('hideGrades');
     if (savedHideGrades !== null) {
       const parsedHideGrades = savedHideGrades === 'true';
       setHideGrades(parsedHideGrades);
       setShowGrades(!parsedHideGrades);
     }
 
-    const savedMenuOrder = localStorage.getItem('menuOrder');
+    const savedMenuOrder = getStoredData('menuOrder');
     if (savedMenuOrder) {
-      const parsedMenuOrder = JSON.parse(savedMenuOrder).filter(title => !title.includes("KLAS+"));
+      const parsedMenuOrder = savedMenuOrder.filter(title => !title.includes("KLAS+"));
       setMenuOrder(parsedMenuOrder);
-      localStorage.setItem('menuOrder', JSON.stringify(parsedMenuOrder));
+      setStoredData('menuOrder', parsedMenuOrder);
     } else {
       setMenuOrder(menuItems.map(item => item.title));
     }
 
-    const savedFavorites = localStorage.getItem('favorites');
+    const savedFavorites = getStoredData('favorites');
     if (savedFavorites) {
-      setFavorites(JSON.parse(savedFavorites));
+      setFavorites(savedFavorites);
     }
   }, [])
 
@@ -103,17 +107,19 @@ export default function Home() {
   }, [synthesisGPAs]);
 
   useEffect(() => {
-    try {
-      if (isOpenSettingsModal) Android.openWebViewBottomSheet()
-      else Android.closeWebViewBottomSheet()
-    } catch (e) { }
+    if (isOpenSettingsModal) {
+      openWebViewBottomSheet();
+    } else {
+      closeWebViewBottomSheet();
+    }
   }, [isOpenSettingsModal]);
 
   useEffect(() => {
-    try {
-      if (isCardOpen) Android.openWebViewBottomSheet()
-      else Android.closeWebViewBottomSheet()
-    } catch (e) { }
+    if (isCardOpen) {
+      openWebViewBottomSheet();
+    } else {
+      closeWebViewBottomSheet();
+    }
   }, [isCardOpen]);
 
   const handleGradeClick = () => {
@@ -128,7 +134,7 @@ export default function Home() {
       const newFavorites = isFavorite
         ? prevFavorites.filter(url => url !== item.url)
         : [...prevFavorites, item.url];
-      localStorage.setItem('favorites', JSON.stringify(newFavorites));
+      setStoredData('favorites', newFavorites);
       return newFavorites;
     });
   };
@@ -271,7 +277,7 @@ export default function Home() {
     items.splice(result.destination.index, 0, reorderedItem);
 
     setMenuOrder(items);
-    localStorage.setItem('menuOrder', JSON.stringify(items));
+    setStoredData('menuOrder', items);
   };
 
   const sortedMenuItems = menuOrder.map(title =>
@@ -281,7 +287,7 @@ export default function Home() {
   const handleResetMenuOrder = () => {
     const defaultOrder = menuItems.map(item => item.title);
     setMenuOrder(defaultOrder);
-    localStorage.setItem('menuOrder', JSON.stringify(defaultOrder));
+    setStoredData('menuOrder', defaultOrder);
   };
 
   const filteredMenuItems = sortedMenuItems
@@ -300,9 +306,8 @@ export default function Home() {
       <div className="profile-card">
         {data ? <>
           <motion.div layoutId="card" onClick={() => {
-            try {
-              Android.openCustomBottomSheet("https://klasplus.yuntae.in/modal/idCard", true)
-            } catch (e) { setIsCardOpen(true) }
+            openCustomBottomSheet("https://klasplus.yuntae.in/modal/idCard", true);
+            if (!openCustomBottomSheet) setIsCardOpen(true);
           }} style={{ padding: 0, display: 'flex', flexDirection: 'row', justifyContent: "space-between", alignItems: 'center', width: '100%' }}>
             <div style={{ opacity: .8, fontSize: '14px' }}>
               <Spacer y={5} />
@@ -316,9 +321,8 @@ export default function Home() {
           </motion.div>
           <Spacer y={10} />
           <button onClick={() => {
-            try {
-              Android.openCustomBottomSheet("https://klasplus.yuntae.in/modal/idCard", true)
-            } catch (e) { setIsCardOpen(true) }
+            openCustomBottomSheet("https://klasplus.yuntae.in/modal/idCard", true);
+            if (!openCustomBottomSheet) setIsCardOpen(true);
           }}
             style={{ background: 'var(--notice-hover)', borderRadius: '10px' }}>
             <span className="tossface">🪪</span>모바일 학생증

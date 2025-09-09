@@ -26,6 +26,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             data = await response.text();
         }
 
+        if (response.status !== 200) {
+            console.error('KLAS API error:', data);
+        }
+
         res.status(response.status).json(data);
     } catch (error) {
         console.error('Proxy error:', error);

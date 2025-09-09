@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import Spacer from "./components/spacer";
 import LoadingComponent from "./components/loader";
 import { KLAS } from "../lib/klas";
+import { safeAndroidCall } from "../lib/androidBridge";
 
 const generateRandomColor = () => {
   const hue = Math.floor(Math.random() * 360);
@@ -14,7 +15,7 @@ const generateRandomPattern = () => {
   return patterns[Math.floor(Math.random() * patterns.length)];
 };
 
-const ScholarshipCard = ({ scholarship, isFocused }) => {
+const OriginalScholarshipCard = ({ scholarship, isFocused }) => {
   const cardColor = React.useMemo(() => generateRandomColor(), []);
   const pattern = React.useMemo(() => generateRandomPattern(), []);
 
@@ -88,25 +89,29 @@ export default function Janghak() {
   const observerRef = useRef(null);
   const [viewType, setViewType] = useState('list');
 
+  // Android 브리지 설정
   useEffect(() => {
     window.receiveToken = (receivedToken) => {
       if (receivedToken) setToken(receivedToken);
     };
 
     try {
-
+      // Android 환경에서 실행되는 코드
     } catch (e) {
       console.log('not app');
     }
   }, []);
 
+  // 포커스 인덱스 조정
   useEffect(() => {
     if (focusedIndex === 0) setFocusedIndex(1);
     if (focusedIndex === janghak.length - 1) setFocusedIndex(janghak.length - 2);
   }, [focusedIndex]);
 
+  // 장학금 데이터 로드
   useEffect(() => {
     if (!token) return;
+
     KLAS("https://klas.kw.ac.kr/std/cps/inqire/JanghakHistoryStdList.do", token)
       .then((data) => {
         data.unshift(null);
@@ -120,6 +125,7 @@ export default function Janghak() {
       });
   }, [token]);
 
+  // Intersection Observer 설정
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -153,11 +159,26 @@ export default function Janghak() {
     };
   }, [janghak]);
 
+  // 초기 스크롤 위치 설정
   useEffect(() => {
     const container = containerRef.current;
     if (!container || !container.children[1]) return;
     container.scrollLeft = container.children[0].offsetWidth;
   }, [janghak]);
+
+  // KLAS 페이지 열기
+  const handleOpenKlas = () => {
+    safeAndroidCall(() => {
+      Android.openPage('https://klas.kw.ac.kr/std/cps/inqire/JanghakStdPage.do');
+    });
+  };
+
+  // 학부 장학안내 페이지 열기
+  const handleOpenScholarshipInfo = () => {
+    safeAndroidCall(() => {
+      Android.openPage('https://www.kw.ac.kr/ko/life/summary.jsp');
+    });
+  };
 
   if (isLoading) {
     return (
@@ -177,7 +198,18 @@ export default function Janghak() {
     <main style={{ paddingBottom: '60px' }}>
       <Spacer y={5} />
       <h2>장학 조회
-        <button onClick={() => Android.openPage('https://klas.kw.ac.kr/std/cps/inqire/JanghakStdPage.do')} style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-5px', borderRadius: '20px', padding: '10px 15px' }}>
+        <button
+          onClick={handleOpenKlas}
+          style={{
+            float: 'right',
+            border: '1px solid var(--card-background)',
+            width: 'fit-content',
+            fontSize: '14px',
+            marginTop: '-5px',
+            borderRadius: '20px',
+            padding: '10px 15px'
+          }}
+        >
           KLAS에서 열기
         </button>
       </h2>
@@ -192,15 +224,25 @@ export default function Janghak() {
             transform: 'translateY(-40%)'
           }}>
             <h3 style={{ textAlign: 'center' }}>지금까지 수여받은<br />장학금이 아직 없어요!</h3>
-            <button onClick={() => Android.openPage('https://www.kw.ac.kr/ko/life/summary.jsp')} style={{ background: 'var(--button-background)', color: 'var(--button-text)', width: 'fit-content', margin: '0 auto', display: 'block', fontSize: '14px', marginTop: '15px', padding: '10px 15px' }}>
+            <button
+              onClick={handleOpenScholarshipInfo}
+              style={{
+                background: 'var(--button-background)',
+                color: 'var(--button-text)',
+                width: 'fit-content',
+                margin: '0 auto',
+                display: 'block',
+                fontSize: '14px',
+                marginTop: '15px',
+                padding: '10px 15px'
+              }}
+            >
               학부 장학안내 보러가기
             </button>
           </div>
         </>
       ) : (
         <>
-
-
           {viewType === 'card' ? (
             <>
               <div style={{
@@ -228,7 +270,7 @@ export default function Janghak() {
                   {janghak.map((scholarship, index) => (
                     <div key={index} style={{ scrollSnapAlign: 'center' }}>
                       {scholarship ? (
-                        <ScholarshipCard scholarship={scholarship} isFocused={index === focusedIndex} />
+                        <OriginalScholarshipCard scholarship={scholarship} isFocused={index === focusedIndex} />
                       ) : (
                         <div style={{ width: 'calc(25vw - 40px)', height: '70vw' }}>
                           <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}></div>
@@ -237,13 +279,15 @@ export default function Janghak() {
                     </div>
                   ))}
                 </div>
-
               </div>
             </>
           ) : (
             <div style={{
               display: 'flex',
-              flexDirection: 'column', width: '100%', gap: '15px', padding: '25px 0'
+              flexDirection: 'column',
+              width: '100%',
+              gap: '15px',
+              padding: '25px 0'
             }}>
               {janghak.slice(1, -1).map((scholarship, index) => (
                 <ScholarshipListItem key={index} scholarship={scholarship} />

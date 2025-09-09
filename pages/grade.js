@@ -6,6 +6,8 @@ import IonIcon from '@reacticons/ionicons';
 import { BottomSheet } from 'react-spring-bottom-sheet';
 import 'react-spring-bottom-sheet/dist/style.css'
 import { KLAS } from "../lib/klas";
+import Skeleton, { SkeletonLayouts } from "./components/Skeleton";
+import GradeCard from "./components/GradeCard";
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 export default function Grade() {
@@ -171,78 +173,37 @@ export default function Grade() {
       {synthesisGPAs ? (
         synthesisGPAs.map((value, id) => (
           value.name === '전체 학기' ? (
-            <div className="profile-card"
-              style={{ border: '2px solid rgba(165, 165, 165, 0.3)', marginTop: '20px' }}>
-              <h3>{value.name}</h3>
-              <div style={{ display: 'flex', justifyContent: 'center', width: '100%', gap: '20px' }}>
-                <div style={{ textAlign: 'center', width: '100%' }}>
-                  <span style={{ opacity: .8, fontSize: '12px' }}>취득학점</span>
-                  <h3 style={{ margin: 0 }}>{value.credit}</h3>
-                  <span style={{ opacity: .5, fontSize: '12px' }}>F 미포함 :</span>
-
-                </div>
-                <div style={{ textAlign: 'center', width: '100%' }}>
-                  <span style={{ opacity: .8, fontSize: '12px' }}>전공</span>
-                  <h3 style={{ margin: 0 }}>{value.majorGPA.includeF}</h3>
-                  <span style={{ opacity: .5, fontSize: '12px' }}>{value.majorGPA.excludeF}</span>
-                </div>
-                <div style={{ textAlign: 'center', width: '100%' }}>
-                  <span style={{ opacity: .8, fontSize: '12px' }}>전공 외</span>
-                  <h3 style={{ margin: 0 }}>{value.nonMajorGPA.includeF}</h3>
-                  <span style={{ opacity: .5, fontSize: '12px' }}>{value.nonMajorGPA.excludeF}</span>
-                </div>
-                <div style={{ textAlign: 'center', width: '100%' }}>
-                  <span style={{ opacity: .8, fontSize: '12px' }}>평균</span>
-                  <h3 style={{ margin: 0 }}>{value.averageGPA.includeF}</h3>
-                  <span style={{ opacity: .5, fontSize: '12px' }}>{value.averageGPA.excludeF}</span>
-                </div>
-              </div>
-            </div>
+            <GradeCard
+              key={id}
+              data={value}
+              title={value.name}
+              isTotal={true}
+            />
           ) : value.name.includes('계절학기') ? (
-            <button className="profile-card"
+            <GradeCard
+              key={id}
+              data={{}}
+              title={value.name}
               onClick={() => openDetailModal(id)}
-              style={{ marginTop: '10px' }}>
-              <h3 style={{ width: '100%', margin: 0 }}>{value.name}
-                <IonIcon style={{ float: 'right' }} name="chevron-forward" /></h3>
-            </button>
-          ) :
-            (
-              <button className="profile-card"
-                onClick={() => openDetailModal(id)}
-                style={{ marginTop: '10px' }}>
-                <h3 style={{ width: '100%' }}>{value.name}
-                  <IonIcon style={{ float: 'right' }} name="chevron-forward" /></h3>
-                <div style={{ display: 'flex', justifyContent: 'center', width: '100%', gap: '20px' }}>
-                  <div style={{ textAlign: 'center', width: '100%' }}>
-                    <span style={{ opacity: .8, fontSize: '12px' }}>취득학점</span>
-                    <h3 style={{ margin: 0 }}>{value.credit}</h3>
-                    <span style={{ opacity: .5, fontSize: '12px' }}>F 미포함 :</span>
-
-                  </div>
-                  <div style={{ textAlign: 'center', width: '100%' }}>
-                    <span style={{ opacity: .8, fontSize: '12px' }}>전공</span>
-                    <h3 style={{ margin: 0 }}>{value.majorGPA.includeF}</h3>
-                    <span style={{ opacity: .5, fontSize: '12px' }}>{value.majorGPA.excludeF}</span>
-                  </div>
-                  <div style={{ textAlign: 'center', width: '100%' }}>
-                    <span style={{ opacity: .8, fontSize: '12px' }}>전공 외</span>
-                    <h3 style={{ margin: 0 }}>{value.nonMajorGPA.includeF}</h3>
-                    <span style={{ opacity: .5, fontSize: '12px' }}>{value.nonMajorGPA.excludeF}</span>
-                  </div>
-                  <div style={{ textAlign: 'center', width: '100%' }}>
-                    <span style={{ opacity: .8, fontSize: '12px' }}>평균</span>
-                    <h3 style={{ margin: 0 }}>{value.averageGPA.includeF}</h3>
-                    <span style={{ opacity: .5, fontSize: '12px' }}>{value.averageGPA.excludeF}</span>
-                  </div>
-                </div>
-              </button>
-            )
+              showChevron={true}
+              style={{ marginTop: '10px' }}
+            />
+          ) : (
+            <GradeCard
+              key={id}
+              data={value}
+              title={value.name}
+              onClick={() => openDetailModal(id)}
+              showChevron={true}
+              style={{ marginTop: '10px' }}
+            />
+          )
         )).reverse()
       ) : (
         <div>
-          <div className="skeleton" style={{ height: '120px', width: '100%' }} />
-          <div className="skeleton" style={{ height: '120px', width: '100%' }} />
-          <div className="skeleton" style={{ height: '120px', width: '100%' }} />
+          <Skeleton height="120px" style={{ marginBottom: '10px' }} />
+          <Skeleton height="120px" style={{ marginBottom: '10px' }} />
+          <Skeleton height="120px" />
         </div>
       )}
 
@@ -283,11 +244,7 @@ export default function Grade() {
             }} />
           </div>
         )
-      ) : (
-        <div>
-          <div className="skeleton" style={{ height: '200px', width: '100%' }} />
-        </div>
-      )}
+      ) : <SkeletonLayouts.Chart />}
 
       <BottomSheet open={isModalOpen} expandOnContentDrag={false} scrollLocking={false} onDismiss={() => setIsModalOpen(false)}
         data-body-scroll-lock-ignore="true">
