@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import Spacer from './components/spacer';
 import IonIcon from '@reacticons/ionicons';
 import { KLAS } from "../lib/klas";
+import { normalizeBuildingName } from '../lib/normalizeBuildingName';
+
 export default function LectureHome() {
     const [data, setData] = useState(null);
     const [subjectInfo, setSubjectInfo] = useState(null);
@@ -94,6 +96,27 @@ export default function LectureHome() {
         }
     };
 
+    const openBuildingMap = (buildingName) => {
+        const buildingUrlMap = {
+            '누리': 'https://naver.me/G65JGSGc',
+            '문화': 'https://naver.me/FK5vCrqC',
+            '한울': 'https://naver.me/5tJtisN6',
+            '연구': 'https://naver.me/5eZJ0BvX',
+            '옥의': 'https://naver.me/565F45w6',
+            '비마': 'https://naver.me/xBwfkQLH',
+            '참빛': 'https://naver.me/Gal5ZmBK',
+            '새빛': 'https://naver.me/Gq8SGz6z',
+            '화도': 'https://naver.me/5uIEX9an',
+            '기념': 'https://naver.me/58NfGdrj'
+        };
+        const mapUrl = buildingUrlMap[buildingName];
+        try {
+            Android.openExternalLink(mapUrl);
+        } catch (error) {
+            window.open(mapUrl, '_blank');
+        }
+    }
+
 
     if (!data || !subjectInfo || !subjectPlaceTime) return <main>
         <Spacer y={40} />
@@ -112,11 +135,13 @@ export default function LectureHome() {
     </main>;
     const stats = calculateStats(data.atendSubList);
 
+
     return (
         <main>
             <Spacer y={20} />
             <h2>{subjectInfo.name}</h2>
-            <span style={{ opacity: .5, fontSize: '14px' }}>{subjectInfo.label.split(') - ')[1]} | {subjectPlaceTime}</span>
+            <span style={{ opacity: .5, fontSize: '14px' }}>{subjectInfo.label.split(') - ')[1]} | {subjectPlaceTime.split('/')[0]} / <span onClick={() => openBuildingMap(normalizeBuildingName(subjectPlaceTime.split('/')[1]).match(/^([가-힣]+)(\d+.*)?$/)[1])} style={{ textDecoration: 'underline' }}>{normalizeBuildingName(subjectPlaceTime.split('/')[1])}</span>
+            </span>
 
             <Spacer y={30} />
             <h3>강의 공지사항

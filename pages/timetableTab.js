@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import Header from "./components/header";
 import IonIcon from '@reacticons/ionicons';
+import { normalizeBuildingName } from '../lib/normalizeBuildingName';
+
 
 export default function Timetable() {
     const [timetableData, setTimetableData] = useState(null);
@@ -12,7 +14,12 @@ export default function Timetable() {
 
         window.receiveTimetableData = (data) => {
             const parsedData = JSON.parse(data);
-            console.log(parsedData);
+            for (const day in parsedData) {
+                parsedData[day] = parsedData[day].map(item => ({
+                    ...item,
+                    info: normalizeBuildingName(item.info.split('/')[0]) + '/' + item.info.split('/').slice(1).join('/')
+                }));
+            }
             setTimetableData(parsedData);
         };
 

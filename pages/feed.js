@@ -11,6 +11,7 @@ import Image from 'next/image';
 import Header from './components/header';
 import dynamic from 'next/dynamic';
 import PullToRefresh from 'pulltorefreshjs';
+import { normalizeBuildingName } from '../lib/normalizeBuildingName';
 
 const AdSense = dynamic(() => import('./components/adSense'), { ssr: false });
 
@@ -68,7 +69,7 @@ export default function Feed() {
         0: [
           { day: 0, title: '알고리즘', subj: 'CS101', startTime: '00:00', endTime: '24:00', info: 'Prof. X' }
         ],
-        1: [{ day: 1, title: '알고리즘', subj: 'CS101', startTime: '00:00', endTime: '24:00', info: 'Prof. X' }], 2: [{ day: 2, title: '알고리즘', subj: 'CS101', startTime: '00:00', endTime: '24:00', info: 'Prof. X' }], 3: [{ day: 3, title: '알고리즘', subj: 'CS101', startTime: '00:00', endTime: '24:00', info: 'Prof. X' }], 4: [{ day: 4, title: '알고리즘', subj: 'CS101', startTime: '00:00', endTime: '24:00', info: 'Prof. X' }], 5: [{ day: 5, title: '알고리즘', subj: 'CS101', startTime: '00:00', endTime: '24:00', info: 'Prof. X' }], 6: [{ day: 6, title: '알고리즘', subj: 'CS101', startTime: '00:00', endTime: '24:00', info: 'Prof. X' }]
+        1: [{ day: 1, title: '알고리즘', subj: 'CS101', startTime: '00:00', endTime: '24:00', info: 'Prof. X' }], 2: [{ day: 2, title: '알고리즘', subj: 'CS101', startTime: '12:00', endTime: '24:00', info: '비401/김광운' }], 3: [{ day: 3, title: '알고리즘', subj: 'CS101', startTime: '00:00', endTime: '24:00', info: '비401/김광운' }], 4: [{ day: 4, title: '알고리즘', subj: 'CS101', startTime: '00:00', endTime: '24:00', info: 'Prof. X' }], 5: [{ day: 5, title: '알고리즘', subj: 'CS101', startTime: '00:00', endTime: '24:00', info: 'Prof. X' }], 6: [{ day: 6, title: '알고리즘', subj: 'CS101', startTime: '00:00', endTime: '24:00', info: 'Prof. X' }]
       };
       window.receiveTimetableData(JSON.stringify(dummyTimetable));
     }
@@ -136,9 +137,36 @@ export default function Feed() {
 
     window.receiveTimetableData = (json) => {
       const data = JSON.parse(json);
+      for (const day in data) {
+        data[day] = data[day].map(item => ({
+          ...item,
+          info: normalizeBuildingName(item.info.split('/')[0]) + '/' + item.info.split('/').slice(1)
+        }));
+      }
       setTimetable(data);
       updateTimetableStatus(data);
     };
+
+    window.openBuildingMap = (buildingName) => {
+      const buildingUrlMap = {
+        '누리': 'https://naver.me/G65JGSGc',
+        '문화': 'https://naver.me/FK5vCrqC',
+        '한울': 'https://naver.me/5tJtisN6',
+        '연구': 'https://naver.me/5eZJ0BvX',
+        '옥의': 'https://naver.me/565F45w6',
+        '비마': 'https://naver.me/xBwfkQLH',
+        '참빛': 'https://naver.me/Gal5ZmBK',
+        '새빛': 'https://naver.me/Gq8SGz6z',
+        '화도': 'https://naver.me/5uIEX9an',
+        '기념': 'https://naver.me/58NfGdrj'
+      };
+      const mapUrl = buildingUrlMap[buildingName];
+      try {
+        Android.openExternalLink(mapUrl);
+      } catch (error) {
+        window.open(mapUrl, '_blank');
+      }
+    }
 
     window.receiveToken = (receivedToken) => {
       if (receivedToken) setToken(receivedToken);
@@ -272,9 +300,12 @@ export default function Feed() {
         const { title, subj, info, startTime } = closestClass;
         const startHour = Math.floor(startTime);
         const startMinute = Math.floor((startTime - startHour) * 60);
+        const building = info.split('/')[0];
+        const professor = info.split('/').slice(1).join('/');
+        const buildingName = building.match(/^([가-힣]+)(\d+.*)?$/)[1];
         setStatusText(`${startHour}:${startMinute.toString().padStart(2, '0')}<span style="opacity: 0.6">에</span><br/> ${title} <span style="opacity: 0.6">수업이 있어요.</span>
         <br/>
-        <span style="opacity: 0.6; font-size:14px;">${info} 교수</span>`);
+        <span style="opacity: 0.6; font-size:14px;"><span onclick="window.openBuildingMap('${buildingName}')" style="text-decoration: underline; cursor: pointer;">${building}</span> / ${professor} 교수</span>`);
         setSelectedSubj(subj);
         setSelectedSubjName(title);
         setShowButtons(true);
