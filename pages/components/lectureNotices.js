@@ -19,39 +19,39 @@ const LectureNotices = ({ token }) => {
                         notices: [
                             {
                                 pushSeq: 1,
-                                title: "더미 알림 제목 1",
-                                body: "더미 알림 내용 1",
-                                registDt: "2024-06-01 12:00"
+                                title: "컴퓨터구조",
+                                body: "중간고사 시험 일정이 변경되었습니다",
+                                registDt: "2024-10-15 09:30"
                             },
                             {
                                 pushSeq: 2,
-                                title: "더미 알림 제목 2",
-                                body: "더미 알림 내용 2",
-                                registDt: "2024-06-02 13:00"
+                                title: "자료구조",
+                                body: "과제 제출 마감일이 연장되었습니다 (10/25까지)",
+                                registDt: "2024-10-14 14:20"
                             },
                             {
                                 pushSeq: 3,
-                                title: "더미 알림 제목 3",
-                                body: "더미 알림 내용 3",
-                                registDt: "2024-06-03 14:00"
+                                title: "웹프로그래밍",
+                                body: "실습실 변경 안내: 새빛관 201호",
+                                registDt: "2024-10-13 16:45"
                             },
                             {
                                 pushSeq: 4,
-                                title: "더미 알림 제목 4",
-                                body: "더미 알림 내용 4",
-                                registDt: "2024-06-04 15:00"
+                                title: "알고리즘",
+                                body: "팀 프로젝트 발표 순서가 공지되었습니다",
+                                registDt: "2024-10-12 11:15"
                             },
                             {
                                 pushSeq: 5,
-                                title: "더미 알림 제목 5",
-                                body: "더미 알림 내용 5",
-                                registDt: "2024-06-05 16:00"
+                                title: "운영체제",
+                                body: "보강 수업 일정: 10/20(금) 오후 2시",
+                                registDt: "2024-10-11 10:00"
                             },
                             {
                                 pushSeq: 6,
-                                title: "더미 알림 제목 6",
-                                body: "더미 알림 내용 6",
-                                registDt: "2024-06-06 17:00"
+                                title: "머신러닝",
+                                body: "퀴즈 시험 범위 안내 (3-5장)",
+                                registDt: "2024-10-10 13:30"
                             }
                         ]
                     })

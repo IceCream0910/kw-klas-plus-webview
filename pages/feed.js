@@ -31,7 +31,6 @@ export default function Feed() {
   const [filteredDeadlines, setFilteredDeadlines] = useState(null);
   const [advisor, setAdvisor] = useState(null);
   const [kwNoticeTab, setKwNoticeTab] = useState("");
-  const [policyAgreeDate, setPolicyAgreeDate] = useState(null);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -41,27 +40,25 @@ export default function Feed() {
     const savedExcludeNotStarted = JSON.parse(localStorage.getItem('excludeNotStarted') || 'false');
     setExcludeNotStarted(savedExcludeNotStarted);
 
-    const savedPolicyAgreeDate = localStorage.getItem('policyAgreeDate');
-    setPolicyAgreeDate(savedPolicyAgreeDate);
-
     setupWindowFunctions(savedExcludeNotStarted);
     fetchData();
+
 
     // 더미데이터
     if (process.env.NEXT_PUBLIC_DEVELOPMENT === 'true') {
       const dummyDeadlines = [
         {
-          name: 'Dummy Course 1',
+          name: '광운인되기',
           subj: 'CS101',
           onlineLecture: [{ hourGap: 10, startDate: null }],
           task: [],
           teamTask: []
         },
         {
-          name: 'Dummy Course 2',
+          name: '광운인졸업하기',
           subj: 'MA102',
-          onlineLecture: [{ hourGap: 20, startDate: null }],
-          task: [{ hourGap: 20, startDate: null }],
+          onlineLecture: [{ hourGap: 152, startDate: null }],
+          task: [{ hourGap: 60, startDate: null }],
           teamTask: [{ hourGap: 20, startDate: null }]
         }
       ];
@@ -69,22 +66,13 @@ export default function Feed() {
 
       const dummyTimetable = {
         0: [
-          { day: 0, title: 'Dummy Class', subj: 'CS101', startTime: '09:00', endTime: '10:00', info: 'Prof. X' }
+          { day: 0, title: '알고리즘', subj: 'CS101', startTime: '00:00', endTime: '24:00', info: 'Prof. X' }
         ],
-        1: [], 2: [], 3: [], 4: [], 5: [], 6: []
+        1: [{ day: 1, title: '알고리즘', subj: 'CS101', startTime: '00:00', endTime: '24:00', info: 'Prof. X' }], 2: [{ day: 2, title: '알고리즘', subj: 'CS101', startTime: '00:00', endTime: '24:00', info: 'Prof. X' }], 3: [{ day: 3, title: '알고리즘', subj: 'CS101', startTime: '00:00', endTime: '24:00', info: 'Prof. X' }], 4: [{ day: 4, title: '알고리즘', subj: 'CS101', startTime: '00:00', endTime: '24:00', info: 'Prof. X' }], 5: [{ day: 5, title: '알고리즘', subj: 'CS101', startTime: '00:00', endTime: '24:00', info: 'Prof. X' }], 6: [{ day: 6, title: '알고리즘', subj: 'CS101', startTime: '00:00', endTime: '24:00', info: 'Prof. X' }]
       };
       window.receiveTimetableData(JSON.stringify(dummyTimetable));
     }
     //
-
-    const latestPolicyDate = process.env.NEXT_PUBLIC_LATEST_POLICY_DATE;
-    if (!savedPolicyAgreeDate || savedPolicyAgreeDate !== latestPolicyDate) {
-      try {
-        Android.openCustomBottomSheet("https://klasplus.yuntae.in/modal/agreePolicy", false);
-      } catch (e) {
-        console.error('Failed to open policy bottom sheet:', e);
-      }
-    }
 
     const ptr = PullToRefresh.init({
       mainElement: '.pull-to-swipe-area',
@@ -454,24 +442,25 @@ export default function Feed() {
 
         <LectureNotices token={token} />
 
-        <Spacer y={20} />
-        <div className="card non-anim" style={{ padding: '10px 0' }}>
-          <div style={{
-            position: 'absolute',
-            zIndex: 100,
-            top: '10px',
-            right: '10px',
-            background: 'var(--background)',
-            borderRadius: '15px',
-            fontSize: '12px',
-            opacity: 0.5,
-            padding: '5px 10px'
-          }}>광고</div>
-          <div style={{ width: '100%', height: '100px', maxWidth: '100%', display: 'flex', justifyContent: 'center' }}>
-            <AdSense adClient="ca-pub-7178712602934912" adSlot="8415533910" />
+        {process.env.NEXT_PUBLIC_DEVELOPMENT != "true" && <>
+          <Spacer y={20} />
+          <div className="card non-anim" style={{ padding: '10px 0' }}>
+            <div style={{
+              position: 'absolute',
+              zIndex: 100,
+              top: '10px',
+              right: '10px',
+              background: 'var(--background)',
+              borderRadius: '15px',
+              fontSize: '12px',
+              opacity: 0.5,
+              padding: '5px 10px'
+            }}>광고</div>
+            <div style={{ width: '100%', height: '100px', maxWidth: '100%', display: 'flex', justifyContent: 'center' }}>
+              <AdSense adClient="ca-pub-7178712602934912" adSlot="8415533910" />
+            </div>
           </div>
-        </div>
-
+        </>}
 
 
         <Spacer y={20} />
