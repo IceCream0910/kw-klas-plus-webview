@@ -4,7 +4,7 @@ import LoadingSkeleton from "../components/common/LoadingSkeleton";
 import BoardMetadata from "../components/board/BoardMetadata";
 import AttachmentItem from "../components/board/AttachmentItem";
 import BoardNavigation from "../components/board/BoardNavigation";
-import { useBoardData, useBoardDetail } from "../lib/lecture/useBoardData";
+import { useBoardData, useBoardDetail } from "../lib/useBoardData";
 
 export default function BoardViewWrapper() {
   const router = useRouter();

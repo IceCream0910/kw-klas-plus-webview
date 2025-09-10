@@ -1,5 +1,5 @@
 import Spacer from '../common/spacer';
-import { getYearOptions } from '../../lib/lecture/searchLecturePlanUtils';
+import { getYearOptions } from '../../lib/lecturePlan/searchLecturePlanUtils';
 
 /**
  * 강의계획서 검색 폼 컴포넌트

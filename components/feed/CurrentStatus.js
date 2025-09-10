@@ -1,5 +1,5 @@
 import { openLectureActivity, openQRCheckIn } from '../../lib/core/androidBridge';
-import { SkeletonLayouts } from './Skeleton';
+import { SkeletonLayouts } from '../common/Skeleton';
 
 /**
  * 현재 수업 상태를 표시하는 컴포넌트

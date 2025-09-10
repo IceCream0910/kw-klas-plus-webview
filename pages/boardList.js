@@ -4,7 +4,7 @@ import BoardListItem from "../components/board/BoardListItem";
 import LoadingSkeleton from "../components/common/LoadingSkeleton";
 import EmptyState from "../components/common/EmptyState";
 import Pagination from "../components/common/Pagination";
-import { useBoardData, useBoardList } from "../lib/lecture/useBoardData";
+import { useBoardData, useBoardList } from "../lib/useBoardData";
 
 export default function BoardList() {
   const [boardTitle, setBoardTitle] = useState("");

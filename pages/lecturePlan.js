@@ -1,19 +1,19 @@
 import React from 'react';
 import Spacer from '../components/common/spacer';
 import Skeleton from '../components/common/Skeleton';
-import LectureBasicInfo from '../components/lecture/LectureBasicInfo';
-import LectureInstructorInfo from '../components/lecture/LectureInstructorInfo';
-import StudyResultItem from '../components/lecture/StudyResultItem';
-import PrerequisiteItem from '../components/lecture/PrerequisiteItem';
+import LectureBasicInfo from '../components/lecturePlan/LectureBasicInfo';
+import LectureInstructorInfo from '../components/lecturePlan/LectureInstructorInfo';
+import StudyResultItem from '../components/lecturePlan/StudyResultItem';
+import PrerequisiteItem from '../components/lecturePlan/PrerequisiteItem';
 import GradeChart from '../components/grade/GradeChart';
 import GradeLegend from '../components/grade/GradeLegend';
-import BookItem from '../components/lecture/BookItem';
-import WeeklyScheduleItem from '../components/lecture/WeeklyScheduleItem';
+import BookItem from '../components/lecturePlan/BookItem';
+import WeeklyScheduleItem from '../components/lecturePlan/WeeklyScheduleItem';
 import IonIcon from '@reacticons/ionicons';
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import { useLecturePlan } from "../lib/lecture/useLecturePlan";
-import { formatTextWithBreaks } from "../lib/lecture/lecturePlanUtils";
+import { useLecturePlan } from "../lib/lecturePlan/useLecturePlan";
+import { formatTextWithBreaks } from "../lib/lecturePlan/lecturePlanUtils";
 import { safeAndroidCall } from "../lib/core/androidBridge";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, BarElement, Title, Tooltip, Legend);

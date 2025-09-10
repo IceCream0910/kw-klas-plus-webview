@@ -1,5 +1,5 @@
 import { openKlasPage } from '../../lib/core/androidBridge';
-import { SkeletonLayouts } from './Skeleton';
+import { SkeletonLayouts } from '../common/Skeleton';
 
 /**
  * 공지사항 목록 컴포넌트

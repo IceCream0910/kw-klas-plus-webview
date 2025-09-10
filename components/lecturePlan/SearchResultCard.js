@@ -1,6 +1,6 @@
 import Spacer from '../common/spacer';
 import IonIcon from '@reacticons/ionicons';
-import { getLectureStatus, generateLecturePlanId } from '../../lib/lecture/searchLecturePlanUtils';
+import { getLectureStatus, generateLecturePlanId } from '../../lib/lecturePlan/searchLecturePlanUtils';
 
 /**
  * 강의계획서 검색 결과 카드 컴포넌트

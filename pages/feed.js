@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import TodaysCafeteriaMenu from '../components/common/TodaysCafeteria';
+import TodaysCafeteriaMenu from '../components/feed/TodaysCafeteria';
 import IonIcon from '@reacticons/ionicons';
 import AppVersion from '../components/common/appVersion';
 import LectureNotices from '../components/lecture/lectureNotices';
@@ -14,15 +14,15 @@ import { BUILDING_MAP_URLS, KW_NOTICE_CATEGORIES } from '../lib/core/constants';
 import { openExternalLink, openKlasPage, evaluateKlasPage, openLectureActivity } from '../lib/core/androidBridge';
 import { useTimetableStatus } from '../lib/timetable/useTimetableStatus';
 import { useDeadlines } from '../lib/calendar/useDeadlines';
-import { initializePullToRefresh } from '../lib/ui/pullToRefreshUtils';
+import { initializePullToRefresh } from '../lib/pullToRefreshUtils';
 import Card from '../components/common/Card';
-import CurrentStatus from '../components/common/CurrentStatus';
+import CurrentStatus from '../components/feed/CurrentStatus';
 import ToggleSwitch from '../components/common/ToggleSwitch';
 import DeadlineContent from '../components/calendar/DeadlineContent';
 import { SkeletonLayouts } from '../components/common/Skeleton';
-import NoticeTabs from '../components/common/NoticeTabs';
-import NoticeList from '../components/common/NoticeList';
-import AdvisorInfo from '../components/profile/AdvisorInfo';
+import NoticeTabs from '../components/feed/NoticeTabs';
+import NoticeList from '../components/feed/NoticeList';
+import AdvisorInfo from '../components/feed/AdvisorInfo';
 
 const AdSense = dynamic(() => import('../components/common/adSense'), { ssr: false });
 

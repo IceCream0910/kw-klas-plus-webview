@@ -1,9 +1,9 @@
-import { useSearchLecturePlan } from '../lib/lecture/useSearchLecturePlan';
-import SearchLecturePlanHeader from '../components/lecture/SearchLecturePlanHeader';
-import SearchLecturePlanForm from '../components/lecture/SearchLecturePlanForm';
-import SearchResultCard from '../components/lecture/SearchResultCard';
-import SearchLecturePlanLoadingSkeleton from '../components/lecture/SearchLecturePlanLoadingSkeleton';
-import SearchLecturePlanEmptyState from '../components/lecture/SearchLecturePlanEmptyState';
+import { useSearchLecturePlan } from '../lib/lecturePlan/useSearchLecturePlan';
+import SearchLecturePlanHeader from '../components/lecturePlan/SearchLecturePlanHeader';
+import SearchLecturePlanForm from '../components/lecturePlan/SearchLecturePlanForm';
+import SearchResultCard from '../components/lecturePlan/SearchResultCard';
+import SearchLecturePlanLoadingSkeleton from '../components/lecturePlan/SearchLecturePlanLoadingSkeleton';
+import SearchLecturePlanEmptyState from '../components/lecturePlan/SearchLecturePlanEmptyState';
 import Spacer from '../components/common/spacer';
 
 export default function LectureHome() {
