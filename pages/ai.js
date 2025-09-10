@@ -2,11 +2,11 @@ import { useState, useEffect, useRef, use } from 'react';
 import Head from 'next/head';
 import ReactMarkdown from 'react-markdown';
 import IonIcon from '@reacticons/ionicons';
-import { getStoredData, setStoredData } from '../lib/storageUtils';
-import { openKlasPage } from '../lib/androidBridge';
-import LoadingComponent from './components/loader';
-import Spacer from './components/spacer';
-import Header from './components/header';
+import { getStoredData, setStoredData } from '../lib/core/storageUtils';
+import { openKlasPage } from '../lib/core/androidBridge';
+import LoadingComponent from '../components/common/loader';
+import Spacer from '../components/common/spacer';
+import Header from '../components/common/header';
 import remarkGfm from 'remark-gfm'
 
 export default function AI() {

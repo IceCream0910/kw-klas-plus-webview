@@ -1,9 +1,9 @@
-import { useSettings } from '../lib/hooks/useSettings';
-import ThemeSelector from './components/ThemeSelector';
-import SettingsMenuSection from './components/SettingsMenuSection';
-import SettingsLinkSection from './components/SettingsLinkSection';
-import SettingsInfoSection from './components/SettingsInfoSection';
-import Spacer from "./components/spacer";
+import { useSettings } from '../lib/profile/useSettings';
+import ThemeSelector from '../components/profile/ThemeSelector';
+import SettingsMenuSection from '../components/profile/SettingsMenuSection';
+import SettingsLinkSection from '../components/profile/SettingsLinkSection';
+import SettingsInfoSection from '../components/profile/SettingsInfoSection';
+import Spacer from "../components/common/spacer";
 import { BottomSheet } from 'react-spring-bottom-sheet';
 import 'react-spring-bottom-sheet/dist/style.css';
 

@@ -1,22 +1,20 @@
 "use client";
 import { useState, useEffect } from "react";
-import Header from "./components/header";
-import ProfileCard from "./components/ProfileCard";
-import SearchBar from "./components/SearchBar";
-import FavoriteSection from "./components/FavoriteSection";
-import MenuSection from "./components/MenuSection";
-import StudentIDModal from "./components/StudentIDModal";
-import MenuSettingsModal from "./components/MenuSettingsModal";
-import { menuItems } from "./components/menuItems";
+import Header from "../components/common/header";
+import ProfileCard from "../components/profile/ProfileCard";
+import SearchBar from "../components/profile/SearchBar";
+import FavoriteSection from "../components/profile/FavoriteSection";
+import MenuSection from "../components/profile/MenuSection";
+import StudentIDModal from "../components/profile/StudentIDModal";
+import MenuSettingsModal from "../components/profile/MenuSettingsModal";
+import { menuItems } from "../lib/profile/menuItems";
 import {
   useProfileData,
   useMenuSettings,
   useGradeSettings,
   useModalSettings
-} from "./components/useProfileData";
-import 'react-spring-bottom-sheet/dist/style.css';
-
-export default function Home() {
+} from "../lib/profile/useProfileData";
+import 'react-spring-bottom-sheet/dist/style.css'; export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
 
   // 커스텀 훅 사용

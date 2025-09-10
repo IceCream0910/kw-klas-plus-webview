@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import Spacer from './components/spacer';
+import Spacer from '../components/common/spacer';
 import IonIcon from '@reacticons/ionicons';
-import { KLAS } from "../lib/klas";
-import { normalizeBuildingName } from '../lib/normalizeBuildingName';
+import { KLAS } from "../lib/core/klas";
+import { normalizeBuildingName } from '../lib/core/normalizeBuildingName';
 
 export default function LectureHome() {
     const [data, setData] = useState(null);

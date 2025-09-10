@@ -1,7 +1,7 @@
-import { useOnlineLecture } from '../lib/hooks/useOnlineLecture';
-import OnlineLectureHeader from './components/OnlineLectureHeader';
-import OnlineLectureCard from './components/OnlineLectureCard';
-import OnlineLectureLoadingSkeleton from './components/OnlineLectureLoadingSkeleton';
+import { useOnlineLecture } from '../lib/lecture/useOnlineLecture';
+import OnlineLectureHeader from '../components/lecture/OnlineLectureHeader';
+import OnlineLectureCard from '../components/lecture/OnlineLectureCard';
+import OnlineLectureLoadingSkeleton from '../components/lecture/OnlineLectureLoadingSkeleton';
 
 export default function Page() {
   const {
