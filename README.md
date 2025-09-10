@@ -1,40 +1,105 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+# KLAS+ WebView 페이지
 
-First, run the development server:
+안드로이드 앱: [icecream0910/kw-klas-plus](https://github.com/icecream0910/kw-klas-plus)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 📁 프로젝트 구조
+
+```
+kw-klas-plus-webview/
+├── 📁 lib/                    # 유틸리티 및 비즈니스 로직
+│   ├── 📁 core/               # 핵심 기능 (API, 상수, 스토리지)
+│   ├── 📁 calendar/           # 캘린더 관련 유틸리티
+│   ├── 📁 grade/              # 성적 관련 로직
+│   ├── 📁 lecture/            # 강의 관련 기능
+│   ├── 📁 timetable/          # 시간표 처리
+│   ├── 📁 scholarship/        # 장학금 관련
+│   ├── 📁 profile/            # 프로필 및 설정
+│   └── 📁 ui/                 # UI 유틸리티
+├── 📁 components/             # React 컴포넌트
+│   ├── 📁 common/             # 공통 컴포넌트
+│   ├── 📁 calendar/           # 캘린더 컴포넌트
+│   ├── 📁 grade/              # 성적 관련 컴포넌트
+│   ├── 📁 lecture/            # 강의 관련 컴포넌트
+│   ├── 📁 timetable/          # 시간표 컴포넌트
+│   ├── 📁 board/              # 게시판 컴포넌트
+│   ├── 📁 scholarship/        # 장학금 컴포넌트
+│   └── 📁 profile/            # 프로필 컴포넌트
+├── 📁 pages/                  # Next.js 페이지
+│   ├── 📁 api/                # API 라우트
+│   ├── 📁 modal/              # 모달 페이지
+│   ├── calendar.js            # 캘린더 페이지
+│   ├── grade.js               # 성적 조회
+│   ├── profile.js             # 메인 대시보드
+│   ├── timetableTab.js        # 시간표
+│   ├── lecturePlan.js         # 강의계획서
+│   ├── onlineLecture.js       # 온라인 강의
+│   ├── ranking.js             # 성적 순위
+│   ├── janghak.js             # 장학금
+│   ├── ai.js                  # AI 챗봇
+│   └── settings.js            # 설정
+├── 📁 public/                 # 정적 파일
+└── 📁 styles/                 # 스타일 파일
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 시작하기
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+### 필수 요구사항
+- Node.js 18.0.0 이상
+- npm 또는 yarn 패키지 매니저
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+### 설치 및 실행
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+1. **저장소 클론**
+   ```bash
+   git clone https://github.com/IceCream0910/kw-klas-plus-webview.git
+   cd kw-klas-plus-webview
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+2. **의존성 설치**
+   ```bash
+   npm install
+   # 또는
+   yarn install
+   ```
 
-## Learn More
+3. **환경 변수 설정**
+   ```bash
+   cp .env.example .env.local
+   ```
+   
+   `.env.local` 파일에 필요한 환경 변수를 설정하세요:
+   ```env
+   NEXT_PUBLIC_API_URL=https://klas.kw.ac.kr
+   OPENAI_API_KEY=your_openai_api_key
+   SENTRY_DSN=your_sentry_dsn
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+4. **개발 서버 실행**
+   ```bash
+   npm run dev
+   # 또는
+   yarn dev
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 빌드 및 배포
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+```bash
+# 프로덕션 빌드
+npm run build
+# 또는
+yarn build
 
-## Deploy on Vercel
+# 프로덕션 서버 실행
+npm run start
+# 또는
+yarn start
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🤝 기여하기
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+1. 이 저장소를 포크합니다
+2. 기능 브랜치를 생성합니다 (`git checkout -b feat/새기능`)
+3. 변경사항을 커밋합니다 (`git commit -am '새 기능 추가'`)
+4. 브랜치에 푸시합니다 (`git push origin feat/새기능`)
+5. Pull Request를 생성합니다
