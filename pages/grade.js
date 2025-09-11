@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { Line } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
-import handleCalculateGPA, { calculateGPA } from "../lib/calculateGPA";
+import handleCalculateGPA, { calculateGPA } from "../lib/grade/calculateGPA";
 import IonIcon from '@reacticons/ionicons';
 import { BottomSheet } from 'react-spring-bottom-sheet';
 import 'react-spring-bottom-sheet/dist/style.css'
-import { KLAS } from "../lib/klas";
-import Skeleton, { SkeletonLayouts } from "./components/Skeleton";
-import GradeCard from "./components/GradeCard";
+import { KLAS } from "../lib/core/klas";
+import Skeleton, { SkeletonLayouts } from "../components/common/Skeleton";
+import GradeCard from "../components/grade/GradeCard";
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 export default function Grade() {

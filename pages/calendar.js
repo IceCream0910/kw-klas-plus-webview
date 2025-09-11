@@ -1,16 +1,16 @@
 import React, { useState, useEffect, cloneElement, Children } from 'react';
-import Spacer from "./components/spacer";
+import Spacer from "../components/common/spacer";
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import { BottomSheet } from 'react-spring-bottom-sheet';
 import 'react-spring-bottom-sheet/dist/style.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import IonIcon from '@reacticons/ionicons';
-import { KLAS } from "../lib/klas";
-import { formatCalendarEvents, getEventsForDate, getDefaultSelectedDate, getEventStyle } from '../lib/calendarUtils';
-import { openWebViewBottomSheet, closeWebViewBottomSheet } from '../lib/androidBridge';
-import { useCalendar } from '../lib/hooks/useCalendar';
-import EventItem from './components/EventItem';
+import { KLAS } from "../lib/core/klas";
+import { formatCalendarEvents, getEventsForDate, getDefaultSelectedDate, getEventStyle } from '../lib/calendar/calendarUtils';
+import { openWebViewBottomSheet, closeWebViewBottomSheet } from '../lib/core/androidBridge';
+import { useCalendar } from '../lib/calendar/useCalendar';
+import EventItem from '../components/calendar/EventItem';
 
 const localizer = momentLocalizer(moment);
 var yearHakgi;

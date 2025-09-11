@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import Spacer from "./components/spacer";
-import BoardListItem from "./components/BoardListItem";
-import LoadingSkeleton from "./components/LoadingSkeleton";
-import EmptyState from "./components/EmptyState";
-import Pagination from "./components/Pagination";
-import { useBoardData, useBoardList } from "./components/useBoardData";
+import Spacer from "../components/common/spacer";
+import BoardListItem from "../components/board/BoardListItem";
+import LoadingSkeleton from "../components/common/LoadingSkeleton";
+import EmptyState from "../components/common/EmptyState";
+import Pagination from "../components/common/Pagination";
+import { useBoardData, useBoardList } from "../lib/useBoardData";
 
 export default function BoardList() {
   const [boardTitle, setBoardTitle] = useState("");

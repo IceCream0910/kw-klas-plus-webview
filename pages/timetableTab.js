@@ -1,7 +1,7 @@
-import { useTimetable } from '../lib/hooks/useTimetable';
-import TimetableHeader from './components/TimetableHeader';
-import TimetableRenderer from './components/TimetableRenderer';
-import TimetableStyles from './components/TimetableStyles';
+import { useTimetable } from '../lib/timetable/useTimetable';
+import TimetableHeader from '../components/timetable/TimetableHeader';
+import TimetableRenderer from '../components/timetable/TimetableRenderer';
+import TimetableStyles from '../components/timetable/TimetableStyles';
 
 export default function Timetable() {
     const {

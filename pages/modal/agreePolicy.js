@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { KLAS } from "../../lib/klas";
+import { KLAS } from "../../lib/core/klas";
 import IonIcon from "@reacticons/ionicons";
 import { motion } from "framer-motion";
-import Spacer from "../components/spacer";
+import Spacer from "../../components/common/spacer";
 
 export default function IdCard() {
     return (

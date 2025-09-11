@@ -1,10 +1,10 @@
 import { useRouter } from "next/router";
-import Spacer from "./components/spacer";
-import LoadingSkeleton from "./components/LoadingSkeleton";
-import BoardMetadata from "./components/BoardMetadata";
-import AttachmentItem from "./components/AttachmentItem";
-import BoardNavigation from "./components/BoardNavigation";
-import { useBoardData, useBoardDetail } from "./components/useBoardData";
+import Spacer from "../components/common/spacer";
+import LoadingSkeleton from "../components/common/LoadingSkeleton";
+import BoardMetadata from "../components/board/BoardMetadata";
+import AttachmentItem from "../components/board/AttachmentItem";
+import BoardNavigation from "../components/board/BoardNavigation";
+import { useBoardData, useBoardDetail } from "../lib/useBoardData";
 
 export default function BoardViewWrapper() {
   const router = useRouter();

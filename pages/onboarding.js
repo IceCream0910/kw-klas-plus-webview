@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import GradualBlur from './components/GradualBlur';
+import GradualBlur from '../components/common/GradualBlur';
 import Flicking from "@egjs/react-flicking";
 import "@egjs/react-flicking/dist/flicking.css";
 

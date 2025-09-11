@@ -1,8 +1,8 @@
-import { useRanking } from '../lib/hooks/useRanking';
-import RankingHeader from './components/RankingHeader';
-import RankingCard from './components/RankingCard';
-import RankingLoadingSkeleton from './components/RankingLoadingSkeleton';
-import RankingEmptyState from './components/RankingEmptyState';
+import { useRanking } from '../lib/grade/useRanking';
+import RankingHeader from '../components/grade/RankingHeader';
+import RankingCard from '../components/grade/RankingCard';
+import RankingLoadingSkeleton from '../components/grade/RankingLoadingSkeleton';
+import RankingEmptyState from '../components/grade/RankingEmptyState';
 
 export default function Grade() {
   const { rank } = useRanking();

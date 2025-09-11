@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import IonIcon from '@reacticons/ionicons';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import Spacer from "../components/spacer";
+import Spacer from "../../components/common/spacer";
 
 export default function MenuOrderModal() {
     const [menuOrder, setMenuOrder] = useState([]);

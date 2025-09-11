@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import Spacer from "./components/spacer";
-import LoadingComponent from "./components/loader";
-import { KLAS } from "../lib/klas";
-import { safeAndroidCall } from "../lib/androidBridge";
+import Spacer from "../components/common/spacer";
+import LoadingComponent from "../components/common/loader";
+import { KLAS } from "../lib/core/klas";
+import { safeAndroidCall } from "../lib/core/androidBridge";
 
 const generateRandomColor = () => {
   const hue = Math.floor(Math.random() * 360);
