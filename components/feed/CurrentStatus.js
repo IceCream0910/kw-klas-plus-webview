@@ -1,9 +1,6 @@
 import { openLectureActivity, openQRCheckIn } from '../../lib/core/androidBridge';
 import { SkeletonLayouts } from '../common/Skeleton';
 
-/**
- * 현재 수업 상태를 표시하는 컴포넌트
- */
 function CurrentStatus({ statusText, showButtons, selectedSubj, selectedSubjName }) {
     const handleLectureClick = () => {
         openLectureActivity(selectedSubj, selectedSubjName);

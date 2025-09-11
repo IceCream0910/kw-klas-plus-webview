@@ -1,7 +1,4 @@
-/**
- * 석차 로딩 스켈레톤 컴포넌트
- * @returns {JSX.Element}
- */
+
 const RankingLoadingSkeleton = () => {
     return (
         <div>

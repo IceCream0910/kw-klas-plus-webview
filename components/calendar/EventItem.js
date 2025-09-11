@@ -1,8 +1,5 @@
 import moment from 'moment';
 
-/**
- * 캘린더 이벤트 아이템 컴포넌트
- */
 function EventItem({ event, onClick }) {
     const getEventTypeStyle = (typeNm) => {
         const typeColors = {

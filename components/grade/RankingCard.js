@@ -1,9 +1,4 @@
-/**
- * 성적 석차 카드 컴포넌트
- * @param {Object} props
- * @param {Object} props.data - 석차 데이터
- * @returns {JSX.Element}
- */
+
 const RankingCard = ({ data }) => {
     return (
         <div className="profile-card" style={{

@@ -1,9 +1,4 @@
-/**
- * 설정 정보 섹션 컴포넌트
- * @param {Object} props
- * @param {string} props.appVersion - 앱 버전
- * @returns {JSX.Element}
- */
+
 const SettingsInfoSection = ({ appVersion }) => {
     return (
         <>

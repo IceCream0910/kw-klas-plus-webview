@@ -345,7 +345,6 @@ export default function AI() {
                     )}
                     {chat.map((item, index) => (
                         <div key={index} className={`message`}>
-                            {/* 기존 단순 로딩 컴포넌트 제거 및 skeleton/스피너 논리 추가 */}
                             {item.type === 'question'
                                 ? <div className="me">{item.content}</div>
                                 : item.type !== 'tool' && (
@@ -374,7 +373,6 @@ export default function AI() {
                                             </div>
                                         )}
                                         <Spacer y={5} />
-                                        {/* 답변 스켈레톤: 아직 내용이 비어 있고 스트리밍 진행 중일 때 */}
                                         {item.type === 'answer'
                                             && item.content === ''
                                             && isLoading
@@ -387,7 +385,6 @@ export default function AI() {
                                                 </div>
                                             )
                                         }
-                                        {/* 실제 스트리밍 콘텐츠 */}
                                         {!(item.content === '' && isLoading && index === chat.length - 1) && (
                                             <ReactMarkdown
                                                 remarkPlugins={[remarkGfm]}

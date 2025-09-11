@@ -3,9 +3,6 @@ import { motion } from "framer-motion";
 import Card from '../common/Card';
 import IonIcon from '@reacticons/ionicons';
 
-/**
- * 강의 공지사항 목록 컴포넌트
- */
 const LectureNoticeList = ({ notices, title, onAddClick, emptyMessage = "아직 항목이 없어요" }) => {
     const EmptyState = () => (
         <div className="flex flex-col items-center justify-center py-8 text-gray-400">

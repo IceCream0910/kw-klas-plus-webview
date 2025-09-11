@@ -8,7 +8,6 @@ import Spacer from '../components/common/spacer';
 
 export default function LectureHome() {
     const {
-        // 상태
         searchMode,
         data,
         year,
@@ -23,7 +22,6 @@ export default function LectureHome() {
         hakgwaList,
         majorList,
 
-        // 상태 변경 함수
         setYear,
         setHakgi,
         setName,
@@ -33,7 +31,6 @@ export default function LectureHome() {
         setSelectedMajor,
         setIsMy,
 
-        // 기능 함수
         search,
         backToSearch,
         fetchMajorList

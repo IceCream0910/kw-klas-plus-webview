@@ -21,7 +21,6 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, BarElement, Title, To
 export default function LecturePlan() {
     const { data, subjId, isLoading, error } = useLecturePlan();
 
-    // KLAS에서 열기 핸들러
     const handleOpenInKlas = () => {
         safeAndroidCall(() => {
             Android.openPage('https://klas.kw.ac.kr/std/cps/atnlc/popup/LectrePlanStdView.do?selectSubj=' + subjId);
@@ -29,7 +28,6 @@ export default function LecturePlan() {
     };
 
 
-    // 로딩 상태
     if (isLoading || !data) {
         return (
             <main>
@@ -47,7 +45,6 @@ export default function LecturePlan() {
         );
     }
 
-    // 에러 상태
     if (error) {
         return (
             <main className="p-4">

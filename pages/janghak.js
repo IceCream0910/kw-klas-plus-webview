@@ -89,26 +89,17 @@ export default function Janghak() {
   const observerRef = useRef(null);
   const [viewType, setViewType] = useState('list');
 
-  // Android 브리지 설정
   useEffect(() => {
     window.receiveToken = (receivedToken) => {
       if (receivedToken) setToken(receivedToken);
     };
-
-    try {
-      // Android 환경에서 실행되는 코드
-    } catch (e) {
-      console.log('not app');
-    }
   }, []);
 
-  // 포커스 인덱스 조정
   useEffect(() => {
     if (focusedIndex === 0) setFocusedIndex(1);
     if (focusedIndex === janghak.length - 1) setFocusedIndex(janghak.length - 2);
   }, [focusedIndex]);
 
-  // 장학금 데이터 로드
   useEffect(() => {
     if (!token) return;
 
@@ -125,7 +116,6 @@ export default function Janghak() {
       });
   }, [token]);
 
-  // Intersection Observer 설정
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -166,14 +156,12 @@ export default function Janghak() {
     container.scrollLeft = container.children[0].offsetWidth;
   }, [janghak]);
 
-  // KLAS 페이지 열기
   const handleOpenKlas = () => {
     safeAndroidCall(() => {
       Android.openPage('https://klas.kw.ac.kr/std/cps/inqire/JanghakStdPage.do');
     });
   };
 
-  // 학부 장학안내 페이지 열기
   const handleOpenScholarshipInfo = () => {
     safeAndroidCall(() => {
       Android.openPage('https://www.kw.ac.kr/ko/life/summary.jsp');

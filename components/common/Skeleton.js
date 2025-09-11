@@ -1,8 +1,6 @@
 import { UI_CONSTANTS } from '../../lib/core/constants';
 
-/**
- * 스켈레톤 UI 컴포넌트
- */
+
 function Skeleton({ width = '100%', height = UI_CONSTANTS.SKELETON_HEIGHT.MEDIUM, className = '', style = {} }) {
     return (
         <div
@@ -16,9 +14,6 @@ function Skeleton({ width = '100%', height = UI_CONSTANTS.SKELETON_HEIGHT.MEDIUM
     );
 }
 
-/**
- * 여러 스켈레톤을 그룹으로 표시하는 컴포넌트
- */
 function SkeletonGroup({ items, className = '' }) {
     return (
         <div className={className}>
@@ -34,16 +29,11 @@ function SkeletonGroup({ items, className = '' }) {
     );
 }
 
-/**
- * 미리 정의된 스켈레톤 레이아웃들
- */
 export const SkeletonLayouts = {
-    // 카드 스켈레톤
     Card: () => (
         <Skeleton height={UI_CONSTANTS.SKELETON_HEIGHT.LARGE} />
     ),
 
-    // 공지사항 목록 스켈레톤
     NoticeList: () => (
         <SkeletonGroup
             items={[
@@ -54,12 +44,10 @@ export const SkeletonLayouts = {
         />
     ),
 
-    // 성적 카드 스켈레톤
     GradeCard: () => (
         <Skeleton height="70px" />
     ),
 
-    // 학식 정보 스켈레톤
     CafeteriaInfo: () => (
         <SkeletonGroup
             items={[
@@ -71,7 +59,6 @@ export const SkeletonLayouts = {
         />
     ),
 
-    // 현재 상태 스켈레톤
     CurrentStatus: () => (
         <SkeletonGroup
             items={[
@@ -81,12 +68,10 @@ export const SkeletonLayouts = {
         />
     ),
 
-    // 차트 스켈레톤
     Chart: () => (
         <Skeleton height="200px" />
     ),
 
-    // 마감일 목록 스켈레톤
     DeadlineList: () => (
         <SkeletonGroup
             items={[
@@ -97,7 +82,6 @@ export const SkeletonLayouts = {
         />
     ),
 
-    // 교수 정보 스켈레톤
     AdvisorInfo: () => (
         <Skeleton height={UI_CONSTANTS.SKELETON_HEIGHT.EXTRA_LARGE} />
     )

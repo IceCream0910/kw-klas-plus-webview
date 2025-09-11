@@ -2,9 +2,6 @@ import React from "react";
 import IonIcon from '@reacticons/ionicons';
 import Spacer from '../common/spacer';
 
-/**
- * 강사진 정보 컴포넌트
- */
 const LectureInstructorInfo = ({ lecturePlan, lectureTeam, lectureAssistant }) => {
     return (
         <div className="card non-anim" style={{ paddingBottom: '20px' }}>

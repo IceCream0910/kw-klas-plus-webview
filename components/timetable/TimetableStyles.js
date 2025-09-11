@@ -1,10 +1,7 @@
-/**
- * 시간표 스타일 컴포넌트
- * @returns {JSX.Element}
- */
+
 const TimetableStyles = () => {
-    return (
-        <style jsx global>{`
+  return (
+    <style jsx global>{`
       :root {
         --bg-color: #f5e8e8;
         --text-color: #000000;
@@ -97,7 +94,7 @@ const TimetableStyles = () => {
         transform: scale(0.98);
       }
     `}</style>
-    );
+  );
 };
 
 export default TimetableStyles;

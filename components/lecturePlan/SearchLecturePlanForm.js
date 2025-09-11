@@ -1,11 +1,6 @@
 import Spacer from '../common/spacer';
 import { getYearOptions } from '../../lib/lecturePlan/searchLecturePlanUtils';
 
-/**
- * 강의계획서 검색 폼 컴포넌트
- * @param {Object} props
- * @returns {JSX.Element}
- */
 const SearchLecturePlanForm = ({
     year,
     hakgi,

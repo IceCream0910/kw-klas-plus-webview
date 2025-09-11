@@ -1,12 +1,6 @@
 import Header from "../common/header";
 import IonIcon from '@reacticons/ionicons';
 
-/**
- * 시간표 헤더 컴포넌트
- * @param {Object} props
- * @param {string} props.yearHakgiLabel - 학기 라벨
- * @returns {JSX.Element}
- */
 const TimetableHeader = ({ yearHakgiLabel }) => {
     const handleYearHakgiClick = () => {
         if (typeof window !== 'undefined' && window.Android) {

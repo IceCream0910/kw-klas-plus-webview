@@ -1,8 +1,5 @@
 import { UI_CONSTANTS } from '../../lib/core/constants';
 
-/**
- * 재사용 가능한 카드 컴포넌트
- */
 function Card({
     children,
     title,

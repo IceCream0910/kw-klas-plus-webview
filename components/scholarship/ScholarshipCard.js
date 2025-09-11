@@ -3,9 +3,6 @@ import { motion } from "framer-motion";
 import Card from '../common/Card';
 import { getScholarshipStatusColor, getScholarshipStatusBgColor } from "../../lib/scholarship/scholarshipUtils";
 
-/**
- * 장학금 정보를 표시하는 카드 컴포넌트
- */
 const ScholarshipCard = ({ scholarship, onClick, index = 0 }) => {
     const statusColor = getScholarshipStatusColor(scholarship.status);
     const statusBgColor = getScholarshipStatusBgColor(scholarship.status);

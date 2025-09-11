@@ -101,7 +101,7 @@ export default function CalendarPage() {
         };
     };
 
-    const onSelectSlot = ({ action, slots /*, ...props */ }) => {
+    const onSelectSlot = ({ action, slots }) => {
         return false;
     };
 

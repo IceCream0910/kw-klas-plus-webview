@@ -2,12 +2,6 @@ import Spacer from '../common/spacer';
 import IonIcon from '@reacticons/ionicons';
 import { isBeforeStartDate, handlePreviewLecture, createLectureData } from '../../lib/lecture/onlineLectureUtils';
 
-/**
- * 온라인 강의 카드 컴포넌트
- * @param {Object} props
- * @param {Object} props.item - 강의 데이터
- * @returns {JSX.Element}
- */
 const OnlineLectureCard = ({ item }) => {
     if (!item.grcode) return null;
 

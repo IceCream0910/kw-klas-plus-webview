@@ -1,9 +1,5 @@
 import Spacer from '../common/spacer';
 
-/**
- * 강의계획서 검색 페이지 헤더 컴포넌트
- * @returns {JSX.Element}
- */
 const SearchLecturePlanHeader = () => {
     const handleKLASOpen = () => {
         if (typeof window !== 'undefined' && window.Android) {

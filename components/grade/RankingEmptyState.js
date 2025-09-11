@@ -1,7 +1,4 @@
-/**
- * 석차 빈 상태 컴포넌트
- * @returns {JSX.Element}
- */
+
 const RankingEmptyState = () => {
     return (
         <div style={{

@@ -1,7 +1,4 @@
-/**
- * 설정 링크 섹션 컴포넌트
- * @returns {JSX.Element}
- */
+
 const SettingsLinkSection = () => {
     const links = [
         {

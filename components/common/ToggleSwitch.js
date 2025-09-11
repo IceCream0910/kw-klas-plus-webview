@@ -1,6 +1,4 @@
-/**
- * 재사용 가능한 토글 스위치 컴포넌트
- */
+
 function ToggleSwitch({
     checked,
     onChange,

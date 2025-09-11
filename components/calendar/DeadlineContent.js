@@ -1,8 +1,5 @@
 import { getDeadlineColor, formatDeadline } from '../../lib/timetable/timetableUtils';
 
-/**
- * 마감일 내용을 렌더링하는 컴포넌트
- */
 function DeadlineContent({ name, data }) {
     if (data.length === 0) return null;
 

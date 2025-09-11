@@ -1,9 +1,6 @@
 import IonIcon from "@reacticons/ionicons";
 import Spacer from '../common/spacer';
 
-/**
- * 성적 정보 카드 컴포넌트
- */
 function GradeCard({
     data,
     title,
@@ -59,7 +56,6 @@ function GradeCard({
 
             {children || (
                 <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-                    {/* 학점 정보 표시 */}
                     {data.applyHakjum !== undefined && (
                         <>
                             {renderStatItem('신청학점', data.applyHakjum, `전공 ${data.majorApplyHakjum || 0}`)}
@@ -69,7 +65,6 @@ function GradeCard({
                         </>
                     )}
 
-                    {/* GPA 정보 표시 */}
                     {data.majorGPA && (
                         <>
                             {renderStatItem('취득학점', data.credit, 'F 미포함 :')}

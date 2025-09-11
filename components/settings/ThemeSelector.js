@@ -1,11 +1,5 @@
 import { useState, useEffect } from 'react';
 
-/**
- * 테마 선택기 컴포넌트
- * @param {Object} props
- * @param {string} props.active - 현재 활성 테마
- * @returns {JSX.Element}
- */
 const ThemeSelector = ({ active = "system" }) => {
     const [selectedTheme, setSelectedTheme] = useState('system');
 

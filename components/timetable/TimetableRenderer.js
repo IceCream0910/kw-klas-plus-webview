@@ -5,13 +5,6 @@ import {
     calculateClassDimensions
 } from '../../lib/timetable/timetableHelpers';
 
-/**
- * 시간표 렌더링 컴포넌트
- * @param {Object} props
- * @param {Object} props.timetableData - 시간표 데이터
- * @param {Function} props.onClassClick - 수업 클릭 핸들러
- * @returns {JSX.Element}
- */
 const TimetableRenderer = ({ timetableData, onClassClick }) => {
     if (!timetableData) return <div>시간표 로딩 중....</div>;
 

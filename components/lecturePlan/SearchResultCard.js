@@ -2,13 +2,6 @@ import Spacer from '../common/spacer';
 import IonIcon from '@reacticons/ionicons';
 import { getLectureStatus, generateLecturePlanId } from '../../lib/lecturePlan/searchLecturePlanUtils';
 
-/**
- * 강의계획서 검색 결과 카드 컴포넌트
- * @param {Object} props
- * @param {Object} props.item - 강의 데이터
- * @param {Function} props.onLecturePlanClick - 강의계획서 클릭 핸들러
- * @returns {JSX.Element}
- */
 const SearchResultCard = ({ item, onLecturePlanClick }) => {
     const status = getLectureStatus(item);
     const lectureId = generateLecturePlanId(item);

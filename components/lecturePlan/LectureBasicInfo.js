@@ -2,9 +2,6 @@ import React from "react";
 import IonIcon from '@reacticons/ionicons';
 import Spacer from '../common/spacer';
 
-/**
- * 강의 기본 정보 컴포넌트
- */
 const LectureBasicInfo = ({ lecturePlan, lectureTime, lectureStdCrtNum }) => {
     const formatLectureTime = (timeData) => {
         if (!timeData || !Array.isArray(timeData)) return '';

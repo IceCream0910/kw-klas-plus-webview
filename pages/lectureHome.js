@@ -56,7 +56,6 @@ export default function LectureHome() {
             });
     }
 
-    // 출석 현황 관련 함수
     const calculateStats = (data) => {
         let totalClasses = 0;
         let attendanceCount = 0;

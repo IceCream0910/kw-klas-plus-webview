@@ -1,7 +1,4 @@
-/**
- * 강의계획서 검색 빈 상태 컴포넌트
- * @returns {JSX.Element}
- */
+
 const SearchLecturePlanEmptyState = () => {
     return (
         <div style={{

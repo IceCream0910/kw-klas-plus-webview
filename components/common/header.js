@@ -3,9 +3,6 @@ import IonIcon from "@reacticons/ionicons";
 import Spacer from "../common/spacer";
 import { openOptionsMenu } from "../../lib/core/androidBridge";
 
-/**
- * 앱 버전 체크 유틸리티
- */
 const checkAppCompatibility = (version) => {
     if (!version) return false;
     if (!version.includes('.') && version >= 21) {
@@ -14,9 +11,6 @@ const checkAppCompatibility = (version) => {
     return false;
 };
 
-/**
- * 사용자 에이전트에서 앱 버전 추출
- */
 const getAppVersionFromUserAgent = () => {
     const userAgent = navigator.userAgent;
     const version = userAgent.split('AndroidApp_v')[1];
@@ -35,7 +29,6 @@ function Header({ title }) {
         }
     }, []);
 
-    // 개발 모드가 아니고 호환되지 않는 버전인 경우 렌더링하지 않음
     if (!isCompatible && process.env.NEXT_PUBLIC_DEVELOPMENT !== 'true') {
         return null;
     }

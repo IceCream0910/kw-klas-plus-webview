@@ -17,7 +17,6 @@ import {
 import 'react-spring-bottom-sheet/dist/style.css'; export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
 
-  // 커스텀 훅 사용
   const { data, totGrade, stdInfo } = useProfileData();
   const { hideGrades, showGrades, handleGradeClick } = useGradeSettings();
   const {
@@ -35,7 +34,6 @@ import 'react-spring-bottom-sheet/dist/style.css'; export default function Home(
     handleToggleFavorite
   } = useMenuSettings(menuItems);
 
-  // 메뉴 정렬 및 필터링
   const sortedMenuItems = menuOrder.map(title =>
     menuItems.find(item => item.title === title)
   ).filter(Boolean);

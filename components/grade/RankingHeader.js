@@ -1,7 +1,4 @@
-/**
- * 석차 페이지 헤더 컴포넌트
- * @returns {JSX.Element}
- */
+
 const RankingHeader = () => {
     const handleKLASOpen = () => {
         if (typeof window !== 'undefined' && window.Android) {

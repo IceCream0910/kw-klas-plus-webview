@@ -1,6 +1,4 @@
-/**
- * 공지사항 카테고리 탭 컴포넌트
- */
+
 function NoticeTabs({ activeTab, onTabChange }) {
     const tabs = [
         { id: "", label: "전체" },

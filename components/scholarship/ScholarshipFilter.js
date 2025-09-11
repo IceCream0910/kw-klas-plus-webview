@@ -1,9 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
 
-/**
- * 장학금 필터링 컴포넌트
- */
 const ScholarshipFilter = ({ activeFilter, onFilterChange, scholarshipCounts }) => {
     const filters = [
         { key: "전체", label: "전체", color: "#6b7280" },

@@ -3,9 +3,7 @@ import { openKlasPage } from '../../lib/core/androidBridge';
 import { SkeletonLayouts } from '../common/Skeleton';
 import Card from '../common/Card';
 
-/**
- * 책임지도교수 정보 컴포넌트
- */
+
 function AdvisorInfo({ advisor, isLoading }) {
     if (isLoading) {
         return <SkeletonLayouts.AdvisorInfo />;

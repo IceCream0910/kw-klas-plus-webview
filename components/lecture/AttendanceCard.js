@@ -3,16 +3,12 @@ import { motion } from "framer-motion";
 import Card from "../common/Card";
 import { getAttendanceColor } from "../../lib/lecture/lectureUtils";
 
-/**
- * 출석 현황 카드 컴포넌트
- */
 const AttendanceCard = ({ attendanceData, stats, isExpanded, onToggleExpand }) => {
     if (!attendanceData || !stats) return null;
 
     return (
         <Card className="mb-4">
             <div className="p-4">
-                {/* 헤더 */}
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="text-lg font-semibold text-gray-800">출석 현황</h3>
                     <button
@@ -23,7 +19,6 @@ const AttendanceCard = ({ attendanceData, stats, isExpanded, onToggleExpand }) =
                     </button>
                 </div>
 
-                {/* 출석률 요약 */}
                 <div className="grid grid-cols-2 gap-4 mb-4">
                     <div className="text-center">
                         <div className="text-2xl font-bold text-blue-600">
@@ -39,7 +34,6 @@ const AttendanceCard = ({ attendanceData, stats, isExpanded, onToggleExpand }) =
                     </div>
                 </div>
 
-                {/* 상세 통계 */}
                 <div className="grid grid-cols-3 gap-2 text-sm">
                     <div className="text-center p-2 bg-green-50 rounded-lg">
                         <div className="font-semibold text-green-600">출석</div>
@@ -55,7 +49,6 @@ const AttendanceCard = ({ attendanceData, stats, isExpanded, onToggleExpand }) =
                     </div>
                 </div>
 
-                {/* 출석 상세 내역 */}
                 {isExpanded && (
                     <motion.div
                         initial={{ opacity: 0, height: 0 }}
