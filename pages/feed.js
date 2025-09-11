@@ -249,7 +249,7 @@ export default function Feed() {
 
         {process.env.NEXT_PUBLIC_DEVELOPMENT != "true" && <>
           <Spacer y={20} />
-          <Card isAnimated={false} style={{ padding: '10px 0' }}>
+          <div className="card non-anim" style={{ padding: '10px 0' }}>
             <div style={{
               position: 'absolute',
               zIndex: 100,
@@ -264,7 +264,7 @@ export default function Feed() {
             <div style={{ width: '100%', height: '100px', maxWidth: '100%', display: 'flex', justifyContent: 'center' }}>
               <AdSense adClient="ca-pub-7178712602934912" adSlot="8415533910" />
             </div>
-          </Card>
+          </div>
         </>}
 
         <Spacer y={20} />

@@ -3,44 +3,6 @@
 
 안드로이드 앱: [icecream0910/kw-klas-plus](https://github.com/icecream0910/kw-klas-plus)
 
-## 📁 프로젝트 구조
-
-```
-kw-klas-plus-webview/
-├── 📁 lib/                    # 유틸리티 및 비즈니스 로직
-│   ├── 📁 core/               # 핵심 기능 (API, 상수, 스토리지)
-│   ├── 📁 calendar/           # 캘린더 관련 유틸리티
-│   ├── 📁 grade/              # 성적 관련 로직
-│   ├── 📁 lecture/            # 강의 관련 기능
-│   ├── 📁 timetable/          # 시간표 처리
-│   ├── 📁 scholarship/        # 장학금 관련
-│   ├── 📁 profile/            # 프로필 및 설정
-│   └── 📁 ui/                 # UI 유틸리티
-├── 📁 components/             # React 컴포넌트
-│   ├── 📁 common/             # 공통 컴포넌트
-│   ├── 📁 calendar/           # 캘린더 컴포넌트
-│   ├── 📁 grade/              # 성적 관련 컴포넌트
-│   ├── 📁 lecture/            # 강의 관련 컴포넌트
-│   ├── 📁 timetable/          # 시간표 컴포넌트
-│   ├── 📁 board/              # 게시판 컴포넌트
-│   ├── 📁 scholarship/        # 장학금 컴포넌트
-│   └── 📁 profile/            # 프로필 컴포넌트
-├── 📁 pages/                  # Next.js 페이지
-│   ├── 📁 api/                # API 라우트
-│   ├── 📁 modal/              # 모달 페이지
-│   ├── calendar.js            # 캘린더 페이지
-│   ├── grade.js               # 성적 조회
-│   ├── profile.js             # 메인 대시보드
-│   ├── timetableTab.js        # 시간표
-│   ├── lecturePlan.js         # 강의계획서
-│   ├── onlineLecture.js       # 온라인 강의
-│   ├── ranking.js             # 성적 순위
-│   ├── janghak.js             # 장학금
-│   ├── ai.js                  # AI 챗봇
-│   └── settings.js            # 설정
-├── 📁 public/                 # 정적 파일
-└── 📁 styles/                 # 스타일 파일
-```
 
 ## 🚀 시작하기
 
@@ -70,9 +32,23 @@ kw-klas-plus-webview/
    
    `.env.local` 파일에 필요한 환경 변수를 설정하세요:
    ```env
-   NEXT_PUBLIC_API_URL=https://klas.kw.ac.kr
-   OPENAI_API_KEY=your_openai_api_key
-   SENTRY_DSN=your_sentry_dsn
+   # 개발 모드 여부 (true/false)
+   NEXT_PUBLIC_DEVELOPMENT=true
+   
+   # AI 관련 API 키
+   NEXT_PUBLIC_OPENAI_API_KEY=your_openai_api_key
+   
+   # 안드로이드 앱 최신 버전 (버전 체크용)
+   NEXT_PUBLIC_ANDROID_LATEST_VERSION=20
+   
+   # 공지사항 텍스트 (앱 내 공지용)
+   NEXT_PUBLIC_NOTICE_TEXT=""
+   
+   # AI 챗봇 일일 질문 제한 수
+   NEXT_PUBLIC_MAX_DAILY_QUESTIONS=1000
+   
+   # 최신 개인정보처리방침 날짜 (YYYYMMDD 형식)
+   NEXT_PUBLIC_LATEST_POLICY_DATE=20250413
    ```
 
 4. **개발 서버 실행**
@@ -94,6 +70,131 @@ yarn build
 npm run start
 # 또는
 yarn start
+```
+
+## 📁 프로젝트 구조
+
+```
+kw-klas-plus-webview/
+├── 📁 lib/                    # 유틸리티 및 비즈니스 로직
+│   ├── 📁 core/               # API 호출, 데이터 저장 등 핵심 로직
+│   ├── 📁 calendar/           
+│   ├── 📁 grade/              
+│   ├── 📁 lecture/            
+│   ├── 📁 lecturePlan/        
+│   ├── 📁 timetable/         
+│   ├── 📁 scholarship/        
+│   ├── 📁 profile/            
+│   ├── useBoardData.js        
+│   ├── useSettings.js         
+│   ├── pullToRefreshUtils.js  
+│   └── index.js              
+├── 📁 components/             # 페이지 별 컴포넌트
+│   ├── 📁 common/             # 공통 컴포넌트
+│   ├── 📁 calendar/           
+│   ├── 📁 grade/             
+│   ├── 📁 lecture/            
+│   ├── 📁 lecturePlan/        
+│   ├── 📁 timetable/          
+│   ├── 📁 board/              
+│   ├── 📁 scholarship/        
+│   ├── 📁 profile/            
+│   ├── 📁 feed/               
+│   └── 📁 settings/           
+├── 📁 pages/                  
+│   ├── 📁 api/                
+│   ├── 📁 modal/              
+│   ├── calendar.js            # 캘린더 페이지
+│   ├── grade.js               # 성적 조회 페이지
+│   ├── profile.js             # 전체 메뉴 페이지
+│   ├── feed.js                # 홈 피드 페이지
+│   ├── timetableTab.js        # 시간표 페이지
+│   ├── lecturePlan.js         # 강의계획서 페이지
+│   ├── searchLecturePlan.js   # 강의계획서 검색 페이지
+│   ├── lectureHome.js         # 강의 홈 페이지
+│   ├── onlineLecture.js       # 온라인 강의 목록 페이지
+│   ├── ranking.js             # 석차 페이지
+│   ├── janghak.js             # 장학 조회 페이지
+│   ├── ai.js                  # KLAS AI 페이지
+│   └── settings.js            # 설정 페이지
+├── 📁 public/                 
+└── 📁 styles/                 
+```
+
+
+## 🛠️ 안드로이드 앱 연동
+
+WebView 페이지들은 안드로이드 네이티브 앱과 JavaScript Interface를 통해 데이터를 주고받습니다.
+
+### 공통
+```javascript
+window.receiveToken = function (receivedToken) {
+   // 상태로 저장해 KLAS API 호출 시 사용
+};
+```
+
+#### 피드 (`/feed`)
+```javascript
+window.receiveDeadlineData = function (json) {
+   // 마감 데이터를 수신하여 처리하는 함수
+};
+
+window.receiveTimetableData = function (data) {
+   // 시간표 데이터를 수신하여 처리하는 함수
+};
+```
+
+#### 시간표 (`/timetableTab`)
+```javascript
+window.receiveTimetableData = function (data) {
+   // 시간표 데이터를 수신하여 처리하는 함수
+   // data: 시간표 데이터
+};
+```
+
+#### 강의 홈 (`/lectureHome`)
+```javascript
+window.receivedData = function (token, subj, yearHakgi) {
+   // 강의 홈 데이터를 수신하여 처리하는 함수
+   // token: 세션 토큰
+   // subj: 과목코드(예: U202456789Y000012)
+   // yearHakgi: 학년도/학기(예: 2024,2)
+};
+```
+
+#### 게시판 (`/boardList`, `/boardView`)
+```javascript
+window.receivedData = function (token, subj, yearHakgi, path) {
+   // 게시판 데이터를 수신하여 처리하는 함수
+   // token: 세션 토큰
+   // subj: 과목코드
+   // yearHakgi: 학년도/학기
+   // path: 게시판 경로
+};
+```
+
+#### KLAS AI (`/ai`)
+```javascript
+window.receiveSubjList = function (receivedSubjList) {
+   // 과목 리스트 데이터를 수신하여 처리하는 함수
+   // receivedSubjList: 수신된 과목 리스트
+};
+```
+
+#### 설정 (`/settings`)
+```javascript
+window.receiveTheme = function (theme) {
+   // 테마 데이터를 수신하여 처리하는 함수
+   // theme: 수신된 테마(light | dark | system)
+};
+
+window.receiveYearHakgi = function (yearHakgi) {
+   // 학년도 및 학기 데이터를 수신하여 처리하는 함수
+};
+
+window.receiveVersion = function (version) {
+   // 버전 데이터를 수신하여 처리하는 함수
+};
 ```
 
 ## 🤝 기여하기
