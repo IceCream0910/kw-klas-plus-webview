@@ -16,7 +16,7 @@
     "@reacticons/ionicons": "^7.1.0",
     "@sentry/nextjs": "8",
     "@tailwindcss/postcss": "^4.1.13",
-    "ai": "^3.2.32",
+    "ai": "^5.0.43",
     "autoprefixer": "^10.4.21",
     "axios": "^1.7.5",
     "chart.js": "^4.4.3",
