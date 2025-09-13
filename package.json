@@ -18,7 +18,7 @@
     "@tailwindcss/postcss": "^4.1.13",
     "ai": "^3.2.32",
     "autoprefixer": "^10.4.21",
-    "axios": "^1.7.5",
+    "axios": "^1.12.1",
     "chart.js": "^4.4.3",
     "framer-motion": "^11.9.0",
     "gsap": "^3.12.5",
