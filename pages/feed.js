@@ -175,7 +175,7 @@ export default function Feed() {
               try {
                 Android.openExternalPage("https://blog.klasplus.yuntae.in")
               } catch (e) {
-                toast('앱을 최신버전으로 업데이트 해주세요.');
+                toast('앱을 최신버전으로 업데이트 해주세요');
               }
             }}
           >

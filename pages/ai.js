@@ -271,11 +271,6 @@ export default function AI() {
 
     return (
         <div>
-            <Head>
-                <title>KLAS GPT</title>
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
-
             <Header title={<h2>KLAS AI</h2>} />
 
             <main>
