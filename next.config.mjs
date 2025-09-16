@@ -2,6 +2,22 @@ import { withSentryConfig } from '@sentry/nextjs';
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
+  async redirects() {
+    return [
+      {
+        source: '/favicon.ico',
+        destination: 'https://icecream0910.github.io/kw-klas-plus-webview/public/favicon.ico',
+        permanent: true,
+        has: [
+          {
+            type: 'header',
+            key: 'user-agent',
+            value: '(?!.*webpack).*', // webpack 요청은 제외
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default withSentryConfig(nextConfig, {
