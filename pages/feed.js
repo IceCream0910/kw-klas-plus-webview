@@ -135,8 +135,8 @@ export default function Feed() {
   const fetchData = async () => {
     try {
       const [cafeteriaData, kwNoticeData] = await Promise.all([
-        fetch("/api/crawler/cafeteria").then(res => res.json()),
-        fetch("/api/crawler/kwNotice?srCategoryId=" + kwNoticeTab).then(res => res.json())
+        fetch(process.env.NEXT_PUBLIC_NODE_API_URL + "/api/crawler/cafeteria").then(res => res.json()),
+        fetch(process.env.NEXT_PUBLIC_NODE_API_URL + "/api/crawler/kwNotice?srCategoryId=" + kwNoticeTab).then(res => res.json())
       ]);
 
       setCafeteria(cafeteriaData);

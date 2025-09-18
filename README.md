@@ -34,7 +34,10 @@
    ```env
    # 개발 모드 여부 (true/false)
    NEXT_PUBLIC_DEVELOPMENT=true
-   
+
+   # API URL
+   NEXT_PUBLIC_NODE_API_URL=https://klasplus-node.vercel.app
+
    # AI 관련 API 키
    NEXT_PUBLIC_OPENAI_API_KEY=your_openai_api_key
    

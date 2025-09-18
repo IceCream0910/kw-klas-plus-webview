@@ -1,21 +1,24 @@
 {
   "name": "klas-plus-webview",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "build:analyze": "ANALYZE=true next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.24",
     "@egjs/react-flicking": "^4.14.0",
     "@langchain/core": "^0.3.33",
     "@langchain/google-genai": "^0.1.6",
+    "@opennextjs/cloudflare": "^1.8.3",
     "@reacticons/ionicons": "^7.1.0",
-    "@sentry/nextjs": "8",
     "@tailwindcss/postcss": "^4.1.13",
     "ai": "^3.2.32",
     "autoprefixer": "^10.4.21",
@@ -48,6 +51,7 @@
   },
   "devDependencies": {
     "@types/react": "18.3.3",
-    "typescript": "5.5.2"
+    "typescript": "5.5.2",
+    "wrangler": "^4.37.1"
   }
 }

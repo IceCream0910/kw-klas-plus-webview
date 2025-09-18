@@ -111,7 +111,7 @@ export default function AI() {
     const sendMessage = async (conversation) => {
         try {
             abortControllerRef.current = new AbortController();
-            const response = await fetch("/api/chat", {
+            const response = await fetch(process.env.NEXT_PUBLIC_NODE_API_URL + "/api/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ conversation, subjList: JSON.stringify(subjList), token, yearHakgi }),

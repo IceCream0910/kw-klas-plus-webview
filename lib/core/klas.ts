@@ -17,7 +17,7 @@ export function KLAS(url: string, token: string, body: any): Promise<any> {
         return Promise.reject(new Error('Missing required values'));
     }
 
-    return fetch('https://klasplus-api.yuntae.in', {
+    return fetch('/api/proxy', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
