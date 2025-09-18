@@ -1,7 +1,26 @@
 import { parse } from 'node-html-parser';
 import TurndownService from 'turndown';
 
+function setCorsHeaders(res) {
+    const allowedOrigins = [
+        'https://klas-plus-webview.taein.workers.dev',
+        'https://klasplus.yuntae.in'
+    ];
+    
+    res.setHeader('Access-Control-Allow-Origin', allowedOrigins.join(','));
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+}
+
 export default async function handler(req, res) {
+  // CORS 헤더 설정
+  setCorsHeaders(res);
+  
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
   if (req.method === 'GET') {
     const { url } = req.query;
 
