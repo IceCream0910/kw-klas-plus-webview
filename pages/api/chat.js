@@ -19,6 +19,14 @@ const toolKoreanNames = {
 };
 
 export default async function handler(req) {
+  const allowedOrigins = [
+    'https://klas-plus-webview.taein.workers.dev',
+    'https://klasplus.yuntae.in'
+  ];
+  
+  const origin = req.headers.get('origin');
+  const corsOrigin = allowedOrigins.includes(origin) ? origin : null;
+
   if (req.method === 'POST') {
     const { conversation, subjList, token, yearHakgi } = await req.json();
     sessionId = token;
@@ -47,7 +55,7 @@ export default async function handler(req) {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
-        'Access-Control-Allow-Origin': 'https://klas-plus-webview.taein.workers.dev, https://klasplus.yuntae.in',
+        ...(corsOrigin && { 'Access-Control-Allow-Origin': corsOrigin }),
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
       },
@@ -56,7 +64,7 @@ export default async function handler(req) {
     return new Response(null, {
       status: 200,
       headers: {
-        'Access-Control-Allow-Origin': 'https://klas-plus-webview.taein.workers.dev, https://klasplus.yuntae.in',
+        ...(corsOrigin && { 'Access-Control-Allow-Origin': corsOrigin }),
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
       },
@@ -65,7 +73,7 @@ export default async function handler(req) {
     return new Response('Method Not Allowed', { 
       status: 405,
       headers: {
-        'Access-Control-Allow-Origin': 'https://klas-plus-webview.taein.workers.dev, https://klasplus.yuntae.in',
+        ...(corsOrigin && { 'Access-Control-Allow-Origin': corsOrigin }),
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
       },

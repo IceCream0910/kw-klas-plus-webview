@@ -1,12 +1,16 @@
 import { parse } from 'node-html-parser';
 
-function setCorsHeaders(res) {
+function setCorsHeaders(req, res) {
     const allowedOrigins = [
         'https://klas-plus-webview.taein.workers.dev',
         'https://klasplus.yuntae.in'
     ];
     
-    res.setHeader('Access-Control-Allow-Origin', allowedOrigins.join(','));
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -14,7 +18,7 @@ function setCorsHeaders(res) {
 
 export default async function handler(req, res) {
     // CORS 헤더 설정
-    setCorsHeaders(res);
+    setCorsHeaders(req, res);
     
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
