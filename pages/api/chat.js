@@ -18,27 +18,7 @@ const toolKoreanNames = {
   getContentFromUrl: "URL 내용 확인",
 };
 
-function setCorsHeaders(response) {
-  const allowedOrigins = ['https://klas-plus-webview.taein.workers.dev', 'https://klasplus.yuntae.in'];
-  const origin = request.headers.get('origin');
-  if (allowedOrigins.includes(origin)) {
-    response.headers.set('Access-Control-Allow-Origin', origin);
-  }
-  
-  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-  response.headers.set('Access-Control-Allow-Credentials', 'true');
-  response.headers.set('Access-Control-Max-Age', '86400');
-  return response;
-}
-
 export default async function handler(req) {
-  // OPTIONS 요청 처리 (preflight)
-  if (req.method === 'OPTIONS') {
-    const response = new Response(null, { status: 200 });
-    return setCorsHeaders(response);
-  }
-
   if (req.method === 'POST') {
     const { conversation, subjList, token, yearHakgi } = await req.json();
     sessionId = token;
@@ -62,18 +42,34 @@ export default async function handler(req) {
       }
     });
 
-    const response = new Response(stream, {
+    return new Response(stream, {
       headers: {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
+        'Access-Control-Allow-Origin': 'https://klas-plus-webview.taein.workers.dev, https://klasplus.yuntae.in',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
       },
     });
-
-    return setCorsHeaders(response);
+  } else if (req.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 200,
+      headers: {
+        'Access-Control-Allow-Origin': 'https://klas-plus-webview.taein.workers.dev, https://klasplus.yuntae.in',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
+    });
   } else {
-    const response = new Response('Method Not Allowed', { status: 405 });
-    return setCorsHeaders(response);
+    return new Response('Method Not Allowed', { 
+      status: 405,
+      headers: {
+        'Access-Control-Allow-Origin': 'https://klas-plus-webview.taein.workers.dev, https://klasplus.yuntae.in',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
+    });
   }
 }
 
@@ -251,18 +247,18 @@ const processChatRequest = async (conversation, subjList, controller, encoder) =
       content: `
 You are KLAS GPT, an AI assistant for 광운대학교 (Kwangwoon University) students. Respond in the user's language and carefully follow these instructions for all queries:
 
-Always analyze the user's question and conversation context to determine what information is needed and which tools or results to use. All reasoning and step-by-step planning must be done internally—[...]
+Always analyze the user's question and conversation context to determine what information is needed and which tools or results to use. All reasoning and step-by-step planning must be done internally—do not include your process, tool usage plan, or intermediate steps in the user-facing final answer. Only present a concise, clear summary answer derived from any external tools, resources, or previous conversation data.
 
 KLAS GPT Toolset and Their Usage Rules:
 
-- **searchCourseInfo**: Use only for specific course-related inquiries about attendance, recent course notices (max 4 items), online lecture lists, and number of assignments. (Requires: courseName, co[...]
-- **searchTaskList**: Use only for retrieving assignment lists for a specific course, including submission status, deadlines, and titles. (Requires: courseName, courseLabel, courseCode—all from subj[...]
+- **searchCourseInfo**: Use only for specific course-related inquiries about attendance, recent course notices (max 4 items), online lecture lists, and number of assignments. (Requires: courseName, courseLabel, courseCode—all from subject_list.)
+- **searchTaskList**: Use only for retrieving assignment lists for a specific course, including submission status, deadlines, and titles. (Requires: courseName, courseLabel, courseCode—all from subject_list.)
 - **getKWNoticeList**: Retrieve the latest general university-wide notices from the official site (use only when recent generalized notices are needed).
 - **searchKWNoticeList**: Search for university-wide notices matching a user query; always include 3-5 results with hyperlinks if used.
 - **getSchedules**: Retrieve this year's official university academic calendar/events; use for broad academic schedule queries.
 - **getHaksik**: Retrieve the current week's student cafeteria menu (student dining hall - 함지마루 복지관).
 - **getHomepageSitemap**: Retrieve the full university homepage sitemap to identify relevant menu items. For any menu/URL found, always follow up with getContentFromUrl for detailed content.
-- **getContentFromUrl**: Given a URL (or list of URLs), retrieve the page's main content for up-to-date details (always use after sitemap when handling general university queries).
+- **getContentFromUrl**: Given a URL (or list of URLs), retrieve the page’s main content for up-to-date details (always use after sitemap when handling general university queries).
 
 **Tool Usage Routing Rules**
 - **Course-Related Questions**:  
@@ -285,7 +281,7 @@ KLAS GPT Toolset and Their Usage Rules:
 - **Error/Exception Handling**:  
     - If key parameters are missing or an API fails, prompt the user with clarifying questions.
     - Where possible, use fallback methods (e.g. sitemap > direct page fetch > notice search).
-    - Clearly note if information may be outdated ("2024년 10월 기준") and advise verification.
+    - Clearly note if information may be outdated (“2024년 10월 기준”) and advise verification.
 - **Tool Separation**:  
     - Never use course-related support tools for general university questions, and never use general tools for answering course-specific questions.
 
@@ -293,7 +289,7 @@ KLAS GPT Toolset and Their Usage Rules:
 
 # Steps
 
-1. Analyze the user's query and conversation history for context and previously obtained information.
+1. Analyze the user’s query and conversation history for context and previously obtained information.
 2. Internally determine the query category (course-specific, general university, or non-university) and select the appropriate tool(s) according to the routing rules above.
 3. Gather and synthesize all relevant content from the chosen tools and conversation.
 4. Provide only a clear, concise, well-formatted summary of the answer in markdown, using bullet or numbered lists and hyperlinks as appropriate.
@@ -316,7 +312,7 @@ KLAS GPT Toolset and Their Usage Rules:
 - Maintain concise, helpful language and always provide official links or sources.
 
 **Reminder:**  
-Always present only a clean summary answer based on reasoning and tool results; never expose your process or intermediate steps. Respond in markdown with official links. If context or key parameters a[...]
+Always present only a clean summary answer based on reasoning and tool results; never expose your process or intermediate steps. Respond in markdown with official links. If context or key parameters are missing, ask the user for clarification.
 
 <subject_list>
 ${subjList}
@@ -340,7 +336,7 @@ Current Date: ${new Date().toLocaleDateString()}\
       type: "function",
       function: {
         name: 'searchCourseInfo',
-        description: '해당 강의의 출석 현황(O:출석, X:결석, L:지각, A:공결), 최근 공지사항(최대 4개), 온라인 강의 리스트, 과제 개수 등 조회. 출석정보(atend[...]
+        description: '해당 강의의 출석 현황(O:출석, X:결석, L:지각, A:공결), 최근 공지사항(최대 4개), 온라인 강의 리스트, 과제 개수 등 조회. 출석정보(atendSubList, 회차는 pgr1, pgr2..로 표시), 최근 공지사항(noticeList), 온라인 강의 리스트(cntntList), 과제 개수(taskCnt)',
         parameters: {
           type: 'object',
           properties: {
@@ -382,7 +378,7 @@ Current Date: ${new Date().toLocaleDateString()}\
       type: "function",
       function: {
         name: 'searchKWNoticeList',
-        description: '학교 홈페이지에서 공지사항 검색. 검색어를 입력하면 해당 검색어가 포함된 공지사항 목록을 반환. 답변 시 되도록 많은 공지사항 목[...]
+        description: '학교 홈페이지에서 공지사항 검색. 검색어를 입력하면 해당 검색어가 포함된 공지사항 목록을 반환. 답변 시 되도록 많은 공지사항 목록을 포함해.',
         parameters: {
           type: 'object',
           properties: { query: { type: 'string' } },
