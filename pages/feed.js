@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import TodaysCafeteriaMenu from '../components/feed/TodaysCafeteria';
 import IonIcon from '@reacticons/ionicons';
 import AppVersion from '../components/common/appVersion';
+import { getStoredData, setStoredData } from '../lib/core/storageUtils';
 import LectureNotices from '../components/lecture/lectureNotices';
 import Spacer from '../components/common/spacer';
 import Adfit from '../components/common/adfit';
@@ -134,8 +135,30 @@ export default function Feed() {
 
   const fetchData = async () => {
     try {
-      const [cafeteriaData, kwNoticeData] = await Promise.all([
-        fetch("/api/crawler/cafeteria").then(res => res.json()),
+      const CACHE_KEY = 'cafeteriaData';
+      const cachedData = getStoredData(CACHE_KEY);
+      const now = new Date();
+      const isCacheValid = cachedData && new Date().getTime() < cachedData.expiresAt;
+
+      let cafeteriaData;
+      if (isCacheValid) {
+        cafeteriaData = cachedData.data;
+      } else {
+        const response = await fetch("/api/crawler/cafeteria");
+        cafeteriaData = await response.json();
+        
+        const sunday = new Date(now);
+        sunday.setDate(now.getDate() + (7 - now.getDay()));
+        sunday.setHours(23, 59, 59, 999);
+        
+        setStoredData(CACHE_KEY, {
+          data: cafeteriaData,
+          expiresAt: sunday.getTime()
+        });
+      }
+
+      const [_, kwNoticeData] = await Promise.all([
+        Promise.resolve(cafeteriaData),
         fetch("/api/crawler/kwNotice?srCategoryId=" + kwNoticeTab).then(res => res.json())
       ]);
 
