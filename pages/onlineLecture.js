@@ -2,6 +2,7 @@ import { useOnlineLecture } from '../lib/lecture/useOnlineLecture';
 import OnlineLectureHeader from '../components/lecture/OnlineLectureHeader';
 import OnlineLectureCard from '../components/lecture/OnlineLectureCard';
 import OnlineLectureLoadingSkeleton from '../components/lecture/OnlineLectureLoadingSkeleton';
+import EmptyState from '../components/common/EmptyState';
 
 export default function Page() {
   const {
@@ -21,7 +22,7 @@ export default function Page() {
         {!filteredList && <OnlineLectureLoadingSkeleton />}
 
         {filteredList && filteredList.length === 0 && (
-          <span style={{ opacity: .5 }}>온라인 강의가 없습니다!</span>
+          <EmptyState/>
         )}
 
         {filteredList && filteredList.map((item, index) => (
