@@ -9,7 +9,7 @@
     "NEXT_PUBLIC_NODE_API_URL": "https://klasplus-node.vercel.app",
     "NEXT_PUBLIC_NOTICE_TEXT": ""
   },
-  "compatibility_date": "2025-03-25",
+  "compatibility_date": "2025-09-15",
   "compatibility_flags": [
     "nodejs_compat",
     "nodejs_compat_populate_process_env"
