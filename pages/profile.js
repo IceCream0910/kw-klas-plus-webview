@@ -71,13 +71,13 @@ import 'react-spring-bottom-sheet/dist/style.css'; export default function Home(
         onSettingsClick={() => setIsOpenSettingsModal(!isOpenSettingsModal)}
       />
 
-      <FavoriteSection
+      {!searchTerm && <FavoriteSection
         menuItems={menuItems}
         favorites={favorites}
         onMenuClick={handleMenuClick}
         onFavoriteToggle={handleToggleFavorite}
-      />
-
+      /> }
+      
       {filteredMenuItems.map((category, index) => (
         <MenuSection
           key={`category-${index}`}
