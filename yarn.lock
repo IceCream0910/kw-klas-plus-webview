@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@ai-sdk/gateway@1.0.23":
-  version "1.0.23"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/gateway/-/gateway-1.0.23.tgz#284a7de5bf7c9e80ac68416f19cf3644d7bb2db6"
-  integrity sha512-ynV7WxpRK2zWLGkdOtrU2hW22mBVkEYVS3iMg1+ZGmAYSgzCqzC74bfOJZ2GU1UdcrFWUsFI9qAYjsPkd+AebA==
+"@ai-sdk/gateway@1.0.29":
+  version "1.0.29"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/gateway/-/gateway-1.0.29.tgz#b7e902c2d7139e2ca2a94cb6076febe517088fa0"
+  integrity sha512-o9LtmBiG2WAgs3GAmL79F8idan/UupxHG8Tyr2gP4aUSOzflM0bsvfzozBp8x6WatQnOx+Pio7YNw45Y6I16iw==
   dependencies:
     "@ai-sdk/provider" "2.0.0"
     "@ai-sdk/provider-utils" "3.0.9"
@@ -1472,12 +1472,12 @@ agentkeepalive@^4.2.1:
   dependencies:
     humanize-ms "^1.2.1"
 
-ai@^5.0.44:
-  version "5.0.44"
-  resolved "https://registry.yarnpkg.com/ai/-/ai-5.0.44.tgz#a4503c2fbcc54329a5e59381f0c144e91eb71311"
-  integrity sha512-l/rdoM4LcRpsRBVvZQBwSU73oNoFGlWj+PcH86QRzxDGJgZqgGItWO0QcKjBNcLDmUjGN1VYd/8J0TAXHJleRQ==
+ai@^5.0.52:
+  version "5.0.52"
+  resolved "https://registry.yarnpkg.com/ai/-/ai-5.0.52.tgz#3aa9a6eab56505db2c94ce7a16a7ea089760977e"
+  integrity sha512-GLlRHjMlvN9+w7UYGxCpUQ8GgCRv5Z+JCprRH3Q8YbXJ/JyIc6EP9+YRUmQsyExX/qQsuehe7y/LLygarbSTOw==
   dependencies:
-    "@ai-sdk/gateway" "1.0.23"
+    "@ai-sdk/gateway" "1.0.29"
     "@ai-sdk/provider" "2.0.0"
     "@ai-sdk/provider-utils" "3.0.9"
     "@opentelemetry/api" "1.9.0"
