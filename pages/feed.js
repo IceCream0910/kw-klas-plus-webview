@@ -144,13 +144,13 @@ export default function Feed() {
       if (isCacheValid) {
         cafeteriaData = cachedData.data;
       } else {
-        const response = await fetch(process.env.NEXT_PUBLIC_NODE_API_URL + "/api/crawler/cafeteria");
+        const response = await fetch("/api/crawler/cafeteria");
         cafeteriaData = await response.json();
-        
+
         const sunday = new Date(now);
         sunday.setDate(now.getDate() + (7 - now.getDay()));
         sunday.setHours(23, 59, 59, 999);
-        
+
         setStoredData(CACHE_KEY, {
           data: cafeteriaData,
           expiresAt: sunday.getTime()
@@ -159,7 +159,7 @@ export default function Feed() {
 
       const [_, kwNoticeData] = await Promise.all([
         Promise.resolve(cafeteriaData),
-        fetch(process.env.NEXT_PUBLIC_NODE_API_URL + "/api/crawler/kwNotice?srCategoryId=" + kwNoticeTab).then(res => res.json())
+        fetch("/api/crawler/kwNotice?srCategoryId=" + kwNoticeTab).then(res => res.json())
       ]);
 
       setCafeteria(cafeteriaData);
