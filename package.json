@@ -1,6 +1,6 @@
 {
   "name": "klas-plus-webview",
-  "version": "0.1.0",
+  "version": "2025.11.20",
   "private": false,
   "scripts": {
     "dev": "next dev",
