@@ -260,13 +260,13 @@ export default function ChatKitComponent() {
     });
 
     return (
-        <>
+       <main>
             <ChatKit control={chatkit.control} style={{ height: '100dvh', width: 'calc(100% + 2em)', margin: '-1em' }} />
 
             <Script
                 src="https://cdn.platform.openai.com/deployments/chatkit/chatkit.js"
                 strategy="afterInteractive"
             />
-        </>
+       </main>
     );
 }

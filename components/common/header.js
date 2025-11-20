@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import IonIcon from "@reacticons/ionicons";
 import Spacer from "../common/spacer";
-import { openOptionsMenu } from "../../lib/core/androidBridge";
+import { openOptionsMenu, openKlasPage } from "../../lib/core/androidBridge";
 import toast, { Toaster } from 'react-hot-toast';
 
 
@@ -50,7 +50,7 @@ function Header({ title }) {
         }
 
         try {
-            Android.openCustomBottomSheet("https://klasplus.yuntae.in/agent")
+           openKlasPage("https://klasplus.yuntae.in/agent")
         } catch (error) {
             toast("앱을 최신버전으로 업데이트해주세요.")
         }
@@ -117,7 +117,7 @@ function Header({ title }) {
                                         height: '8px',
                                         backgroundColor: '#3b82f6'
                                     }} />
-                                    KLAS AI가 여기로 이동했어요!
+                                    AI가 여기로 이사했어요!
                                 </div>
                             )}
                             <button

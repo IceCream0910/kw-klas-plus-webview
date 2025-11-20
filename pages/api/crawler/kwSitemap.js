@@ -33,7 +33,11 @@ function getFullUrl(href) {
 
 async function getKwSitemap() {
     try {
-        const response = await fetch('https://www.kw.ac.kr/ko/info/sitemap.jsp');
+        const response = await fetch('https://www.kw.ac.kr/ko/info/sitemap.jsp', {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            }
+        });
         const html = await response.text();
         const root = parse(html);
         const sitemapBoxes = root.querySelectorAll('.sitemap-box');

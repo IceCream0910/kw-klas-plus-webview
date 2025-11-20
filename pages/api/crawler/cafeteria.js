@@ -35,7 +35,11 @@ export default async function handler(req, res) {
 
 async function getHaksik() {
     try {
-        const response = await fetch('https://www.kw.ac.kr/ko/life/facility11.jsp');
+        const response = await fetch('https://www.kw.ac.kr/ko/life/facility11.jsp', {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            }
+        });
         const html = await response.text();
 
         const root = parse(html);
