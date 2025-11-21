@@ -53,7 +53,7 @@ export default function MenuOrderModal() {
         try {
             Android.closeWebViewBottomSheet();
         } catch (e) {
-            console.log("Error closing bottom sheet", e);
+            console.error("Error closing bottom sheet", e);
         }
     };
 

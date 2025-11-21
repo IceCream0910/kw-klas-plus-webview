@@ -29,11 +29,8 @@ export default async function handler(req, res) {
             let targetElement = root.querySelector('div.contents-wrap-in');
 
             if (!targetElement) {
-                console.log('contents-wrap-in not found, searching in HTML source...');
                 const htmlLowerCase = html.toLowerCase();
                 const hasContentsWrapIn = htmlLowerCase.includes('contents-wrap-in');
-                console.log('HTML contains "contents-wrap-in":', hasContentsWrapIn);
-
                 const alternatives = [
                     '.contents-wrap-in',
                     'div[class*="contents-wrap-in"]',
@@ -50,24 +47,18 @@ export default async function handler(req, res) {
                 for (const selector of alternatives) {
                     targetElement = root.querySelector(selector);
                     if (targetElement) {
-                        console.log(`Found content using selector: ${selector}`);
                         break;
                     }
                 }
             }
 
             if (!targetElement) {
-                console.log('No suitable content container found, using body');
                 targetElement = root.querySelector('body');
             }
 
             if (!targetElement) {
-                console.log('No body found, using entire HTML');
                 targetElement = root;
             }
-
-            console.log('Final target element tag:', targetElement?.tagName);
-            console.log('Final target element classes:', targetElement?.getAttribute('class'));
 
             let contentHtml = '';
             if (targetElement) {
@@ -75,8 +66,6 @@ export default async function handler(req, res) {
                     targetElement.querySelectorAll(selector).forEach(el => el.remove());
                 });
                 contentHtml = targetElement.innerHTML;
-            } else {
-                console.warn(`No suitable content element found on ${url}. Processing will result in empty content.`);
             }
 
             const turndownService = new TurndownService({

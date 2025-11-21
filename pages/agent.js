@@ -12,7 +12,6 @@ async function getSubjectList() {
 
     try {
         const data = await KLAS('https://klas.kw.ac.kr/std/cmn/frame/YearhakgiAtnlcSbjectList.do', sessionId, {});
-        console.log(data)
         return data;
     } catch (error) {
         console.error(error);
@@ -150,10 +149,6 @@ async function getContentFromUrl({ urls }) {
 }
 
 export default function ChatKitComponent() {
-    const handleResponseEnd = useCallback(() => {
-        console.log('AI response completed');
-    }, []);
-
     const handleError = useCallback(({ error }) => {
         console.error('ChatKit error:', error);
     }, []);
@@ -260,13 +255,13 @@ export default function ChatKitComponent() {
     });
 
     return (
-       <main>
+        <main>
             <ChatKit control={chatkit.control} style={{ height: '100dvh', width: 'calc(100% + 2em)', margin: '-1em' }} />
 
             <Script
                 src="https://cdn.platform.openai.com/deployments/chatkit/chatkit.js"
                 strategy="afterInteractive"
             />
-       </main>
+        </main>
     );
 }

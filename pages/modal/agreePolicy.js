@@ -19,7 +19,6 @@ export default function IdCard() {
             <div className="bottom-sheet" style={{ padding: 0, marginBottom: 0 }}>
                 <button style={{ background: 'var(--button-background)', height: '50px' }} onClick={() => {
                     localStorage.setItem("policyAgreeDate", process.env.NEXT_PUBLIC_LATEST_POLICY_DATE);
-                    console.log("Agreed to policy:", process.env.NEXT_PUBLIC_LATEST_POLICY_DATE);
                     Android.closeModal();
                 }}>동의</button>
             </div>

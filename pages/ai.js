@@ -85,12 +85,6 @@ export default function AI() {
             if (!receivedToken) return;
             setToken(receivedToken);
         };
-
-        try {
-
-        } catch (error) {
-            console.log("not app");
-        }
     }, []);
 
     useEffect(() => {
