@@ -1,14 +1,6 @@
 {
   "main": ".open-next/worker.js",
   "name": "klas-plus-webview",
-  "vars": {
-    "NEXT_PUBLIC_ANDROID_LATEST_VERSION": "22",
-    "NEXT_PUBLIC_DEVELOPMENT": "false",
-    "NEXT_PUBLIC_GOOGLE_ANALYTICS": "G-7N7L7MMF1M",
-    "NEXT_PUBLIC_LATEST_POLICY_DATE": "20250412",
-    "NEXT_PUBLIC_NODE_API_URL": "https://klasplus-node.vercel.app",
-    "NEXT_PUBLIC_NOTICE_TEXT": ""
-  },
   "compatibility_date": "2025-09-15",
   "compatibility_flags": [
     "nodejs_compat",
