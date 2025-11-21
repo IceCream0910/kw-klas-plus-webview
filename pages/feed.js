@@ -270,26 +270,6 @@ export default function Feed() {
 
         <LectureNotices token={token} />
 
-        {process.env.NEXT_PUBLIC_DEVELOPMENT != "true" && <>
-          <Spacer y={20} />
-          <div className="card non-anim" style={{ padding: '10px 0' }}>
-            <div style={{
-              position: 'absolute',
-              zIndex: 100,
-              top: '10px',
-              right: '10px',
-              background: 'var(--background)',
-              borderRadius: '15px',
-              fontSize: '12px',
-              opacity: 0.5,
-              padding: '5px 10px'
-            }}>광고</div>
-            <div style={{ width: '100%', height: '100px', maxWidth: '100%', display: 'flex', justifyContent: 'center' }}>
-              <AdSense adClient="ca-pub-7178712602934912" adSlot="8415533910" />
-            </div>
-          </div>
-        </>}
-
         <Spacer y={20} />
 
         <Card
