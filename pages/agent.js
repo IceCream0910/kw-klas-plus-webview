@@ -149,6 +149,10 @@ async function getContentFromUrl({ urls }) {
 }
 
 export default function ChatKitComponent() {
+    const handleResponseEnd = useCallback(() => {
+        console.log('AI response completed');
+    }, []);
+
     const handleError = useCallback(({ error }) => {
         console.error('ChatKit error:', error);
     }, []);
