@@ -212,8 +212,6 @@ export default function Feed() {
         </>
         )}
 
-        <AppVersion updater={true} />
-
         {showToggle && (
           <>
             <Spacer y={5} />
