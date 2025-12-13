@@ -15,7 +15,6 @@ export default function Onboarding() {
 
     return () => {
       clearInterval(interval);
-      mediaQuery.removeEventListener('change', handleChange);
     };
   }, []);
 
@@ -24,12 +23,11 @@ export default function Onboarding() {
   };
 
   return (
-    <main style={{ margin: '-15px' }}>
+    <main style={{ margin: '-15px', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
       <Flicking
         ref={flickingRef}
         circular={true}
-
-        style={{ width: '100%', height: '100%' }}
+        style={{ maxWidth: '600px', height: '100%' }}
       >
 
         <img src="https://i.imgur.com/bVwCc7y.png" style={imageStyle} />
