@@ -11,6 +11,7 @@ import { formatCalendarEvents, getEventsForDate, getDefaultSelectedDate, getEven
 import { openWebViewBottomSheet, closeWebViewBottomSheet } from '../lib/core/androidBridge';
 import { useCalendar } from '../lib/calendar/useCalendar';
 import EventItem from '../components/calendar/EventItem';
+import ToggleSwitch from '../components/common/ToggleSwitch';
 
 const localizer = momentLocalizer(moment);
 var yearHakgi;
@@ -200,6 +201,7 @@ export default function CalendarPage() {
                         typeNm: "개인일정"
                     } : selectedEvent}
                     date={selectedDate}
+                    isOpen={isModalOpen}
                     onSave={handleSaveEvent}
                     onDelete={handleDeleteEvent}
                     onClose={() => { closeModal(); }}
@@ -209,9 +211,7 @@ export default function CalendarPage() {
     );
 }
 
-
-
-function EventForm({ event, date, onSave, onDelete, onClose }) {
+function EventForm({ event, date, isOpen, onSave, onDelete, onClose }) {
     const [title, setTitle] = useState('');
     const [start, setStart] = useState(new Date());
     const [end, setEnd] = useState(new Date());
@@ -221,6 +221,8 @@ function EventForm({ event, date, onSave, onDelete, onClose }) {
     const [isEditingStart, setIsEditingStart] = useState(false);
     const [isEditingEnd, setIsEditingEnd] = useState(false);
     const [isEditingTitle, setIsEditingTitle] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         window.setDateTime = (dateTimeStr, isStart) => {
@@ -242,9 +244,21 @@ function EventForm({ event, date, onSave, onDelete, onClose }) {
         }
     }, [event, date]);
 
+    // Modal open 시마다 상태 초기화
+    useEffect(() => {
+        if (!isOpen) return;
+        setErrorMessage('');
+        setIsSubmitting(false);
+        setIsAllDay(false);
+        setIsEditingStart(false);
+        setIsEditingEnd(false);
+        setIsEditingTitle(false);
+    }, [isOpen]);
 
-    const handleSubmit = (e) => {
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setErrorMessage('');
         const eventData = {
             title,
             sdate: moment(start).format('YYYY-MM-DD'),
@@ -259,16 +273,21 @@ function EventForm({ event, date, onSave, onDelete, onClose }) {
         };
 
         if (eventData.title === "") {
-            alert('제목을 입력해주세요.');
+            setErrorMessage('제목을 입력해주세요.');
             return;
         }
 
         if (moment(start).isAfter(end)) {
-            alert('종료 일시가 종료 일시보다 빠를 수 없습니다.');
+            setErrorMessage('종료 일시가 시작 일시보다 빠를 수 없습니다.');
             return;
         }
 
-        onSave(eventData);
+        try {
+            setIsSubmitting(true);
+            await onSave(eventData);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
 
@@ -319,7 +338,7 @@ function EventForm({ event, date, onSave, onDelete, onClose }) {
     return (
         <div style={styles.form}>
             <div style={{ maxHeight: '70dvh', overflow: 'scroll' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     {isEditingTitle ? (
                         <input
                             type="text"
@@ -332,32 +351,35 @@ function EventForm({ event, date, onSave, onDelete, onClose }) {
                         />
                     ) : (
 
-                        <h2 onClick={(event && event.typeNm == "개인일정") ? handleTitleClick : null} style={{ fontSize: '22px', padding: '7px 5px 5px 0' }}>
+                        <h2 onClick={(event && event.typeNm == "개인일정") ? handleTitleClick : null} style={{ fontSize: '22px', margin: 0 }}>
                             {title || '제목 입력'}
                         </h2>
                     )}
 
-                    {event && event.typeNm == "개인일정" && (
+                    {event && event.typeNm == "개인일정" && event.schdulId && (
                         <button type="button" onClick={() => onDelete(event)} style={styles.deleteButton}>
                             <IonIcon style={{ position: 'relative', top: '2px' }} name="trash-outline" />
                         </button>
                     )}
                 </div>
 
+                {errorMessage && (
+                    <div style={{ color: 'var(--red)', fontSize: '12px', marginTop: '4px' }}>{errorMessage}</div>
+                )}
+
                 <Spacer y={20} />
                 <div style={styles.timeSelector}>
                     {event && event.typeNm == "개인일정" && (
                         <div style={styles.timeSelectorHeader}>
                             <span>기간</span>
-                            <label style={styles.allDayToggle}>
-                                <input
-                                    type="checkbox"
-                                    checked={isAllDay}
-                                    onChange={handleAllDayToggle}
-                                    style={styles.allDayCheckbox}
-                                />
-                                <span>하루 종일</span>
-                            </label>
+                            <ToggleSwitch
+                                label="하루 종일"
+                                checked={isAllDay}
+                                onChange={handleAllDayToggle}
+                                id="all-day-toggle"
+                                scale={0.7}
+                                style={{ marginLeft: 'auto' }}
+                            />
                         </div>)}
                     <div style={styles.dateTimeInputs}>
                         <div style={styles.dateTimeInput} onClick={() => {
@@ -415,7 +437,7 @@ function EventForm({ event, date, onSave, onDelete, onClose }) {
                 </div>
                 {event && event.typeNm == "개인일정" && (
                     <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '10px' }}>
-                        <span>색상</span>
+                        <span style={{ opacity: .7 }}>색상</span>
                         <input
                             type="color"
                             value={color}
@@ -451,7 +473,7 @@ function EventForm({ event, date, onSave, onDelete, onClose }) {
             <div className='bottom-sheet-footer'>
                 {event && event.typeNm == "개인일정" ? (<>
                     <button type="button" onClick={onClose} style={styles.button}>취소</button>
-                    <button type="submit" onClick={handleSubmit} style={styles.primaryButton}>저장</button>
+                    <button type="submit" disabled={isSubmitting} onClick={handleSubmit} style={styles.primaryButton}>{isSubmitting ? '저장 중...' : '저장'}</button>
                 </>) : (<>
                     <button type="button" onClick={onClose} style={styles.button}>닫기</button>
                 </>)
