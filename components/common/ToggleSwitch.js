@@ -12,11 +12,12 @@ function ToggleSwitch({
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
+            cursor: 'pointer',
             ...style
         }}>
-            <span style={{ opacity: 0.7, fontSize: '14px' }}>
+            <label htmlFor={id} style={{ opacity: 0.7, fontSize: '14px', cursor: 'pointer', flex: 1 }}>
                 {label}
-            </span>
+            </label>
             <label
                 className="switch"
                 style={{ transform: `scale(${scale})` }}
