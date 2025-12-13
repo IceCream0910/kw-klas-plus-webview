@@ -39,6 +39,9 @@ export const SkeletonLayouts = {
             items={[
                 { height: UI_CONSTANTS.SKELETON_HEIGHT.MEDIUM },
                 { height: UI_CONSTANTS.SKELETON_HEIGHT.MEDIUM },
+                { height: UI_CONSTANTS.SKELETON_HEIGHT.MEDIUM },
+                { height: UI_CONSTANTS.SKELETON_HEIGHT.MEDIUM },
+                { height: UI_CONSTANTS.SKELETON_HEIGHT.MEDIUM },
                 { height: UI_CONSTANTS.SKELETON_HEIGHT.MEDIUM }
             ]}
         />

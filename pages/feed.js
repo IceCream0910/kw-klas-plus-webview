@@ -171,6 +171,7 @@ export default function Feed() {
 
   useEffect(() => {
     if (kwNoticeTab != null) {
+      setKWNotice(null);
       fetchData();
     }
   }, [kwNoticeTab]);
@@ -317,6 +318,9 @@ export default function Feed() {
           advisor={advisor}
           isLoading={!advisor && token}
         />
+        
+        <br />
+        <AppVersion/>
 
         <br /> <br />
         <br />
