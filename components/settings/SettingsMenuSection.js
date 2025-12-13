@@ -59,6 +59,13 @@ const SettingsMenuSection = ({ hideGrades, onHideGradesChange, yearHakgi }) => {
                     <IonIcon name="chevron-forward-outline" />
                 </span>
             </button>
+            <style jsx global>{`
+             label {
+                opacity: 1 !important;
+                font-size: 16px !important;
+                margin-bottom: 5px;
+             }
+            `}</style>
         </>
     );
 };
