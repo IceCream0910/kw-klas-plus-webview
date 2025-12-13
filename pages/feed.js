@@ -318,9 +318,6 @@ export default function Feed() {
           advisor={advisor}
           isLoading={!advisor && token}
         />
-        
-        <br />
-        <AppVersion/>
 
         <br /> <br />
         <br />
