@@ -77,8 +77,7 @@ function Header({ title }) {
                                         fontSize: '20px',
                                         color: 'var(--text-color)',
                                         position: 'relative',
-                                        top: '2px',
-                                        animation: showTooltip ? 'rainbow-flash 4s ease-in-out 1' : 'none'
+                                        top: '2px'
                                     }}
                                 />
                             </button>
