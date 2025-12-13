@@ -6,7 +6,6 @@ import SearchBar from "../components/profile/SearchBar";
 import FavoriteSection from "../components/profile/FavoriteSection";
 import MenuSection from "../components/profile/MenuSection";
 import StudentIDModal from "../components/profile/StudentIDModal";
-import MenuSettingsModal from "../components/profile/MenuSettingsModal";
 import { menuItems } from "../lib/profile/menuItems";
 import {
   useProfileData,
@@ -20,25 +19,16 @@ import 'react-spring-bottom-sheet/dist/style.css'; export default function Home(
   const { data, totGrade, stdInfo } = useProfileData();
   const { hideGrades, showGrades, handleGradeClick } = useGradeSettings();
   const {
-    isOpenSettingsModal,
     isCardOpen,
-    setIsOpenSettingsModal,
     setIsCardOpen,
     handleCardClick
   } = useModalSettings();
   const {
-    menuOrder,
     favorites,
-    handleMenuReorder,
-    handleResetMenuOrder,
     handleToggleFavorite
-  } = useMenuSettings(menuItems);
+  } = useMenuSettings();
 
-  const sortedMenuItems = menuOrder.map(title =>
-    menuItems.find(item => item.title === title)
-  ).filter(Boolean);
-
-  const filteredMenuItems = sortedMenuItems
+  const filteredMenuItems = menuItems
     .map(category => ({
       ...category,
       items: category.items.filter(item =>
@@ -68,7 +58,6 @@ import 'react-spring-bottom-sheet/dist/style.css'; export default function Home(
       <SearchBar
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
-        onSettingsClick={() => setIsOpenSettingsModal(!isOpenSettingsModal)}
       />
 
       {!searchTerm && <FavoriteSection
@@ -95,13 +84,7 @@ import 'react-spring-bottom-sheet/dist/style.css'; export default function Home(
         stdInfo={stdInfo}
       />
 
-      <MenuSettingsModal
-        isOpen={isOpenSettingsModal}
-        onClose={() => setIsOpenSettingsModal(false)}
-        menuOrder={menuOrder}
-        onMenuReorder={handleMenuReorder}
-        onResetMenuOrder={handleResetMenuOrder}
-      />
+
     </main>
   );
 }

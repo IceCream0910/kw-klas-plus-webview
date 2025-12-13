@@ -1,6 +1,6 @@
 import IonIcon from '@reacticons/ionicons';
 
-const SearchBar = ({ searchTerm, onSearchChange, onSettingsClick }) => (
+const SearchBar = ({ searchTerm, onSearchChange }) => (
     <div style={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -23,22 +23,6 @@ const SearchBar = ({ searchTerm, onSearchChange, onSettingsClick }) => (
                 }}
             />
         </div>
-        <button
-            onClick={onSettingsClick}
-            style={{
-                background: 'var(--card-background)',
-                padding: '5px',
-                width: '50px',
-                height: '42px',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                float: 'right',
-                marginTop: '20px'
-            }}
-        >
-            <IonIcon name='sync-outline' />
-        </button>
     </div>
 );
 
