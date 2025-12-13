@@ -19,7 +19,7 @@ const SettingsLinkSection = () => {
         {
             emoji: '🔒',
             text: '개인정보 처리방침',
-            url: 'https://blog.yuntae.in/11cfc9b9-3eca-8078-96a0-c41c4ca9cb8f'
+            url: 'https://klasplus.yuntae.in/privacy'
         },
         {
             emoji: '🔧',

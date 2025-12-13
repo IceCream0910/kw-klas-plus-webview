@@ -1,5 +1,24 @@
 
-const SettingsInfoSection = ({ appVersion }) => {
+import { useState, useEffect } from 'react';
+
+const SettingsInfoSection = ({ appVersion = 'n/a' }) => {
+    const [cfRay, setCfRay] = useState('loading...');
+    const [cfPlacement, setCfPlacement] = useState('loading...');
+
+    useEffect(() => {
+        fetch(window.location.href, { method: 'HEAD' })
+            .then(response => {
+                const ray = response.headers.get('cf-ray') || 'n/a';
+                const placement = response.headers.get('cf-placement') || 'n/a';
+                setCfRay(ray);
+                setCfPlacement(placement);
+            })
+            .catch(() => {
+                setCfRay('error');
+                setCfPlacement('error');
+            });
+    }, []);
+
     return (
         <>
             <button
@@ -16,12 +35,8 @@ const SettingsInfoSection = ({ appVersion }) => {
                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                 disabled
             >
-                <span style={{ fontSize: '16px' }}>WebView Git SHA</span>
-                <span style={{ opacity: .8, fontSize: '14px' }}>
-                    {process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA
-                        ? process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA.substring(0, 7)
-                        : 'n/a'}
-                </span>
+                <span style={{ fontSize: '16px' }}>Ray ID</span>
+                <span style={{ opacity: .8, fontSize: '14px' }}>{cfRay}</span>
             </button>
 
             <button
@@ -29,8 +44,8 @@ const SettingsInfoSection = ({ appVersion }) => {
                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                 disabled
             >
-                <span style={{ fontSize: '16px' }}>Runtime Region</span>
-                <span style={{ opacity: .8, fontSize: '14px' }}>icn1</span>
+                <span style={{ fontSize: '16px' }}>Region</span>
+                <span style={{ opacity: .8, fontSize: '14px' }}>{cfPlacement}</span>
             </button>
         </>
     );
