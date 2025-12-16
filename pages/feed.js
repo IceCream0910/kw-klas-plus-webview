@@ -27,6 +27,21 @@ import AdvisorInfo from '../components/feed/AdvisorInfo';
 
 const AdSense = dynamic(() => import('../components/common/adSense'), { ssr: false });
 
+const SEMESTER_SCHEDULE = [
+  { yearHakgi: '2025,2', start: new Date(2025, 8, 1), end: new Date(2025, 11, 19) },
+  { yearHakgi: '2025,4', start: new Date(2025, 11, 22), end: new Date(2026, 0, 14) },
+  { yearHakgi: '2026,1', start: new Date(2026, 2, 3), end: new Date(2026, 5, 22) },
+  { yearHakgi: '2026,3', start: new Date(2026, 5, 23), end: new Date(2026, 6, 13) }
+];
+
+const NO_COURSE_STATUS_TEXT = '지금은 선택된<br/>학기 중이 아니에요.';
+
+const getCurrentSemesterYearHakgi = (today = new Date()) => {
+  const currentDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const matched = SEMESTER_SCHEDULE.find(({ start, end }) => currentDate >= start && currentDate <= end);
+  return matched ? matched.yearHakgi : null;
+};
+
 export default function Feed() {
   const [yearHakgi, setYearHakgi] = useState(null);
   const [token, setToken] = useState(null);
@@ -41,7 +56,7 @@ export default function Feed() {
     statusText,
     selectedSubj,
     selectedSubjName,
-    showButtons,
+    showClassActions,
     setTimetableData
   } = useTimetableStatus();
 
@@ -53,6 +68,14 @@ export default function Feed() {
     processAndSetDeadlines,
     handleToggleChange
   } = useDeadlines();
+
+  const currentSemesterYearHakgi = getCurrentSemesterYearHakgi();
+  const isSemesterMismatch = Boolean(currentSemesterYearHakgi && yearHakgi && currentSemesterYearHakgi !== yearHakgi);
+  const displayedStatusText = isSemesterMismatch ? NO_COURSE_STATUS_TEXT : statusText;
+  const canShowClassActions = isSemesterMismatch ? false : showClassActions;
+  const displayedSelectedSubj = isSemesterMismatch ? null : selectedSubj;
+  const displayedSelectedSubjName = isSemesterMismatch ? null : selectedSubjName;
+  const isNoCourseStatus = displayedStatusText === NO_COURSE_STATUS_TEXT;
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -184,10 +207,11 @@ export default function Feed() {
 
       <div className='pull-to-swipe-area'>
         <CurrentStatus
-          statusText={statusText}
-          showButtons={showButtons}
-          selectedSubj={selectedSubj}
-          selectedSubjName={selectedSubjName}
+          statusText={displayedStatusText}
+          showClassActions={canShowClassActions}
+          isNoCourse={isNoCourseStatus}
+          selectedSubj={displayedSelectedSubj}
+          selectedSubjName={displayedSelectedSubjName}
         />
 
         <Spacer y={10} />
