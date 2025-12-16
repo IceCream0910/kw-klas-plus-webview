@@ -287,6 +287,43 @@ select {
   animation: spin 1s ease infinite;
 }
 
+.ptr-expressive {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 14px 0 10px;
+}
+
+.ptr-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  animation: ptr-bounce 1.1s ease-in-out infinite;
+  will-change: transform;
+}
+
+.ptr-dot-left {
+  background: #7b6dff;
+  animation-delay: 0s;
+}
+
+.ptr-dot-right {
+  background: #32267a;
+  box-shadow: 0 0 0 7px rgba(103, 86, 255, 0.18);
+  animation-delay: 0.2s;
+}
+
+@keyframes ptr-bounce {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  40% {
+    transform: translateY(-10px) scale(0.96);
+  }
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);
