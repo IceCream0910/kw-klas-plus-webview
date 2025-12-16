@@ -319,7 +319,7 @@ export default function Feed() {
           style={{ paddingBottom: '20px', position: 'relative' }}
           title={
             <span
-              style={{ display: 'flex', alignItems: 'center', fontWeight: 600 }}
+              style={{ display: 'flex', alignItems: 'center' }}
               onClick={() => openKlasPage('https://www.kw.ac.kr/ko/life/notice.jsp?srCategoryId=&mode=list&searchKey=1&searchVal=')}
             >
               공지사항 <IonIcon name="chevron-forward" />
