@@ -44,6 +44,9 @@ function Header({ title }) {
         }
     };
 
+    if(!isCompatible) {
+        return null;
+    }
 
     return (
         <>
