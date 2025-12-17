@@ -12,7 +12,7 @@ function CurrentStatus({ statusText, showClassActions, selectedSubj, selectedSub
 
     const handleYearHakgiSelect = () => {
         if (typeof window !== 'undefined' && window.Android) {
-            window.Android.openYearHakgiSelectModal();
+            window.Android.openYearHakgiBottomSheet();
         }
     };
 
