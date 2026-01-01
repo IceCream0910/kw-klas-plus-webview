@@ -25,15 +25,20 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  if (event.request.url.includes('/_next/static/') && event.request.method === 'GET') {
+  const url = event.request.url;
+  const isStatic = url.includes('/_next/static/');
+  const isImage = /\.(png|jpg|jpeg|gif|webp|svg|ico)$/i.test(url);
+  const isFont = /\.(woff|woff2|ttf|otf|eot)$/i.test(url);
+
+  if ((isStatic || isImage || isFont) && event.request.method === 'GET') {
     event.respondWith(
       caches.match(event.request).then((response) => {
         if (response) {
-          console.log('Cache hit:', event.request.url);
+          console.log('Cache hit:', url);
           return response;
         }
-        
-        console.log('Cache miss, fetching:', event.request.url);
+
+        console.log('Cache miss, fetching:', url);
         return fetch(event.request).then((fetchResponse) => {
           if (fetchResponse.status === 200) {
             const responseClone = fetchResponse.clone();

@@ -1,7 +1,7 @@
 {
   "main": ".open-next/worker.js",
   "name": "klas-plus-webview",
-  "compatibility_date": "2025-09-15",
+  "compatibility_date": "2025-11-17",
   "compatibility_flags": [
     "nodejs_compat",
     "nodejs_compat_populate_process_env"
@@ -17,6 +17,9 @@
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
+  },
+  "images": {
+    "binding": "IMAGES"
   },
   "placement": {
     "mode": "smart"
