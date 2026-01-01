@@ -8,7 +8,7 @@ const TAB_ITEMS = [
     { key: "feed", label: "피드", icon: "newspaper-outline", href: "/feed" },
     { key: "timetable", label: "시간표", icon: "calendar-outline", href: "/timetableTab" },
     { key: "calendar", label: "캘린더", icon: "today-outline", href: "/calendar" },
-    { key: "all", label: "전체", icon: "grid-outline", href: "/profile" }
+    { key: "menu", label: "전체", icon: "grid-outline", href: "/profile" }
 ];
 
 const checkAppCompatibility = (version) => {
@@ -35,12 +35,13 @@ function BottomNav({ currentTab }) {
 
     const handleTabClick = (tab) => {
         if (tab) {
-            router.push(tab.href);
+            try {
+                Android.changeTab(tab.key);
+                Android.performHapticFeedback("CLOCK_TICK");
+            } catch (error) {
+                router.push(tab.href);
+            }
             return;
-        }
-
-        if (tab.href) {
-            window.location.href = tab.href;
         }
     };
 
