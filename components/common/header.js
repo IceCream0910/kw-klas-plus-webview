@@ -44,7 +44,7 @@ function Header({ title }) {
         }
     };
 
-    if(!isCompatible) {
+    if (!isCompatible) {
         return null;
     }
 
@@ -68,6 +68,7 @@ function Header({ title }) {
                     left: 0,
                     width: 'calc(100% - 40px)',
                     padding: '10px 20px 20px 20px',
+                    background: 'linear-gradient(to bottom, var(--background) 0%, transparent 100%)',
                     zIndex: 9999
                 }}>
                     {title}
@@ -112,14 +113,9 @@ function Header({ title }) {
 
 
                 <GradualBlur
-                    target="parent"
                     position="top"
-                    height="5rem"
+                    height="6rem"
                     strength={1.5}
-                    divCount={5}
-                    curve="bazier"
-                    exponential={true}
-                    opacity={1}
                 />
             </div>
 
