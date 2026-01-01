@@ -87,7 +87,21 @@ export const SkeletonLayouts = {
 
     AdvisorInfo: () => (
         <Skeleton height={UI_CONSTANTS.SKELETON_HEIGHT.EXTRA_LARGE} />
+    ),
+
+    Timetable: () => (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '4px', padding: '15px' }}>
+
+            {Array.from({ length: 5 }).map((_, hour) => (
+                <div key={`row-${hour}`} style={{ display: 'contents' }}>
+                    {Array.from({ length: 5 }).map((_, day) => (
+                        <Skeleton key={`cell-${day}-${hour}`} height="80px" />
+                    ))}
+                </div>
+            ))}
+        </div>
     )
 };
 
+export { SkeletonLayouts };
 export default Skeleton;

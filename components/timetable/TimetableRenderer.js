@@ -4,9 +4,10 @@ import {
     calculateTimeRange,
     calculateClassDimensions
 } from '../../lib/timetable/timetableHelpers';
+import { SkeletonLayouts } from '../common/Skeleton';
 
 const TimetableRenderer = ({ timetableData, onClassClick }) => {
-    if (!timetableData) return <div>시간표 로딩 중....</div>;
+    if (!timetableData) return <SkeletonLayouts.Timetable />;
 
     const days = ['월', '화', '수', '목', '금'];
     const colorMap = {};
