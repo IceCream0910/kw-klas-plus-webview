@@ -1,8 +1,23 @@
 import { motion } from 'framer-motion';
 import IonIcon from '@reacticons/ionicons';
 import Spacer from "../common/spacer";
+import { getStoredData, setStoredData } from "../../lib/core/storageUtils";
+import { useState } from 'react';
 
-const ProfileCard = ({ data, stdInfo, totGrade, hideGrades, showGrades, onCardClick, onGradeClick }) => {
+const ProfileCard = ({ data, stdInfo, totGrade, onCardClick, onGradeClick }) => {
+    const maskGrades = getStoredData('hideGrades') ?? false;
+    const [tempUnmasked, setTempUnmasked] = useState(false);
+
+    const handleGradeClick = () => {
+        if (maskGrades) {
+            setTempUnmasked(true);
+        } else {
+            setStoredData('hideGrades', true);
+        }
+        onGradeClick?.();
+    };
+
+    const shouldShow = tempUnmasked || !maskGrades;
     if (!data) {
         return (
             <div className="profile-card">
@@ -70,19 +85,19 @@ const ProfileCard = ({ data, stdInfo, totGrade, hideGrades, showGrades, onCardCl
                         width: '100%',
                         backgroundColor: 'none !important'
                     }}
-                    onClick={() => showGrades && Android.openPage('https://klasplus.yuntae.in/grade')}
+                    onClick={() => !maskGrades && Android.openPage('https://klasplus.yuntae.in/grade')}
                 >
-                    <div style={{ textAlign: 'center', width: '100%' }} onClick={onGradeClick}>
+                    <div style={{ textAlign: 'center', width: '100%' }} onClick={handleGradeClick}>
                         <span style={{ opacity: 0.8, fontSize: '12px' }}>취득학점</span>
-                        <h3>{hideGrades && !showGrades ? '??' : totGrade.credit}</h3>
+                        <h3>{shouldShow ? totGrade.credit : '??'}</h3>
                     </div>
-                    <div style={{ textAlign: 'center', width: '100%' }} onClick={onGradeClick}>
+                    <div style={{ textAlign: 'center', width: '100%' }} onClick={handleGradeClick}>
                         <span style={{ opacity: 0.8, fontSize: '12px' }}>평균평점</span>
-                        <h3>{hideGrades && !showGrades ? '??' : totGrade.averageGPA.includeF}</h3>
+                        <h3>{shouldShow ? totGrade.averageGPA.includeF : '??'}</h3>
                     </div>
-                    <div style={{ textAlign: 'center', width: '100%' }} onClick={onGradeClick}>
+                    <div style={{ textAlign: 'center', width: '100%' }} onClick={handleGradeClick}>
                         <span style={{ opacity: 0.8, fontSize: '12px' }}>전공평점</span>
-                        <h3>{hideGrades && !showGrades ? '??' : totGrade.majorGPA.includeF}</h3>
+                        <h3>{shouldShow ? totGrade.majorGPA.includeF : '??'}</h3>
                     </div>
                 </div>
             )}

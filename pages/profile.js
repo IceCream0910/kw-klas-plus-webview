@@ -10,14 +10,15 @@ import { menuItems } from "../lib/profile/menuItems";
 import {
   useProfileData,
   useMenuSettings,
-  useGradeSettings,
   useModalSettings
 } from "../lib/profile/useProfileData";
-import 'react-spring-bottom-sheet/dist/style.css'; export default function Home() {
+import 'react-spring-bottom-sheet/dist/style.css';
+import BottomNav from "../components/common/bottomNav";
+
+export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const { data, totGrade, stdInfo } = useProfileData();
-  const { hideGrades, showGrades, handleGradeClick } = useGradeSettings();
   const {
     isCardOpen,
     setIsCardOpen,
@@ -44,15 +45,13 @@ import 'react-spring-bottom-sheet/dist/style.css'; export default function Home(
   return (
     <main>
       <Header title={<h2>전체</h2>} />
+      <BottomNav currentTab="all" />
 
       <ProfileCard
         data={data}
         stdInfo={stdInfo}
         totGrade={totGrade}
-        hideGrades={hideGrades}
-        showGrades={showGrades}
         onCardClick={handleCardClick}
-        onGradeClick={handleGradeClick}
       />
 
       <SearchBar
@@ -65,8 +64,8 @@ import 'react-spring-bottom-sheet/dist/style.css'; export default function Home(
         favorites={favorites}
         onMenuClick={handleMenuClick}
         onFavoriteToggle={handleToggleFavorite}
-      /> }
-      
+      />}
+
       {filteredMenuItems.map((category, index) => (
         <MenuSection
           key={`category-${index}`}
