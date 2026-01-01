@@ -12,6 +12,7 @@ import { openWebViewBottomSheet, closeWebViewBottomSheet } from '../lib/core/and
 import { useCalendar } from '../lib/calendar/useCalendar';
 import EventItem from '../components/calendar/EventItem';
 import ToggleSwitch from '../components/common/ToggleSwitch';
+import BottomNav from '../components/common/bottomNav';
 
 const localizer = momentLocalizer(moment);
 var yearHakgi;
@@ -108,6 +109,8 @@ export default function CalendarPage() {
 
     return (
         <main style={{ padding: '0px 5px 20px 5px' }}>
+            <BottomNav currentTab="calendar" />
+            
             <div style={styles.header}>
 
                 <h2 style={{ marginBottom: '20px', marginTop: '20px' }}>{currentMonth.format('MM월')}

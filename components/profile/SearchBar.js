@@ -9,7 +9,7 @@ const SearchBar = ({ searchTerm, onSearchChange }) => (
         gap: "10px",
         width: '100%'
     }}>
-        <div className="search-container">
+        <div className="search-container" style={{ width: '100%' }}>
             <span className="tossface" style={{ position: 'relative', left: '10px', top: '30px' }}>🔍</span>
             <input
                 style={{ paddingLeft: '35px' }}

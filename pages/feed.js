@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import TodaysCafeteriaMenu from '../components/feed/TodaysCafeteria';
 import IonIcon from '@reacticons/ionicons';
-import AppVersion from '../components/common/appVersion';
 import { getStoredData, setStoredData } from '../lib/core/storageUtils';
 import LectureNotices from '../components/lecture/lectureNotices';
 import Spacer from '../components/common/spacer';
-import Adfit from '../components/common/adfit';
 import toast, { Toaster } from 'react-hot-toast';
 import { KLAS } from '../lib/core/klas';
 import Image from 'next/image';
 import Header from '../components/common/header';
+import BottomNav from '../components/common/bottomNav';
 import dynamic from 'next/dynamic';
 import { BUILDING_MAP_URLS, KW_NOTICE_CATEGORIES } from '../lib/core/constants';
 import { openExternalLink, openKlasPage, evaluateKlasPage, openLectureActivity } from '../lib/core/androidBridge';
@@ -204,7 +203,7 @@ export default function Feed() {
     <div style={{ padding: '5px' }}>
       <Toaster position="top-center" />
       <Header title={<Image src="/klasplus_icon_foreground_red.png" alt="Logo" width={40} height={40} style={{ borderRadius: '50%', marginLeft: '-5px' }} />} />
-
+      <BottomNav currentTab="feed" />
       <div className='pull-to-swipe-area'>
         <CurrentStatus
           statusText={displayedStatusText}
