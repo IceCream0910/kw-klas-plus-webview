@@ -81,6 +81,8 @@ export default function Feed() {
     const yearHakgi = urlParams.get('yearHakgi');
     setYearHakgi(yearHakgi);
 
+    try { Android.completePageLoad() } catch (error) { console.log('not app') }
+
     setupWindowFunctions();
     fetchData();
 
@@ -202,7 +204,7 @@ export default function Feed() {
   return (
     <div style={{ padding: '5px' }}>
       <Toaster position="top-center" />
-      <Header title={<Image src="/klasplus_icon_foreground_red.png" alt="Logo" width={40} height={40} style={{ borderRadius: '50%', marginLeft: '-5px' }} />} />
+      <Header title={<Image src="/klasplus_icon_foreground_red.png" loading="eager" alt="Logo" width={40} height={40} style={{ borderRadius: '50%', marginLeft: '-5px' }} />} />
       <BottomNav currentTab="feed" />
       <div className='pull-to-swipe-area'>
         <CurrentStatus
