@@ -78,7 +78,15 @@ export default function Feed() {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const yearHakgi = urlParams.get('yearHakgi');
+    var yearHakgi = urlParams.get('yearHakgi');
+    if (!yearHakgi) {
+      getStoredData('currentYearHakgi').then((storedYearHakgi) => {
+        if (storedYearHakgi) {
+          yearHakgi = storedYearHakgi;
+        }
+      });
+    }
+
     setYearHakgi(yearHakgi);
 
     try { Android.completePageLoad() } catch (error) { console.log('not app') }
