@@ -14,6 +14,7 @@ import {
 } from "../lib/profile/useProfileData";
 import 'react-spring-bottom-sheet/dist/style.css';
 import BottomNav from "../components/common/bottomNav";
+import Spacer from "@/components/common/spacer";
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -83,6 +84,7 @@ export default function Home() {
         stdInfo={stdInfo}
       />
 
+      <Spacer y={50} />
 
     </main>
   );
