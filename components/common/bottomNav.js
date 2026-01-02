@@ -49,6 +49,11 @@ function BottomNav({ currentTab }) {
 
     return (
         <>
+            <style jsx>{`
+                .bottom-nav-tab-button:active {
+                    transform: scale(1.05, 0.85) !important;
+                }
+            `}</style>
             <nav
                 style={{
                     position: 'fixed',
@@ -76,6 +81,7 @@ function BottomNav({ currentTab }) {
                             <button
                                 key={tab.key}
                                 type="button"
+                                className="bottom-nav-tab-button"
                                 onClick={() => handleTabClick(tab)}
                                 aria-label={tab.label}
                                 aria-current={isActive ? 'page' : undefined}
@@ -89,6 +95,7 @@ function BottomNav({ currentTab }) {
                                     borderRadius: '14px',
                                     backgroundColor: isActive ? 'var(--card-background)' : 'transparent',
                                     color: isActive ? 'var(--text-color)' : 'var(--text-color-transparent)',
+                                    transition: 'transform 0.1s ease-out',
                                 }}
                             >
                                 <IonIcon
