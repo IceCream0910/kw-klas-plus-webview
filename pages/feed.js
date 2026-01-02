@@ -344,6 +344,7 @@ export default function Feed() {
 
         <br /> <br />
         <br />
+        <Spacer y={30} />
       </div>
     </div>
   );

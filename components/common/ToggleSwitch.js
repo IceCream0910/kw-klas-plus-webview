@@ -7,6 +7,16 @@ function ToggleSwitch({
     scale = 0.8,
     style = {}
 }) {
+    const handleChange = (e) => {
+        if (window.Android && window.Android.performHapticFeedback) {
+            const feedbackType = e.target.checked ? "TOGGLE_ON" : "TOGGLE_OFF";
+            window.Android.performHapticFeedback(feedbackType);
+        }
+        if (onChange) {
+            onChange(e);
+        }
+    };
+
     return (
         <div style={{
             display: 'flex',
@@ -27,7 +37,7 @@ function ToggleSwitch({
                     id={id}
                     type="checkbox"
                     checked={checked}
-                    onChange={onChange}
+                    onChange={handleChange}
                 />
                 <span className="slider"></span>
             </label>

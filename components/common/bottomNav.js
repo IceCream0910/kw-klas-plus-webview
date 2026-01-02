@@ -35,13 +35,10 @@ function BottomNav({ currentTab }) {
 
     const handleTabClick = (tab) => {
         if (tab) {
+            router.push(tab.href);
             try {
-                Android.changeTab(tab.key);
                 Android.performHapticFeedback("CLOCK_TICK");
-            } catch (error) {
-                router.push(tab.href);
-            }
-            return;
+            } catch (error) { }
         }
     };
 

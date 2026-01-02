@@ -45,7 +45,7 @@ export default function Home() {
   return (
     <main>
       <Header title={<h2>전체</h2>} />
-      <BottomNav currentTab="all" />
+      <BottomNav currentTab="menu" />
 
       <ProfileCard
         data={data}
