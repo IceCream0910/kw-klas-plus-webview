@@ -80,11 +80,10 @@ export default function Feed() {
     const urlParams = new URLSearchParams(window.location.search);
     var yearHakgi = urlParams.get('yearHakgi');
     if (!yearHakgi) {
-      getStoredData('currentYearHakgi').then((storedYearHakgi) => {
-        if (storedYearHakgi) {
-          yearHakgi = storedYearHakgi;
-        }
-      });
+      const storedYearHakgi = localStorage.getItem('currentYearHakgi');
+      if (storedYearHakgi) {
+        yearHakgi = storedYearHakgi;
+      }
     }
 
     setYearHakgi(yearHakgi);
