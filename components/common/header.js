@@ -114,7 +114,7 @@ function Header({ title }) {
 
                 <GradualBlur
                     position="top"
-                    height="6rem"
+                    height="5rem"
                     strength={1.5}
                 />
             </div>

@@ -66,7 +66,7 @@ function BottomNav({ currentTab }) {
                 }}
             >
                 <div style={{
-                    display: 'flex', gap: '8px', justifyContent: 'space-between', position: 'fixed',
+                    display: 'flex', gap: '8px', justifyContent: 'center', position: 'fixed',
                     left: 0,
                     bottom: 0,
                     width: '100%',
@@ -86,7 +86,7 @@ function BottomNav({ currentTab }) {
                                 aria-label={tab.label}
                                 aria-current={isActive ? 'page' : undefined}
                                 style={{
-                                    flex: 1,
+                                    width: '100px',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
