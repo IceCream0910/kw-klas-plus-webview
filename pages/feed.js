@@ -10,7 +10,7 @@ import Image from 'next/image';
 import Header from '../components/common/header';
 import BottomNav from '../components/common/bottomNav';
 import dynamic from 'next/dynamic';
-import { BUILDING_MAP_URLS, KW_NOTICE_CATEGORIES } from '../lib/core/constants';
+import { KW_NOTICE_CATEGORIES } from '../lib/core/constants';
 import { openExternalLink, openKlasPage, evaluateKlasPage, openLectureActivity } from '../lib/core/androidBridge';
 import { useTimetableStatus } from '../lib/timetable/useTimetableStatus';
 import { useDeadlines } from '../lib/calendar/useDeadlines';
@@ -23,6 +23,7 @@ import { SkeletonLayouts } from '../components/common/Skeleton';
 import NoticeTabs from '../components/feed/NoticeTabs';
 import NoticeList from '../components/feed/NoticeList';
 import AdvisorInfo from '../components/feed/AdvisorInfo';
+import CampusMapSheet from '../components/common/CampusMapSheet';
 
 const AdSense = dynamic(() => import('../components/common/adSense'), { ssr: false });
 
@@ -49,6 +50,8 @@ export default function Feed() {
   const [kwNotice, setKWNotice] = useState(null);
   const [advisor, setAdvisor] = useState(null);
   const [kwNoticeTab, setKwNoticeTab] = useState("");
+  const [mapSheetOpen, setMapSheetOpen] = useState(false);
+  const [selectedBuilding, setSelectedBuilding] = useState(null);
 
   const {
     timetable,
@@ -153,10 +156,9 @@ export default function Feed() {
     };
 
     window.openBuildingMap = (buildingName) => {
-      const mapUrl = BUILDING_MAP_URLS[buildingName];
-      if (mapUrl) {
-        openExternalLink(mapUrl);
-      }
+      if (!buildingName) return;
+      setSelectedBuilding(buildingName);
+      setMapSheetOpen(true);
     }
 
     window.receiveToken = (receivedToken) => {
@@ -209,152 +211,159 @@ export default function Feed() {
 
 
   return (
-    <div style={{ padding: '5px' }}>
-      <Toaster position="top-center" />
-      <Header title={<Image src="/klasplus_icon_foreground_red.png" loading="eager" alt="Logo" width={40} height={40} style={{ borderRadius: '50%', marginLeft: '-5px' }} />} />
-      <BottomNav currentTab="feed" />
-      <div className='pull-to-swipe-area'>
-        <CurrentStatus
-          statusText={displayedStatusText}
-          showClassActions={canShowClassActions}
-          isNoCourse={isNoCourseStatus}
-          selectedSubj={displayedSelectedSubj}
-          selectedSubjName={displayedSelectedSubjName}
-        />
+    <>
+      <div style={{ padding: '5px' }}>
+        <Toaster position="top-center" />
+        <Header title={<Image src="/klasplus_icon_foreground_red.png" loading="eager" alt="Logo" width={40} height={40} style={{ borderRadius: '50%', marginLeft: '-5px' }} />} />
+        <BottomNav currentTab="feed" />
+        <div className='pull-to-swipe-area'>
+          <CurrentStatus
+            statusText={displayedStatusText}
+            showClassActions={canShowClassActions}
+            isNoCourse={isNoCourseStatus}
+            selectedSubj={displayedSelectedSubj}
+            selectedSubjName={displayedSelectedSubjName}
+          />
 
-        <Spacer y={10} />
+          <Spacer y={10} />
 
-        {process.env.NEXT_PUBLIC_NOTICE_TEXT && (<>
-          <Card
-            style={{ padding: '15px' }}
-            onClick={() => {
-              try {
-                Android.openExternalPage("https://blog.klasplus.yuntae.in")
-              } catch (e) {
-                toast('앱을 최신버전으로 업데이트 해주세요');
-              }
-            }}
-          >
-            <div style={{ width: '100%', display: 'flex', alignContent: 'center', gap: '5px' }}>
-              <IonIcon name="notifications" style={{ opacity: .7 }} />
-              <b style={{ fontSize: '14px', position: 'relative', top: '1px' }}>{process.env.NEXT_PUBLIC_NOTICE_TEXT}</b>
-              <IonIcon name="chevron-forward-outline" />
-            </div>
-          </Card>
-          <Spacer y={20} />
-        </>
-        )}
-
-        {showToggle && (
-          <>
-            <Spacer y={5} />
-            <ToggleSwitch
-              label="아직 시작일이 되지 않은 항목 숨기기"
-              checked={excludeNotStarted}
-              onChange={handleToggleChange}
-              id="exclude-not-started"
-            />
+          {process.env.NEXT_PUBLIC_NOTICE_TEXT && (<>
+            <Card
+              style={{ padding: '15px' }}
+              onClick={() => {
+                try {
+                  Android.openExternalPage("https://blog.klasplus.yuntae.in")
+                } catch (e) {
+                  toast('앱을 최신버전으로 업데이트 해주세요');
+                }
+              }}
+            >
+              <div style={{ width: '100%', display: 'flex', alignContent: 'center', gap: '5px' }}>
+                <IonIcon name="notifications" style={{ opacity: .7 }} />
+                <b style={{ fontSize: '14px', position: 'relative', top: '1px' }}>{process.env.NEXT_PUBLIC_NOTICE_TEXT}</b>
+                <IonIcon name="chevron-forward-outline" />
+              </div>
+            </Card>
+            <Spacer y={20} />
           </>
-        )}
+          )}
 
-        <Spacer y={15} />
-        <div id="remaining-deadline">
-          {filteredDeadlines ? (
-            filteredDeadlines.length === 0 ? (
-              <Card title="남은 할 일" isAnimated={false} id="notices" style={{ paddingBottom: '30px' }}>
-                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', justifyContent: 'center', marginTop: '10px', opacity: '.3' }}>
-                  <IonIcon name="checkmark-circle" style={{ fontSize: '50px', marginBottom: '5px' }} />
-                  <span>할 일을 모두 끝냈어요!</span>
-                </div>
-              </Card>
-            ) : (
-              filteredDeadlines.map((item, index) => (
-                <Card key={index} style={{ paddingBottom: '15px' }}>
-                  <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', margin: '-5px -5px 0 0' }}>
-                    <b style={{ fontSize: '15px' }}>{item.name}</b>
-                    <div style={{ position: 'relative', top: '-8px', right: '-5px' }}>
-                      <button
-                        style={{ width: 'fit-content', background: 'var(--background)', fontSize: '12px', padding: '8px 10px' }}
-                        onClick={() => openLectureActivity(item.subj, item.name)}
-                      >
-                        강의 홈
-                      </button>
-                    </div>
-                  </div>
+          {showToggle && (
+            <>
+              <Spacer y={5} />
+              <ToggleSwitch
+                label="아직 시작일이 되지 않은 항목 숨기기"
+                checked={excludeNotStarted}
+                onChange={handleToggleChange}
+                id="exclude-not-started"
+              />
+            </>
+          )}
 
-                  <div onClick={() => evaluateKlasPage('/std/lis/evltn/OnlineCntntsStdPage.do', yearHakgi, item.subj)}>
-                    <DeadlineContent name="온라인 강의" data={item.onlineLecture} />
-                  </div>
-                  <div onClick={() => evaluateKlasPage('/std/lis/evltn/TaskStdPage.do', yearHakgi, item.subj)}>
-                    <DeadlineContent name="과제" data={item.task} />
-                  </div>
-                  <div onClick={() => evaluateKlasPage('/std/lis/evltn/PrjctStdPage.do', yearHakgi, item.subj)}>
-                    <DeadlineContent name="팀 프로젝트" data={item.teamTask} />
+          <Spacer y={15} />
+          <div id="remaining-deadline">
+            {filteredDeadlines ? (
+              filteredDeadlines.length === 0 ? (
+                <Card title="남은 할 일" isAnimated={false} id="notices" style={{ paddingBottom: '30px' }}>
+                  <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', justifyContent: 'center', marginTop: '10px', opacity: '.3' }}>
+                    <IonIcon name="checkmark-circle" style={{ fontSize: '50px', marginBottom: '5px' }} />
+                    <span>할 일을 모두 끝냈어요!</span>
                   </div>
                 </Card>
-              ))
-            )
-          ) : (
-            <SkeletonLayouts.DeadlineList />
-          )}
+              ) : (
+                filteredDeadlines.map((item, index) => (
+                  <Card key={index} style={{ paddingBottom: '15px' }}>
+                    <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', margin: '-5px -5px 0 0' }}>
+                      <b style={{ fontSize: '15px' }}>{item.name}</b>
+                      <div style={{ position: 'relative', top: '-8px', right: '-5px' }}>
+                        <button
+                          style={{ width: 'fit-content', background: 'var(--background)', fontSize: '12px', padding: '8px 10px' }}
+                          onClick={() => openLectureActivity(item.subj, item.name)}
+                        >
+                          강의 홈
+                        </button>
+                      </div>
+                    </div>
+
+                    <div onClick={() => evaluateKlasPage('/std/lis/evltn/OnlineCntntsStdPage.do', yearHakgi, item.subj)}>
+                      <DeadlineContent name="온라인 강의" data={item.onlineLecture} />
+                    </div>
+                    <div onClick={() => evaluateKlasPage('/std/lis/evltn/TaskStdPage.do', yearHakgi, item.subj)}>
+                      <DeadlineContent name="과제" data={item.task} />
+                    </div>
+                    <div onClick={() => evaluateKlasPage('/std/lis/evltn/PrjctStdPage.do', yearHakgi, item.subj)}>
+                      <DeadlineContent name="팀 프로젝트" data={item.teamTask} />
+                    </div>
+                  </Card>
+                ))
+              )
+            ) : (
+              <SkeletonLayouts.DeadlineList />
+            )}
+          </div>
+
+          <LectureNotices token={token} />
+
+          <Spacer y={20} />
+
+          <Card
+            title="오늘의 학식"
+            isAnimated={false}
+            style={{ paddingBottom: '0.1em' }}
+            actionButton={
+              <button onClick={() => openKlasPage('https://www.kw.ac.kr/ko/life/facility11.jsp')} style={{ float: "right", width: 'fit-content', marginTop: '-12px' }}>
+                <IonIcon name='add-outline' />
+              </button>
+            }
+          >
+            {!cafeteria ? (
+              <SkeletonLayouts.CafeteriaInfo />
+            ) : (
+              <TodaysCafeteriaMenu data={cafeteria} />
+            )}
+          </Card>
+          <Spacer y={20} />
+
+          <Card
+            isAnimated={false}
+            id="notices"
+            style={{ paddingBottom: '20px', position: 'relative' }}
+            title={
+              <span
+                style={{ display: 'flex', alignItems: 'center' }}
+                onClick={() => openKlasPage('https://www.kw.ac.kr/ko/life/notice.jsp?srCategoryId=&mode=list&searchKey=1&searchVal=')}
+              >
+                공지사항 <IonIcon name="chevron-forward" />
+              </span>
+            }
+          >
+            <NoticeTabs
+              activeTab={kwNoticeTab}
+              onTabChange={setKwNoticeTab}
+            />
+            <NoticeList
+              notices={kwNotice}
+              isLoading={!kwNotice}
+            />
+          </Card>
+
+          <Spacer y={20} />
+
+          <AdvisorInfo
+            advisor={advisor}
+            isLoading={!advisor && token}
+          />
+
+          <br /> <br />
+          <br />
+          <Spacer y={30} />
         </div>
-
-        <LectureNotices token={token} />
-
-        <Spacer y={20} />
-
-        <Card
-          title="오늘의 학식"
-          isAnimated={false}
-          style={{ paddingBottom: '0.1em' }}
-          actionButton={
-            <button onClick={() => openKlasPage('https://www.kw.ac.kr/ko/life/facility11.jsp')} style={{ float: "right", width: 'fit-content', marginTop: '-12px' }}>
-              <IonIcon name='add-outline' />
-            </button>
-          }
-        >
-          {!cafeteria ? (
-            <SkeletonLayouts.CafeteriaInfo />
-          ) : (
-            <TodaysCafeteriaMenu data={cafeteria} />
-          )}
-        </Card>
-        <Spacer y={20} />
-
-        <Card
-          isAnimated={false}
-          id="notices"
-          style={{ paddingBottom: '20px', position: 'relative' }}
-          title={
-            <span
-              style={{ display: 'flex', alignItems: 'center' }}
-              onClick={() => openKlasPage('https://www.kw.ac.kr/ko/life/notice.jsp?srCategoryId=&mode=list&searchKey=1&searchVal=')}
-            >
-              공지사항 <IonIcon name="chevron-forward" />
-            </span>
-          }
-        >
-          <NoticeTabs
-            activeTab={kwNoticeTab}
-            onTabChange={setKwNoticeTab}
-          />
-          <NoticeList
-            notices={kwNotice}
-            isLoading={!kwNotice}
-          />
-        </Card>
-
-        <Spacer y={20} />
-
-        <AdvisorInfo
-          advisor={advisor}
-          isLoading={!advisor && token}
-        />
-
-        <br /> <br />
-        <br />
-        <Spacer y={30} />
       </div>
-    </div>
+      <CampusMapSheet
+        open={mapSheetOpen}
+        buildingName={selectedBuilding}
+        onClose={() => setMapSheetOpen(false)}
+      />
+    </>
   );
 }

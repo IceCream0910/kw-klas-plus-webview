@@ -4,12 +4,16 @@ import IonIcon from '@reacticons/ionicons';
 import { KLAS } from "../lib/core/klas";
 import { normalizeBuildingName } from '../lib/core/normalizeBuildingName';
 import GradualBlur from "../components/common/GradualBlur";
+import { calculateAttendanceStats, getAttendanceColor } from '../lib/lecture/lectureUtils';
+import CampusMapSheet from '../components/common/CampusMapSheet';
 
 export default function LectureHome() {
     const [data, setData] = useState(null);
     const [subjectInfo, setSubjectInfo] = useState(null);
     const [subjectPlaceTime, setSubjectPlaceTime] = useState(null);
     const [attendExpand, setAttendExpand] = useState(false);
+    const [mapSheetOpen, setMapSheetOpen] = useState(false);
+    const [selectedBuilding, setSelectedBuilding] = useState(null);
 
     useEffect(() => {
         window.receivedData = function (token, subj, yearHakgi) {
@@ -30,7 +34,6 @@ export default function LectureHome() {
                     console.error(error);
                 });
         };
-
     }, []);
 
     const fetchSubjectInfo = (token, subj) => {
@@ -57,66 +60,11 @@ export default function LectureHome() {
             });
     }
 
-    const calculateStats = (data) => {
-        let totalClasses = 0;
-        let attendanceCount = 0;
-        let lateCount = 0;
-        let absentCount = 0;
-
-        data.forEach(item => {
-            ['pgr1', 'pgr2', 'pgr3', 'pgr4'].forEach(key => {
-                const value = item[key];
-                if (value && value !== '-') {
-                    totalClasses++;
-                    if (value === 'O') attendanceCount++;
-                    if (value === 'L') lateCount++;
-                    if (value === 'X') absentCount++;
-                }
-            });
-        });
-
-        const attendanceRate = totalClasses > 0 ? (attendanceCount / totalClasses) * 100 : 0;
-
-        return {
-            attendanceRate,
-            lateCount,
-            absentCount,
-            totalClasses
-        };
+    const handleOpenMapSheet = (buildingName) => {
+        if (!buildingName) return;
+        setSelectedBuilding({ name: buildingName });
+        setMapSheetOpen(true);
     };
-
-    const getColor = (status) => {
-        switch (status) {
-            case 'O': return '#7099ff';  // 출석
-            case 'L': return '#dd36cf';  // 지각
-            case 'R': return '#FFA500';  // 조퇴
-            case 'X': return '#ff596a';  // 결석
-            case 'A': return '#FFA500';  // 공결
-            default: return 'gray';      // 기본값
-        }
-    };
-
-    const openBuildingMap = (buildingName) => {
-        const buildingUrlMap = {
-            '누리': 'https://naver.me/G65JGSGc',
-            '문화': 'https://naver.me/FK5vCrqC',
-            '한울': 'https://naver.me/5tJtisN6',
-            '연구': 'https://naver.me/5eZJ0BvX',
-            '옥의': 'https://naver.me/565F45w6',
-            '비마': 'https://naver.me/xBwfkQLH',
-            '참빛': 'https://naver.me/Gal5ZmBK',
-            '새빛': 'https://naver.me/Gq8SGz6z',
-            '화도': 'https://naver.me/5uIEX9an',
-            '기념': 'https://naver.me/58NfGdrj'
-        };
-        const mapUrl = buildingUrlMap[buildingName];
-        try {
-            Android.openExternalLink(mapUrl);
-        } catch (error) {
-            window.open(mapUrl, '_blank');
-        }
-    }
-
 
     if (!data || !subjectInfo || !subjectPlaceTime) return <main>
         <Spacer y={40} />
@@ -133,463 +81,474 @@ export default function LectureHome() {
         <Spacer y={20} />
         <div className="skeleton" style={{ height: '80px', width: '100%' }} />
     </main>;
-    const stats = calculateStats(data.atendSubList);
+    const stats = calculateAttendanceStats(data.atendSubList);
 
 
     return (
-        <main>
-            <Spacer y={20} />
-            <h2>{subjectInfo.name}</h2>
-            <span style={{ opacity: .5, fontSize: '14px' }}>{subjectInfo.label.split(') - ')[1]} | {subjectPlaceTime.split('/')[0]} / <span onClick={() => openBuildingMap(normalizeBuildingName(subjectPlaceTime.split('/')[1]).match(/^([가-힣]+)(\d+.*)?$/)[1])} style={{ textDecoration: 'underline' }}>{normalizeBuildingName(subjectPlaceTime.split('/')[1])}</span>
-            </span>
+        <>
+            <main>
+                <Spacer y={20} />
+                <h2>{subjectInfo.name}</h2>
+                <span style={{ opacity: .5, fontSize: '14px' }}>{subjectInfo.label.split(') - ')[1]} | {subjectPlaceTime.split('/')[0]} / <span onClick={() => handleOpenMapSheet(normalizeBuildingName(subjectPlaceTime.split('/')[1]).match(/^([가-힣]+)(\d+.*)?$/)[1])} style={{ textDecoration: 'underline' }}>{normalizeBuildingName(subjectPlaceTime.split('/')[1])}</span>
+                </span>
 
-            <Spacer y={30} />
-            <h3>강의 공지사항
-                <button onClick={() => Android.openBoardList("notice", "강의 공지사항")} style={{ float: "right", width: 'fit-content', marginTop: '-5px' }}>
-                    <IonIcon name='add-outline' />
-                </button>
-            </h3>
-            <Spacer y={15} />
-            {data.noticeList.length > 0 ? (
-                <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
-                    {data.noticeList.map((notice, index) => (
-                        <div key={index} className="notice-item" onClick={() => Android.openBoardView("notice", notice.boardNo.toString(), notice.masterNo.toString())}>
-                            <span><b>{notice.title}</b></span><br />
-                            <span style={{ opacity: 0.6, fontSize: '12px' }}>
-                                {new Date(notice.registDt).getFullYear()}-{(new Date(notice.registDt).getMonth() + 1).toString().padStart(2, '0')}-{new Date(notice.registDt).getDate().toString().padStart(2, '0')}</span><br />
-                            <hr style={{ opacity: 0.3 }} />
-                        </div>
-                    ))}
-                </div>
-            ) : (
-                <div className="card non-anim" id="notices" style={{ paddingBottom: '20px', paddingTop: '10px' }}>
-                    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', justifyContent: 'center', marginTop: '10px', opacity: '.3' }}>
-                        <svg width="64" height="41" viewBox="0 0 64 41" xmlns="http://www.w3.org/2000/svg">
-                            <g transform="translate(0 1)" fill="none" fillRule="evenodd">
-                                <g fillRule="nonzero" stroke="var(--text-color)">
-                                    <path d="M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z"></path>
-                                    <path d="M41.613 15.931c0-1.605.994-2.93 2.227-2.931H55v18.137C55 33.26 53.68 35 52.05 35h-40.1C10.32 35 9 33.259 9 31.137V13h11.16c1.233 0 2.227 1.323 2.227 2.928v.022c0 1.605 1.005 2.901 2.237 2.901h14.752c1.232 0 2.237-1.308 2.237-2.913v-.007z" fill="#fafafa"></path>
+                <Spacer y={30} />
+                <h3>강의 공지사항
+                    <button onClick={() => Android.openBoardList("notice", "강의 공지사항")} style={{ float: "right", width: 'fit-content', marginTop: '-5px' }}>
+                        <IonIcon name='add-outline' />
+                    </button>
+                </h3>
+                <Spacer y={15} />
+                {data.noticeList.length > 0 ? (
+                    <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
+                        {data.noticeList.map((notice, index) => (
+                            <div key={index} className="notice-item" onClick={() => Android.openBoardView("notice", notice.boardNo.toString(), notice.masterNo.toString())}>
+                                <span><b>{notice.title}</b></span><br />
+                                <span style={{ opacity: 0.6, fontSize: '12px' }}>
+                                    {new Date(notice.registDt).getFullYear()}-{(new Date(notice.registDt).getMonth() + 1).toString().padStart(2, '0')}-{new Date(notice.registDt).getDate().toString().padStart(2, '0')}</span><br />
+                                <hr style={{ opacity: 0.3 }} />
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="card non-anim" id="notices" style={{ paddingBottom: '20px', paddingTop: '10px' }}>
+                        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', justifyContent: 'center', marginTop: '10px', opacity: '.3' }}>
+                            <svg width="64" height="41" viewBox="0 0 64 41" xmlns="http://www.w3.org/2000/svg">
+                                <g transform="translate(0 1)" fill="none" fillRule="evenodd">
+                                    <g fillRule="nonzero" stroke="var(--text-color)">
+                                        <path d="M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z"></path>
+                                        <path d="M41.613 15.931c0-1.605.994-2.93 2.227-2.931H55v18.137C55 33.26 53.68 35 52.05 35h-40.1C10.32 35 9 33.259 9 31.137V13h11.16c1.233 0 2.227 1.323 2.227 2.928v.022c0 1.605 1.005 2.901 2.237 2.901h14.752c1.232 0 2.237-1.308 2.237-2.913v-.007z" fill="#fafafa"></path>
+                                    </g>
                                 </g>
-                            </g>
-                        </svg>
-                        <span>아직 항목이 없어요</span>
-                    </div>
-                </div>
-            )}
-
-            <Spacer y={30} />
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridGap: '10px' }}>
-                {(data.cntntCmpltCnt !== 0 || data.cntntList.length !== 0) && (
-                    <div onClick={() => Android.openOnlineLecture()}
-                        className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
-                        <span><b>강의 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
-                        <span style={{ opacity: .7, color: data.cntntCmpltCnt !== data.cntntList.length && 'var(--red)' }}>{data.cntntCmpltCnt}/{data.cntntList.length}</span>
-                    </div>
-                )}
-                {(data.taskPrsntCnt !== 0 || data.taskCnt !== 0) && (
-                    <div onClick={() => Android.evaluteKLASScript(`appModule.goTask()`)}
-                        className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
-                        <span><b>과제 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
-                        <span style={{ opacity: .7, color: data.taskPrsntCnt !== data.taskCnt && 'var(--red)' }}>{data.taskPrsntCnt}/{data.taskCnt}</span>
-                    </div>
-                )}
-                {(data.quizPrsntCnt !== 0 || data.quizCnt) !== 0 && (
-                    <div onClick={() => Android.evaluteKLASScript(`appModule.goQuiz()`)}
-                        className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
-                        <span><b>퀴즈 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
-                        <span style={{ opacity: .7, color: data.quizPrsntCnt !== data.quizCnt && 'var(--red)' }}>{data.quizPrsntCnt}/{data.quizCnt}</span>
-                    </div>
-                )}
-                {data.pdsCnt !== 0 && (
-                    <div onClick={() => Android.openBoardList("pds", "강의 자료실")}
-                        className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
-                        <span><b>자료 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
-                        <span style={{ opacity: .7, color: data.pdsNewCnt == 1 && 'var(--red)' }}>{data.pdsCnt}</span>
-                    </div>
-                )}
-                {(data.examPrsntCnt !== 0 || data.examCnt !== 0) && (
-                    <div onClick={() => Android.evaluteKLASScript(`appModule.goExam()`)}
-                        className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
-                        <span><b>시험 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
-                        <span style={{ opacity: .7, color: data.examPrsntCnt !== data.examCnt && 'var(--red)' }}>{data.examPrsntCnt}/{data.examCnt}</span>
-                    </div>
-                )}
-                {(data.prjctPrsntCnt !== 0 || data.prjctCnt !== 0) && (
-                    <div onClick={() => Android.evaluteKLASScript(`appModule.goPrjct()`)}
-                        className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
-                        <span><b>팀프로젝트 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
-                        <span style={{ opacity: .7, color: data.prjctPrsntCnt !== data.prjctCnt && 'var(--red)' }}>{data.prjctPrsntCnt}/{data.prjctCnt}</span>
-                    </div>
-                )}
-                {(data.dscsnJoinCnt !== 0 || data.dscsnCnt) !== 0 && (
-                    <div onClick={() => Android.evaluteKLASScript(`appModule.goDscsn()`)}
-                        className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
-                        <span><b>토론 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
-                        <span style={{ opacity: .7, color: data.dscsnJoinCnt !== data.dscsnCnt && 'var(--red)' }}>{data.dscsnJoinCnt}/{data.dscsnCnt}</span>
-                    </div>
-                )}
-                {(data.surveyPrsntCnt !== 0 || data.surveyCnt) !== 0 && (
-                    <div onClick={() => Android.evaluteKLASScript(`appModule.goSurvey()`)}
-                        className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
-                        <span><b>설문 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
-                        <span style={{ opacity: .7, color: data.surveyPrsntCnt !== data.surveyCnt && 'var(--red)' }}>{data.surveyPrsntCnt}/{data.surveyCnt}</span>
+                            </svg>
+                            <span>아직 항목이 없어요</span>
+                        </div>
                     </div>
                 )}
 
-                <div onClick={() => Android.evaluteKLASScript(`
+                <Spacer y={30} />
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridGap: '10px' }}>
+                    {(data.cntntCmpltCnt !== 0 || data.cntntList.length !== 0) && (
+                        <div onClick={() => Android.openOnlineLecture()}
+                            className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
+                            <span><b>강의 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
+                            <span style={{ opacity: .7, color: data.cntntCmpltCnt !== data.cntntList.length && 'var(--red)' }}>{data.cntntCmpltCnt}/{data.cntntList.length}</span>
+                        </div>
+                    )}
+                    {(data.taskPrsntCnt !== 0 || data.taskCnt !== 0) && (
+                        <div onClick={() => Android.evaluteKLASScript(`appModule.goTask()`)}
+                            className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
+                            <span><b>과제 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
+                            <span style={{ opacity: .7, color: data.taskPrsntCnt !== data.taskCnt && 'var(--red)' }}>{data.taskPrsntCnt}/{data.taskCnt}</span>
+                        </div>
+                    )}
+                    {(data.quizPrsntCnt !== 0 || data.quizCnt) !== 0 && (
+                        <div onClick={() => Android.evaluteKLASScript(`appModule.goQuiz()`)}
+                            className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
+                            <span><b>퀴즈 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
+                            <span style={{ opacity: .7, color: data.quizPrsntCnt !== data.quizCnt && 'var(--red)' }}>{data.quizPrsntCnt}/{data.quizCnt}</span>
+                        </div>
+                    )}
+                    {data.pdsCnt !== 0 && (
+                        <div onClick={() => Android.openBoardList("pds", "강의 자료실")}
+                            className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
+                            <span><b>자료 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
+                            <span style={{ opacity: .7, color: data.pdsNewCnt == 1 && 'var(--red)' }}>{data.pdsCnt}</span>
+                        </div>
+                    )}
+                    {(data.examPrsntCnt !== 0 || data.examCnt !== 0) && (
+                        <div onClick={() => Android.evaluteKLASScript(`appModule.goExam()`)}
+                            className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
+                            <span><b>시험 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
+                            <span style={{ opacity: .7, color: data.examPrsntCnt !== data.examCnt && 'var(--red)' }}>{data.examPrsntCnt}/{data.examCnt}</span>
+                        </div>
+                    )}
+                    {(data.prjctPrsntCnt !== 0 || data.prjctCnt !== 0) && (
+                        <div onClick={() => Android.evaluteKLASScript(`appModule.goPrjct()`)}
+                            className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
+                            <span><b>팀프로젝트 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
+                            <span style={{ opacity: .7, color: data.prjctPrsntCnt !== data.prjctCnt && 'var(--red)' }}>{data.prjctPrsntCnt}/{data.prjctCnt}</span>
+                        </div>
+                    )}
+                    {(data.dscsnJoinCnt !== 0 || data.dscsnCnt) !== 0 && (
+                        <div onClick={() => Android.evaluteKLASScript(`appModule.goDscsn()`)}
+                            className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
+                            <span><b>토론 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
+                            <span style={{ opacity: .7, color: data.dscsnJoinCnt !== data.dscsnCnt && 'var(--red)' }}>{data.dscsnJoinCnt}/{data.dscsnCnt}</span>
+                        </div>
+                    )}
+                    {(data.surveyPrsntCnt !== 0 || data.surveyCnt) !== 0 && (
+                        <div onClick={() => Android.evaluteKLASScript(`appModule.goSurvey()`)}
+                            className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
+                            <span><b>설문 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
+                            <span style={{ opacity: .7, color: data.surveyPrsntCnt !== data.surveyCnt && 'var(--red)' }}>{data.surveyPrsntCnt}/{data.surveyCnt}</span>
+                        </div>
+                    )}
+
+                    <div onClick={() => Android.evaluteKLASScript(`
                 var link = 'https://klas.kw.ac.kr' + $("a[onclick*='BoardQnaListStdPage.do']").attr("onclick").replace("linkUrl('" , "").replace("');", "");
                 location.href="https://klas.kw.ac.kr/std/lis/evltn/LctrumHomeStdPage.do";
                 Android.openPage(link);
                 `)}
-                    className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
-                    <span><b>묻고답하기 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
-                </div>
+                        className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
+                        <span><b>묻고답하기 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
+                    </div>
 
-                <div onClick={() => Android.evaluteKLASScript(`
+                    <div onClick={() => Android.evaluteKLASScript(`
                 var link = 'https://klas.kw.ac.kr' + $("a:contains('수강생 자료실')").attr("onclick").replace("linkUrl('" , "").replace("');", "");
                 location.href="https://klas.kw.ac.kr/std/lis/evltn/LctrumHomeStdPage.do";
                 Android.openPage(link);
                 `)}
-                    className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
-                    <span><b>수강생 자료실 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
+                        className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
+                        <span><b>수강생 자료실 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
+                    </div>
+
                 </div>
 
-            </div>
+                <Spacer y={30} />
+                <h3>출석 현황</h3>
+                <Spacer y={15} />
 
-            <Spacer y={30} />
-            <h3>출석 현황</h3>
-            <Spacer y={15} />
-
-            <div className="card non-anim" style={{ paddingBottom: '10px' }}>
-                {/* 출석률 카드 */}
-                <div style={{ marginBottom: '25px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-                        <div>
-                            <span style={{ opacity: 0.7, fontSize: '13px' }}>현재까지 출석률</span>
-                            <h4 style={{ margin: '5px 0 0 0', fontSize: '28px', color: '#7099ff', fontWeight: 'bold' }}>
-                                {stats.attendanceRate.toFixed(1)}%
-                            </h4>
+                <div className="card non-anim" style={{ paddingBottom: '10px' }}>
+                    {/* 출석률 카드 */}
+                    <div style={{ marginBottom: '25px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                            <div>
+                                <span style={{ opacity: 0.7, fontSize: '13px' }}>현재까지 출석률</span>
+                                <h4 style={{ margin: '5px 0 0 0', fontSize: '28px', color: '#7099ff', fontWeight: 'bold' }}>
+                                    {stats.attendanceRate.toFixed(1)}%
+                                </h4>
+                            </div>
                         </div>
-                    </div>
 
-                    {/* 진행률 바 */}
-                    <div style={{
-                        width: '100%',
-                        height: '8px',
-                        background: 'var(--card-border)',
-                        borderRadius: '4px',
-                        overflow: 'hidden',
-                        marginBottom: '12px'
-                    }}>
+                        {/* 진행률 바 */}
                         <div style={{
-                            width: `${stats.attendanceRate}%`,
-                            height: '100%',
-                            background: `linear-gradient(90deg, #7099ff 0%, ${stats.attendanceRate >= 90 ? '#60a5fa' : '#ff596a'} 100%)`,
-                            transition: 'width 0.5s ease-out'
-                        }} />
-                    </div>
-
-                    {(stats.lateCount == 0 && stats.absentCount == 0) ? <span style={{ opacity: .7 }}>지각과 결석이 한 번도 없어요!</span>
-                        : <span style={{ opacity: .7 }}>지각 {stats.lateCount}회, 결석 {stats.absentCount}회가 있어요.</span>}
-                </div>
-
-                {/* 주차별 상세 정보 */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                    <button onClick={() => setAttendExpand(!attendExpand)} style={{
-                        background: 'transparent',
-                        border: 'none',
-                        padding: '0',
-                        display: 'flex',
-                        width: '100%',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '5px',
-                        cursor: 'pointer',
-                        color: 'var(--text-color)',
-                        fontSize: '14px',
-                        opacity: 0.7
-                    }}>
-                        {attendExpand ? '간단히 보기' : '주차별로 보기 '} <IonIcon style={{ position: 'relative' }} name={attendExpand ? 'chevron-up' : 'chevron-down'} />
-                    </button>
-                </div>
-
-                {attendExpand && (
-                    <>
-                        <div style={{
-                            display: 'grid',
-                            gridTemplateColumns: '1fr 1fr 1fr 1fr',
-                            gap: '10px',
-                            marginBottom: '20px',
+                            width: '100%',
+                            height: '8px',
+                            background: 'var(--card-border)',
+                            borderRadius: '4px',
+                            overflow: 'hidden',
+                            marginBottom: '12px'
                         }}>
-                            <div style={{ textAlign: 'center', fontSize: '12px' }}>
-                                <div style={{ color: '#7099ff', fontWeight: 'bold', marginBottom: '4px', fontSize: '14px' }}>●</div>
-                                <div style={{ opacity: 0.7 }}>출석</div>
-                            </div>
-                            <div style={{ textAlign: 'center', fontSize: '12px' }}>
-                                <div style={{ color: '#dd36cf', fontWeight: 'bold', marginBottom: '4px', fontSize: '14px' }}>●</div>
-                                <div style={{ opacity: 0.7 }}>지각</div>
-                            </div>
-                            <div style={{ textAlign: 'center', fontSize: '12px' }}>
-                                <div style={{ color: '#FFA500', fontWeight: 'bold', marginBottom: '4px', fontSize: '14px' }}>●</div>
-                                <div style={{ opacity: 0.7 }}>조퇴/공결</div>
-                            </div>
-                            <div style={{ textAlign: 'center', fontSize: '12px' }}>
-                                <div style={{ color: '#ff596a', fontWeight: 'bold', marginBottom: '4px', fontSize: '14px' }}>●</div>
-                                <div style={{ opacity: 0.7 }}>결석</div>
-                            </div>
+                            <div style={{
+                                width: `${stats.attendanceRate}%`,
+                                height: '100%',
+                                background: `linear-gradient(90deg, #7099ff 0%, ${stats.attendanceRate >= 90 ? '#60a5fa' : '#ff596a'} 100%)`,
+                                transition: 'width 0.5s ease-out'
+                            }} />
                         </div>
 
-                        {data.atendSubList.map((aSubitem, index) => (
-                            <div key={index} style={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                marginBottom: '8px',
-                                fontSize: '13px'
+                        {(stats.lateCount == 0 && stats.absentCount == 0) ? <span style={{ opacity: .7 }}>지각과 결석이 한 번도 없어요!</span>
+                            : <span style={{ opacity: .7 }}>지각 {stats.lateCount}회, 결석 {stats.absentCount}회가 있어요.</span>}
+                    </div>
+
+                    {/* 주차별 상세 정보 */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                        <button onClick={() => setAttendExpand(!attendExpand)} style={{
+                            background: 'transparent',
+                            border: 'none',
+                            padding: '0',
+                            display: 'flex',
+                            width: '100%',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '5px',
+                            cursor: 'pointer',
+                            color: 'var(--text-color)',
+                            fontSize: '14px',
+                            opacity: 0.7
+                        }}>
+                            {attendExpand ? '간단히 보기' : '주차별로 보기 '} <IonIcon style={{ position: 'relative' }} name={attendExpand ? 'chevron-up' : 'chevron-down'} />
+                        </button>
+                    </div>
+
+                    {attendExpand && (
+                        <>
+                            <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: '1fr 1fr 1fr 1fr',
+                                gap: '10px',
+                                marginBottom: '20px',
                             }}>
-                                <span style={{ fontWeight: '500', minWidth: '50px' }}>{aSubitem.weeklyseq}주차</span>
-                                <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                                    {[aSubitem.pgr1, aSubitem.pgr2, aSubitem.pgr3, aSubitem.pgr4].map((status, i) => (
-                                        <div
-                                            key={i}
-                                            style={{
-                                                width: '20px',
-                                                height: '20px',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                borderRadius: '15px',
-                                                fontSize: '12px',
-                                                fontWeight: 'bold',
-                                                color: status ? getColor(status) : 'var(--text-color)',
-                                                background: status && status !== '-' ? `${getColor(status)}20` : 'var(--card-background)',
-                                                border: `1px solid ${status && status !== '-' ? getColor(status) : 'var(--card-border)'}`
-                                            }}
-                                            title={`${i + 1}일차`}
-                                        >
-                                            {status === 'O' && <IonIcon name='checkmark' style={{ fontSize: '14px' }} />}
-                                            {status === 'L' && 'L'}
-                                            {status === 'X' && 'X'}
-                                            {status === 'R' && 'R'}
-                                            {status === 'A' && 'A'}
-                                            {status === '-' && '-'}
-                                        </div>
-                                    ))}
+                                <div style={{ textAlign: 'center', fontSize: '12px' }}>
+                                    <div style={{ color: getAttendanceColor('O'), fontWeight: 'bold', marginBottom: '4px', fontSize: '14px' }}>●</div>
+                                    <div style={{ opacity: 0.7 }}>출석</div>
+                                </div>
+                                <div style={{ textAlign: 'center', fontSize: '12px' }}>
+                                    <div style={{ color: getAttendanceColor('L'), fontWeight: 'bold', marginBottom: '4px', fontSize: '14px' }}>●</div>
+                                    <div style={{ opacity: 0.7 }}>지각</div>
+                                </div>
+                                <div style={{ textAlign: 'center', fontSize: '12px' }}>
+                                    <div style={{ color: getAttendanceColor('R'), fontWeight: 'bold', marginBottom: '4px', fontSize: '14px' }}>●</div>
+                                    <div style={{ opacity: 0.7 }}>조퇴/공결</div>
+                                </div>
+                                <div style={{ textAlign: 'center', fontSize: '12px' }}>
+                                    <div style={{ color: getAttendanceColor('X'), fontWeight: 'bold', marginBottom: '4px', fontSize: '14px' }}>●</div>
+                                    <div style={{ opacity: 0.7 }}>결석</div>
                                 </div>
                             </div>
+
+                            {data.atendSubList.map((aSubitem, index) => (
+                                <div key={index} style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    marginBottom: '8px',
+                                    fontSize: '13px'
+                                }}>
+                                    <span style={{ fontWeight: '500', minWidth: '50px' }}>{aSubitem.weeklyseq}주차</span>
+                                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                                        {[aSubitem.pgr1, aSubitem.pgr2, aSubitem.pgr3, aSubitem.pgr4].map((status, i) => (
+                                            <div
+                                                key={i}
+                                                style={{
+                                                    width: '20px',
+                                                    height: '20px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    borderRadius: '15px',
+                                                    fontSize: '12px',
+                                                    fontWeight: 'bold',
+                                                    color: status ? getAttendanceColor(status) : 'var(--text-color)',
+                                                    background: status && status !== '-' ? `${getAttendanceColor(status)}20` : 'var(--card-background)',
+                                                    border: `1px solid ${status && status !== '-' ? getAttendanceColor(status) : 'var(--card-border)'}`
+                                                }}
+                                                title={`${i + 1}일차`}
+                                            >
+                                                {status === 'O' && <IonIcon name='checkmark' style={{ fontSize: '14px' }} />}
+                                                {status === 'L' && 'L'}
+                                                {status === 'X' && 'X'}
+                                                {status === 'R' && 'R'}
+                                                {status === 'A' && 'A'}
+                                                {status === '-' && '-'}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </>
+                    )}
+                </div>
+
+
+                <Spacer y={30} />
+                <h3>과제</h3>
+                <Spacer y={15} />
+                {data.taskTop.length > 0 ? (
+                    <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
+                        {data.taskTop.map((task, index) => (
+                            <div key={index} className="notice-item" onClick={() => Android.evaluteKLASScript(`appModule.goTask()`)}>
+                                <span><b>{task.title}</b></span><br />
+                                <span style={{ opacity: 0.6, fontSize: '12px' }}>
+                                    <IonIcon style={{ position: 'relative', top: '2px', marginRight: '3px' }} name='time-outline' />
+                                    {task.startdate.slice(4, 6) + '-' + task.startdate.slice(6, 8) + ' ' + task.startdate.slice(8, 10) + ':' + task.startdate.slice(10, 12)} ~ {task.expiredate.slice(4, 6) + '-' + task.expiredate.slice(6, 8) + ' ' + task.expiredate.slice(8, 10) + ':' + task.expiredate.slice(10, 12)}
+                                </span><br />
+                                <span style={{ opacity: 0.6, fontSize: '12px' }}>
+                                    <IonIcon style={{ position: 'relative', top: '2px', marginRight: '3px' }} name='checkmark-outline' />
+                                    {task.submityn === 'Y' ? '제출 완료' : '미제출'}
+                                </span><br />
+                                <hr style={{ opacity: 0.3 }} />
+                            </div>
                         ))}
-                    </>
+                    </div>
+                ) : (
+                    <div className="card non-anim" id="notices" style={{ paddingBottom: '20px', paddingTop: '10px' }}>
+                        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', justifyContent: 'center', marginTop: '10px', opacity: '.3' }}>
+                            <svg width="64" height="41" viewBox="0 0 64 41" xmlns="http://www.w3.org/2000/svg">
+                                <g transform="translate(0 1)" fill="none" fillRule="evenodd">
+                                    <g fillRule="nonzero" stroke="var(--text-color)">
+                                        <path d="M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z"></path>
+                                        <path d="M41.613 15.931c0-1.605.994-2.93 2.227-2.931H55v18.137C55 33.26 53.68 35 52.05 35h-40.1C10.32 35 9 33.259 9 31.137V13h11.16c1.233 0 2.227 1.323 2.227 2.928v.022c0 1.605 1.005 2.901 2.237 2.901h14.752c1.232 0 2.237-1.308 2.237-2.913v-.007z" fill="#fafafa"></path>
+                                    </g>
+                                </g>
+                            </svg>
+                            <span>아직 항목이 없어요</span>
+                        </div>
+                    </div>
                 )}
-            </div>
 
-
-            <Spacer y={30} />
-            <h3>과제</h3>
-            <Spacer y={15} />
-            {data.taskTop.length > 0 ? (
-                <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
-                    {data.taskTop.map((task, index) => (
-                        <div key={index} className="notice-item" onClick={() => Android.evaluteKLASScript(`appModule.goTask()`)}>
-                            <span><b>{task.title}</b></span><br />
-                            <span style={{ opacity: 0.6, fontSize: '12px' }}>
-                                <IonIcon style={{ position: 'relative', top: '2px', marginRight: '3px' }} name='time-outline' />
-                                {task.startdate.slice(4, 6) + '-' + task.startdate.slice(6, 8) + ' ' + task.startdate.slice(8, 10) + ':' + task.startdate.slice(10, 12)} ~ {task.expiredate.slice(4, 6) + '-' + task.expiredate.slice(6, 8) + ' ' + task.expiredate.slice(8, 10) + ':' + task.expiredate.slice(10, 12)}
-                            </span><br />
-                            <span style={{ opacity: 0.6, fontSize: '12px' }}>
-                                <IonIcon style={{ position: 'relative', top: '2px', marginRight: '3px' }} name='checkmark-outline' />
-                                {task.submityn === 'Y' ? '제출 완료' : '미제출'}
-                            </span><br />
-                            <hr style={{ opacity: 0.3 }} />
-                        </div>
-                    ))}
-                </div>
-            ) : (
-                <div className="card non-anim" id="notices" style={{ paddingBottom: '20px', paddingTop: '10px' }}>
-                    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', justifyContent: 'center', marginTop: '10px', opacity: '.3' }}>
-                        <svg width="64" height="41" viewBox="0 0 64 41" xmlns="http://www.w3.org/2000/svg">
-                            <g transform="translate(0 1)" fill="none" fillRule="evenodd">
-                                <g fillRule="nonzero" stroke="var(--text-color)">
-                                    <path d="M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z"></path>
-                                    <path d="M41.613 15.931c0-1.605.994-2.93 2.227-2.931H55v18.137C55 33.26 53.68 35 52.05 35h-40.1C10.32 35 9 33.259 9 31.137V13h11.16c1.233 0 2.227 1.323 2.227 2.928v.022c0 1.605 1.005 2.901 2.237 2.901h14.752c1.232 0 2.237-1.308 2.237-2.913v-.007z" fill="#fafafa"></path>
-                                </g>
-                            </g>
-                        </svg>
-                        <span>아직 항목이 없어요</span>
+                <Spacer y={30} />
+                <h3>온라인시험</h3>
+                <Spacer y={15} />
+                {data.examTop.length > 0 ? (
+                    <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
+                        {data.examTop.map((item, index) => (
+                            <div key={index} className="notice-item">
+                                <span><b>{item.papernm}</b></span><br />
+                                <span style={{ opacity: 0.6, fontSize: '12px' }}>
+                                    <IonIcon style={{ position: 'relative', top: '2px', marginRight: '3px' }} name='time-outline' />
+                                    {item.sdates + ' ~ ' + item.edates}
+                                </span><br />
+                                <span style={{ opacity: 0.6, fontSize: '12px' }}>
+                                    <IonIcon style={{ position: 'relative', top: '2px', marginRight: '3px' }} name='checkmark-outline' />
+                                    {item.submit === 'Y' ? '제출 완료' : '미제출'}
+                                </span><br />
+                                <hr style={{ opacity: 0.3 }} />
+                            </div>
+                        ))}
                     </div>
-                </div>
-            )}
-
-            <Spacer y={30} />
-            <h3>온라인시험</h3>
-            <Spacer y={15} />
-            {data.examTop.length > 0 ? (
-                <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
-                    {data.examTop.map((item, index) => (
-                        <div key={index} className="notice-item">
-                            <span><b>{item.papernm}</b></span><br />
-                            <span style={{ opacity: 0.6, fontSize: '12px' }}>
-                                <IonIcon style={{ position: 'relative', top: '2px', marginRight: '3px' }} name='time-outline' />
-                                {item.sdates + ' ~ ' + item.edates}
-                            </span><br />
-                            <span style={{ opacity: 0.6, fontSize: '12px' }}>
-                                <IonIcon style={{ position: 'relative', top: '2px', marginRight: '3px' }} name='checkmark-outline' />
-                                {item.submit === 'Y' ? '제출 완료' : '미제출'}
-                            </span><br />
-                            <hr style={{ opacity: 0.3 }} />
-                        </div>
-                    ))}
-                </div>
-            ) : (
-                <div className="card non-anim" id="notices" style={{ paddingBottom: '20px', paddingTop: '10px' }}>
-                    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', justifyContent: 'center', marginTop: '10px', opacity: '.3' }}>
-                        <svg width="64" height="41" viewBox="0 0 64 41" xmlns="http://www.w3.org/2000/svg">
-                            <g transform="translate(0 1)" fill="none" fillRule="evenodd">
-                                <g fillRule="nonzero" stroke="var(--text-color)">
-                                    <path d="M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z"></path>
-                                    <path d="M41.613 15.931c0-1.605.994-2.93 2.227-2.931H55v18.137C55 33.26 53.68 35 52.05 35h-40.1C10.32 35 9 33.259 9 31.137V13h11.16c1.233 0 2.227 1.323 2.227 2.928v.022c0 1.605 1.005 2.901 2.237 2.901h14.752c1.232 0 2.237-1.308 2.237-2.913v-.007z" fill="#fafafa"></path>
+                ) : (
+                    <div className="card non-anim" id="notices" style={{ paddingBottom: '20px', paddingTop: '10px' }}>
+                        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', justifyContent: 'center', marginTop: '10px', opacity: '.3' }}>
+                            <svg width="64" height="41" viewBox="0 0 64 41" xmlns="http://www.w3.org/2000/svg">
+                                <g transform="translate(0 1)" fill="none" fillRule="evenodd">
+                                    <g fillRule="nonzero" stroke="var(--text-color)">
+                                        <path d="M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z"></path>
+                                        <path d="M41.613 15.931c0-1.605.994-2.93 2.227-2.931H55v18.137C55 33.26 53.68 35 52.05 35h-40.1C10.32 35 9 33.259 9 31.137V13h11.16c1.233 0 2.227 1.323 2.227 2.928v.022c0 1.605 1.005 2.901 2.237 2.901h14.752c1.232 0 2.237-1.308 2.237-2.913v-.007z" fill="#fafafa"></path>
+                                    </g>
                                 </g>
-                            </g>
-                        </svg>
-                        <span>아직 항목이 없어요</span>
-                    </div>
-                </div>
-            )
-            }
-
-            <Spacer y={30} />
-            <h3>수시퀴즈</h3>
-            <Spacer y={15} />
-            {data.anQuizTop.length > 0 ? (
-                <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
-                    {data.anQuizTop.map((item, index) => (
-                        <div key={index} className="notice-item">
-                            <span><b>{item.papernm}</b></span><br />
-                            <span style={{ opacity: 0.6, fontSize: '12px' }}>
-                                <IonIcon style={{ position: 'relative', top: '2px', marginRight: '3px' }} name='time-outline' />
-                                {task.startdate.slice(4, 6) + '-' + task.startdate.slice(6, 8) + ' ' + task.startdate.slice(8, 10) + ':' + task.startdate.slice(10, 12)} ~ {task.expiredate.slice(4, 6) + '-' + task.expiredate.slice(6, 8) + ' ' + task.expiredate.slice(8, 10) + ':' + task.expiredate.slice(10, 12)}
-                            </span><br />
-                            <span style={{ opacity: 0.6, fontSize: '12px' }}>
-                                <IonIcon style={{ position: 'relative', top: '2px', marginRight: '3px' }} name='checkmark-outline' />
-                                {item.submityn === 'Y' ? '제출 완료' : '미제출'}
-                            </span><br />
-                            <hr style={{ opacity: 0.3 }} />
+                            </svg>
+                            <span>아직 항목이 없어요</span>
                         </div>
-                    ))}
-                </div>
-            ) : (
-                <div className="card non-anim" id="notices" style={{ paddingBottom: '20px', paddingTop: '10px' }}>
-                    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', justifyContent: 'center', marginTop: '10px', opacity: '.3' }}>
-                        <svg width="64" height="41" viewBox="0 0 64 41" xmlns="http://www.w3.org/2000/svg">
-                            <g transform="translate(0 1)" fill="none" fillRule="evenodd">
-                                <g fillRule="nonzero" stroke="var(--text-color)">
-                                    <path d="M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z"></path>
-                                    <path d="M41.613 15.931c0-1.605.994-2.93 2.227-2.931H55v18.137C55 33.26 53.68 35 52.05 35h-40.1C10.32 35 9 33.259 9 31.137V13h11.16c1.233 0 2.227 1.323 2.227 2.928v.022c0 1.605 1.005 2.901 2.237 2.901h14.752c1.232 0 2.237-1.308 2.237-2.913v-.007z" fill="#fafafa"></path>
-                                </g>
-                            </g>
-                        </svg>
-                        <span>아직 항목이 없어요</span>
                     </div>
-                </div>
-            )
-            }
+                )
+                }
 
-            <Spacer y={30} />
-            <h3>팀프로젝트</h3>
-            <Spacer y={15} />
-            {data.prjctTop.length > 0 ? (
-                <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
-                    {data.prjctTop.map((item, index) => (
-                        <div key={index} className="notice-item">
-                            <span><b>{item.title}</b></span><br />
-                            <span style={{ opacity: 0.6, fontSize: '12px' }}>
-                                <IonIcon style={{ position: 'relative', top: '2px', marginRight: '3px' }} name='time-outline' />
-                                {item.sdates + ' ~ ' + item.edates}
-                            </span><br />
-                            <span style={{ opacity: 0.6, fontSize: '12px' }}>
-                                <IonIcon style={{ position: 'relative', top: '2px', marginRight: '3px' }} name='checkmark-outline' />
-                                {item.submit === 'Y' ? '제출 완료' : '미제출'}
-                            </span><br />
-                            <hr style={{ opacity: 0.3 }} />
+                <Spacer y={30} />
+                <h3>수시퀴즈</h3>
+                <Spacer y={15} />
+                {data.anQuizTop.length > 0 ? (
+                    <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
+                        {data.anQuizTop.map((item, index) => (
+                            <div key={index} className="notice-item">
+                                <span><b>{item.papernm}</b></span><br />
+                                <span style={{ opacity: 0.6, fontSize: '12px' }}>
+                                    <IonIcon style={{ position: 'relative', top: '2px', marginRight: '3px' }} name='time-outline' />
+                                    {task.startdate.slice(4, 6) + '-' + task.startdate.slice(6, 8) + ' ' + task.startdate.slice(8, 10) + ':' + task.startdate.slice(10, 12)} ~ {task.expiredate.slice(4, 6) + '-' + task.expiredate.slice(6, 8) + ' ' + task.expiredate.slice(8, 10) + ':' + task.expiredate.slice(10, 12)}
+                                </span><br />
+                                <span style={{ opacity: 0.6, fontSize: '12px' }}>
+                                    <IonIcon style={{ position: 'relative', top: '2px', marginRight: '3px' }} name='checkmark-outline' />
+                                    {item.submityn === 'Y' ? '제출 완료' : '미제출'}
+                                </span><br />
+                                <hr style={{ opacity: 0.3 }} />
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="card non-anim" id="notices" style={{ paddingBottom: '20px', paddingTop: '10px' }}>
+                        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', justifyContent: 'center', marginTop: '10px', opacity: '.3' }}>
+                            <svg width="64" height="41" viewBox="0 0 64 41" xmlns="http://www.w3.org/2000/svg">
+                                <g transform="translate(0 1)" fill="none" fillRule="evenodd">
+                                    <g fillRule="nonzero" stroke="var(--text-color)">
+                                        <path d="M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z"></path>
+                                        <path d="M41.613 15.931c0-1.605.994-2.93 2.227-2.931H55v18.137C55 33.26 53.68 35 52.05 35h-40.1C10.32 35 9 33.259 9 31.137V13h11.16c1.233 0 2.227 1.323 2.227 2.928v.022c0 1.605 1.005 2.901 2.237 2.901h14.752c1.232 0 2.237-1.308 2.237-2.913v-.007z" fill="#fafafa"></path>
+                                    </g>
+                                </g>
+                            </svg>
+                            <span>아직 항목이 없어요</span>
                         </div>
-                    ))}
-                </div>
-            ) : (
-                <div className="card non-anim" id="notices" style={{ paddingBottom: '20px', paddingTop: '10px' }}>
-                    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', justifyContent: 'center', marginTop: '10px', opacity: '.3' }}>
-                        <svg width="64" height="41" viewBox="0 0 64 41" xmlns="http://www.w3.org/2000/svg">
-                            <g transform="translate(0 1)" fill="none" fillRule="evenodd">
-                                <g fillRule="nonzero" stroke="var(--text-color)">
-                                    <path d="M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z"></path>
-                                    <path d="M41.613 15.931c0-1.605.994-2.93 2.227-2.931H55v18.137C55 33.26 53.68 35 52.05 35h-40.1C10.32 35 9 33.259 9 31.137V13h11.16c1.233 0 2.227 1.323 2.227 2.928v.022c0 1.605 1.005 2.901 2.237 2.901h14.752c1.232 0 2.237-1.308 2.237-2.913v-.007z" fill="#fafafa"></path>
-                                </g>
-                            </g>
-                        </svg>
-                        <span>아직 항목이 없어요</span>
                     </div>
-                </div>
-            )
-            }
+                )
+                }
 
-            <Spacer y={30} />
-            <h3>토론</h3>
-            <Spacer y={15} />
-            {data.dscsnTop.length > 0 ? (
-                <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
-                    {data.dscsnTop.map((item, index) => (
-                        <div key={index} className="notice-item">
-                            <span><b>{item.papernm}</b></span><br />
-                            <span style={{ opacity: 0.6, fontSize: '12px' }}>
-                                <IonIcon style={{ position: 'relative', top: '2px', marginRight: '3px' }} name='time-outline' />
-                                {item.started + ' ~ ' + item.ended}
-                            </span><br />
-                            <span style={{ opacity: 0.6, fontSize: '12px' }}>
-                                <IonIcon style={{ position: 'relative', top: '2px', marginRight: '3px' }} name='checkmark-outline' />
-                                {item.toroncnt}
-                            </span><br />
-                            <hr style={{ opacity: 0.3 }} />
+                <Spacer y={30} />
+                <h3>팀프로젝트</h3>
+                <Spacer y={15} />
+                {data.prjctTop.length > 0 ? (
+                    <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
+                        {data.prjctTop.map((item, index) => (
+                            <div key={index} className="notice-item">
+                                <span><b>{item.title}</b></span><br />
+                                <span style={{ opacity: 0.6, fontSize: '12px' }}>
+                                    <IonIcon style={{ position: 'relative', top: '2px', marginRight: '3px' }} name='time-outline' />
+                                    {item.sdates + ' ~ ' + item.edates}
+                                </span><br />
+                                <span style={{ opacity: 0.6, fontSize: '12px' }}>
+                                    <IonIcon style={{ position: 'relative', top: '2px', marginRight: '3px' }} name='checkmark-outline' />
+                                    {item.submit === 'Y' ? '제출 완료' : '미제출'}
+                                </span><br />
+                                <hr style={{ opacity: 0.3 }} />
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="card non-anim" id="notices" style={{ paddingBottom: '20px', paddingTop: '10px' }}>
+                        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', justifyContent: 'center', marginTop: '10px', opacity: '.3' }}>
+                            <svg width="64" height="41" viewBox="0 0 64 41" xmlns="http://www.w3.org/2000/svg">
+                                <g transform="translate(0 1)" fill="none" fillRule="evenodd">
+                                    <g fillRule="nonzero" stroke="var(--text-color)">
+                                        <path d="M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z"></path>
+                                        <path d="M41.613 15.931c0-1.605.994-2.93 2.227-2.931H55v18.137C55 33.26 53.68 35 52.05 35h-40.1C10.32 35 9 33.259 9 31.137V13h11.16c1.233 0 2.227 1.323 2.227 2.928v.022c0 1.605 1.005 2.901 2.237 2.901h14.752c1.232 0 2.237-1.308 2.237-2.913v-.007z" fill="#fafafa"></path>
+                                    </g>
+                                </g>
+                            </svg>
+                            <span>아직 항목이 없어요</span>
                         </div>
-                    ))}
-                </div>
-            ) : (
-                <div className="card non-anim" id="notices" style={{ paddingBottom: '20px', paddingTop: '10px' }}>
-                    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', justifyContent: 'center', marginTop: '10px', opacity: '.3' }}>
-                        <svg width="64" height="41" viewBox="0 0 64 41" xmlns="http://www.w3.org/2000/svg">
-                            <g transform="translate(0 1)" fill="none" fillRule="evenodd">
-                                <g fillRule="nonzero" stroke="var(--text-color)">
-                                    <path d="M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z"></path>
-                                    <path d="M41.613 15.931c0-1.605.994-2.93 2.227-2.931H55v18.137C55 33.26 53.68 35 52.05 35h-40.1C10.32 35 9 33.259 9 31.137V13h11.16c1.233 0 2.227 1.323 2.227 2.928v.022c0 1.605 1.005 2.901 2.237 2.901h14.752c1.232 0 2.237-1.308 2.237-2.913v-.007z" fill="#fafafa"></path>
-                                </g>
-                            </g>
-                        </svg>
-                        <span>아직 항목이 없어요</span>
                     </div>
+                )
+                }
+
+                <Spacer y={30} />
+                <h3>토론</h3>
+                <Spacer y={15} />
+                {data.dscsnTop.length > 0 ? (
+                    <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
+                        {data.dscsnTop.map((item, index) => (
+                            <div key={index} className="notice-item">
+                                <span><b>{item.papernm}</b></span><br />
+                                <span style={{ opacity: 0.6, fontSize: '12px' }}>
+                                    <IonIcon style={{ position: 'relative', top: '2px', marginRight: '3px' }} name='time-outline' />
+                                    {item.started + ' ~ ' + item.ended}
+                                </span><br />
+                                <span style={{ opacity: 0.6, fontSize: '12px' }}>
+                                    <IonIcon style={{ position: 'relative', top: '2px', marginRight: '3px' }} name='checkmark-outline' />
+                                    {item.toroncnt}
+                                </span><br />
+                                <hr style={{ opacity: 0.3 }} />
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="card non-anim" id="notices" style={{ paddingBottom: '20px', paddingTop: '10px' }}>
+                        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', justifyContent: 'center', marginTop: '10px', opacity: '.3' }}>
+                            <svg width="64" height="41" viewBox="0 0 64 41" xmlns="http://www.w3.org/2000/svg">
+                                <g transform="translate(0 1)" fill="none" fillRule="evenodd">
+                                    <g fillRule="nonzero" stroke="var(--text-color)">
+                                        <path d="M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z"></path>
+                                        <path d="M41.613 15.931c0-1.605.994-2.93 2.227-2.931H55v18.137C55 33.26 53.68 35 52.05 35h-40.1C10.32 35 9 33.259 9 31.137V13h11.16c1.233 0 2.227 1.323 2.227 2.928v.022c0 1.605 1.005 2.901 2.237 2.901h14.752c1.232 0 2.237-1.308 2.237-2.913v-.007z" fill="#fafafa"></path>
+                                    </g>
+                                </g>
+                            </svg>
+                            <span>아직 항목이 없어요</span>
+                        </div>
+                    </div>
+                )
+                }
+
+                <Spacer y={90} />
+
+                <div className='bottom-sheet-footer' style={{ position: 'fixed', bottom: '0', zIndex: 9999 }}>
+                    <div style={{
+                        display: 'flex', gap: '8px', justifyContent: 'center', position: 'fixed',
+                        left: 0,
+                        bottom: 0,
+                        width: '100%',
+                        padding: '10px 16px 20px 16px',
+                        background: 'linear-gradient(to top, var(--background) 0%, transparent 100%)',
+                        boxSizing: 'border-box',
+                        zIndex: 9999
+                    }}>
+                        <button onClick={() => Android.openLecturePlan()} style={{ background: 'var(--button-background)', padding: '15px 20px', borderRadius: '15px', fontSize: '15px' }}>강의계획서</button>
+                        <button onClick={() => Android.openQRScan()} style={{ background: 'var(--card-background)', color: 'var(--text-color)', padding: '15px 20px', borderRadius: '15px', fontSize: '15px' }}>QR 출석</button>
+
+                    </div>
+                    <GradualBlur
+                        position="bottom"
+                        height="8rem"
+                        strength={1.5}
+                    />
                 </div>
-            )
-            }
+            </main>
 
-            <Spacer y={90} />
-
-            <div className='bottom-sheet-footer' style={{ position: 'fixed', bottom: '0', zIndex: 9999 }}>
-                <div style={{
-                    display: 'flex', gap: '8px', justifyContent: 'center', position: 'fixed',
-                    left: 0,
-                    bottom: 0,
-                    width: '100%',
-                    padding: '10px 16px 20px 16px',
-                    background: 'linear-gradient(to top, var(--background) 0%, transparent 100%)',
-                    boxSizing: 'border-box',
-                    zIndex: 9999
-                }}>
-                    <button onClick={() => Android.openLecturePlan()} style={{ background: 'var(--button-background)', padding: '15px 20px', borderRadius: '15px', fontSize: '15px' }}>강의계획서</button>
-                    <button onClick={() => Android.openQRScan()} style={{ background: 'var(--card-background)', color: 'var(--text-color)', padding: '15px 20px', borderRadius: '15px', fontSize: '15px' }}>QR 출석</button>
-
-                </div>
-                <GradualBlur
-                    position="bottom"
-                    height="8rem"
-                    strength={1.5}
-                />
-            </div>
-        </main>
+            <CampusMapSheet
+                open={mapSheetOpen}
+                buildingName={selectedBuilding?.name}
+                onClose={() => {
+                    setMapSheetOpen(false);
+                    setSelectedBuilding(null);
+                }}
+            />
+        </>
     );
 }
