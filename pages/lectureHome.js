@@ -3,6 +3,7 @@ import Spacer from '../components/common/spacer';
 import IonIcon from '@reacticons/ionicons';
 import { KLAS } from "../lib/core/klas";
 import { normalizeBuildingName } from '../lib/core/normalizeBuildingName';
+import GradualBlur from "../components/common/GradualBlur";
 
 export default function LectureHome() {
     const [data, setData] = useState(null);
@@ -259,30 +260,125 @@ export default function LectureHome() {
             <h3>출석 현황</h3>
             <Spacer y={15} />
 
-            <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
-                <h4 style={{ margin: '0', display: 'inline-block' }}>
-                    <span>현재까지 출석률은</span> <span style={{ color: '#7099ff', fontSize: '18px' }}>{stats.attendanceRate.toFixed(1)}%</span> <span>예요.</span>
-                </h4>
-                <br />
-                {(stats.lateCount == 0 && stats.absentCount == 0) ? <span style={{ opacity: .7 }}>지각과 결석이 한 번도 없어요!</span>
-                    : <span style={{ opacity: .7 }}>지각 {stats.lateCount}회, 결석 {stats.absentCount}회가 있어요.</span>}
-                <Spacer y={10} />
-                <button onClick={() => setAttendExpand(!attendExpand)} style={{ background: 'var(--card-border)', width: 'fit-content' }}>{attendExpand ? '접기' : '자세히 보기'} <IonIcon style={{ position: 'relative', top: '2px' }} name={attendExpand ? 'chevron-up' : 'chevron-down'} /></button>
-
-                {attendExpand && (<>
-                    <Spacer y={20} />
-                    {data.atendSubList.map((aSubitem, index) => (
-                        <div key={index} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                            <span>{aSubitem.weeklyseq}주차</span>
-                            <span style={{ fontWeight: 'bold' }}>
-                                <span style={{ color: getColor(aSubitem.pgr1) }}>{aSubitem.pgr1 || '-'}</span>,{' '}
-                                <span style={{ color: getColor(aSubitem.pgr2) }}>{aSubitem.pgr2 || '-'}</span>,{' '}
-                                <span style={{ color: getColor(aSubitem.pgr3) }}>{aSubitem.pgr3 || '-'}</span>,{' '}
-                                <span style={{ color: getColor(aSubitem.pgr4) }}>{aSubitem.pgr4 || '-'}</span>
-                            </span>
+            <div className="card non-anim" style={{ paddingBottom: '10px' }}>
+                {/* 출석률 카드 */}
+                <div style={{ marginBottom: '25px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                        <div>
+                            <span style={{ opacity: 0.7, fontSize: '13px' }}>현재까지 출석률</span>
+                            <h4 style={{ margin: '5px 0 0 0', fontSize: '28px', color: '#7099ff', fontWeight: 'bold' }}>
+                                {stats.attendanceRate.toFixed(1)}%
+                            </h4>
                         </div>
-                    ))}
-                </>
+                    </div>
+
+                    {/* 진행률 바 */}
+                    <div style={{
+                        width: '100%',
+                        height: '8px',
+                        background: 'var(--card-border)',
+                        borderRadius: '4px',
+                        overflow: 'hidden',
+                        marginBottom: '12px'
+                    }}>
+                        <div style={{
+                            width: `${stats.attendanceRate}%`,
+                            height: '100%',
+                            background: `linear-gradient(90deg, #7099ff 0%, ${stats.attendanceRate >= 90 ? '#60a5fa' : '#ff596a'} 100%)`,
+                            transition: 'width 0.5s ease-out'
+                        }} />
+                    </div>
+
+                    {(stats.lateCount == 0 && stats.absentCount == 0) ? <span style={{ opacity: .7 }}>지각과 결석이 한 번도 없어요!</span>
+                        : <span style={{ opacity: .7 }}>지각 {stats.lateCount}회, 결석 {stats.absentCount}회가 있어요.</span>}
+                </div>
+
+                {/* 주차별 상세 정보 */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                    <button onClick={() => setAttendExpand(!attendExpand)} style={{
+                        background: 'transparent',
+                        border: 'none',
+                        padding: '0',
+                        display: 'flex',
+                        width: '100%',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '5px',
+                        cursor: 'pointer',
+                        color: 'var(--text-color)',
+                        fontSize: '14px',
+                        opacity: 0.7
+                    }}>
+                        {attendExpand ? '간단히 보기' : '주차별로 보기 '} <IonIcon style={{ position: 'relative' }} name={attendExpand ? 'chevron-up' : 'chevron-down'} />
+                    </button>
+                </div>
+
+                {attendExpand && (
+                    <>
+                        <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: '1fr 1fr 1fr 1fr',
+                            gap: '10px',
+                            marginBottom: '20px',
+                        }}>
+                            <div style={{ textAlign: 'center', fontSize: '12px' }}>
+                                <div style={{ color: '#7099ff', fontWeight: 'bold', marginBottom: '4px', fontSize: '14px' }}>●</div>
+                                <div style={{ opacity: 0.7 }}>출석</div>
+                            </div>
+                            <div style={{ textAlign: 'center', fontSize: '12px' }}>
+                                <div style={{ color: '#dd36cf', fontWeight: 'bold', marginBottom: '4px', fontSize: '14px' }}>●</div>
+                                <div style={{ opacity: 0.7 }}>지각</div>
+                            </div>
+                            <div style={{ textAlign: 'center', fontSize: '12px' }}>
+                                <div style={{ color: '#FFA500', fontWeight: 'bold', marginBottom: '4px', fontSize: '14px' }}>●</div>
+                                <div style={{ opacity: 0.7 }}>조퇴/공결</div>
+                            </div>
+                            <div style={{ textAlign: 'center', fontSize: '12px' }}>
+                                <div style={{ color: '#ff596a', fontWeight: 'bold', marginBottom: '4px', fontSize: '14px' }}>●</div>
+                                <div style={{ opacity: 0.7 }}>결석</div>
+                            </div>
+                        </div>
+
+                        {data.atendSubList.map((aSubitem, index) => (
+                            <div key={index} style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                marginBottom: '8px',
+                                fontSize: '13px'
+                            }}>
+                                <span style={{ fontWeight: '500', minWidth: '50px' }}>{aSubitem.weeklyseq}주차</span>
+                                <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                                    {[aSubitem.pgr1, aSubitem.pgr2, aSubitem.pgr3, aSubitem.pgr4].map((status, i) => (
+                                        <div
+                                            key={i}
+                                            style={{
+                                                width: '20px',
+                                                height: '20px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                borderRadius: '15px',
+                                                fontSize: '12px',
+                                                fontWeight: 'bold',
+                                                color: status ? getColor(status) : 'var(--text-color)',
+                                                background: status && status !== '-' ? `${getColor(status)}20` : 'var(--card-background)',
+                                                border: `1px solid ${status && status !== '-' ? getColor(status) : 'var(--card-border)'}`
+                                            }}
+                                            title={`${i + 1}일차`}
+                                        >
+                                            {status === 'O' && <IonIcon name='checkmark' style={{ fontSize: '14px' }} />}
+                                            {status === 'L' && 'L'}
+                                            {status === 'X' && 'X'}
+                                            {status === 'R' && 'R'}
+                                            {status === 'A' && 'A'}
+                                            {status === '-' && '-'}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </>
                 )}
             </div>
 
@@ -473,10 +569,26 @@ export default function LectureHome() {
 
             <Spacer y={90} />
 
-            <div className='bottom-sheet-footer' style={{ position: 'fixed', bottom: '0', background: 'linear-gradient(to top, var(--background) 75%, transparent) 100%', paddingTop: '30px' }}>
-                <button onClick={() => Android.openLecturePlan()} style={{ background: 'var(--button-background)', padding: '15px 20px', borderRadius: '15px', fontSize: '15px' }}>강의계획서</button>
-                <button onClick={() => Android.openQRScan()} style={{ background: 'var(--card-background)', color: 'var(--text-color)', padding: '15px 20px', borderRadius: '15px', fontSize: '15px' }}>QR 출석</button>
+            <div className='bottom-sheet-footer' style={{ position: 'fixed', bottom: '0', zIndex: 9999 }}>
+                <div style={{
+                    display: 'flex', gap: '8px', justifyContent: 'center', position: 'fixed',
+                    left: 0,
+                    bottom: 0,
+                    width: '100%',
+                    padding: '10px 16px 20px 16px',
+                    background: 'linear-gradient(to top, var(--background) 0%, transparent 100%)',
+                    boxSizing: 'border-box',
+                    zIndex: 9999
+                }}>
+                    <button onClick={() => Android.openLecturePlan()} style={{ background: 'var(--button-background)', padding: '15px 20px', borderRadius: '15px', fontSize: '15px' }}>강의계획서</button>
+                    <button onClick={() => Android.openQRScan()} style={{ background: 'var(--card-background)', color: 'var(--text-color)', padding: '15px 20px', borderRadius: '15px', fontSize: '15px' }}>QR 출석</button>
 
+                </div>
+                <GradualBlur
+                    position="bottom"
+                    height="8rem"
+                    strength={1.5}
+                />
             </div>
         </main>
     );
