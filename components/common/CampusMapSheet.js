@@ -6,7 +6,6 @@ import { OrbitControls, Html, Edges, Center } from '@react-three/drei';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { getBuildingMapUrl } from '../../lib/lecture/lectureUtils';
 
-// --- 1. 데이터 매핑 설정 ---
 const BUILDING_DATA = {
     '화도': { meshName: 'TPX_Buildings_mesh9', label: '화도관' },
     '비마': { meshName: 'TPX_Buildings_mesh0', label: '비마관' },
@@ -21,16 +20,12 @@ const BUILDING_DATA = {
     '누리': { meshName: 'TPX_Buildings_mesh39', label: '누리관' },
 };
 
-// --- 2. 3D 모델 내부 컴포넌트 ---
 function CampusScene({ selectedId, onBuildingSelect }) {
-    // OBJ 파일 로드 (경로는 실제 파일 위치에 맞게 유지)
     const obj = useLoader(OBJLoader, 'campusMap.obj');
     const [hoveredMesh, setHoveredMesh] = useState(null);
 
-    // OBJ의 자식 Mesh들 추출
     const meshes = useMemo(() => obj?.children || [], [obj]);
 
-    // buildingName -> Mesh Name 매핑
     const getActiveMeshName = (id) => {
         if (!id) return null;
         const key = Object.keys(BUILDING_DATA).find(k => id.includes(k));
@@ -129,7 +124,6 @@ function CampusScene({ selectedId, onBuildingSelect }) {
     );
 }
 
-// --- 3. 외부 앱 연동 함수 ---
 const openExternalMap = (buildingName) => {
     const mapUrl = getBuildingMapUrl(buildingName);
     if (!mapUrl) return;
@@ -144,7 +138,6 @@ const openExternalMap = (buildingName) => {
     }
 };
 
-// --- 4. 메인 BottomSheet 컴포넌트 ---
 export default function CampusMapSheet({ open, buildingName, onClose }) {
     const [selectedId, setSelectedId] = useState(buildingName || null);
     const controlsRef = useRef(null);
@@ -153,7 +146,6 @@ export default function CampusMapSheet({ open, buildingName, onClose }) {
         setSelectedId(buildingName || null);
     }, [buildingName]);
 
-    // OrbitControls y축 고정 로직
     useEffect(() => {
         if (controlsRef.current) {
             const controls = controlsRef.current;
@@ -187,8 +179,6 @@ export default function CampusMapSheet({ open, buildingName, onClose }) {
             scrollLocking={false}
         >
             <div style={{ padding: '4px 16px 30px 16px', pointerEvents: 'auto' }}>
-
-                {/* 헤더 */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                     <div>
                         <div style={{ fontSize: '13px', opacity: 0.6 }}>캠퍼스맵</div>
@@ -198,9 +188,7 @@ export default function CampusMapSheet({ open, buildingName, onClose }) {
                     </div>
                 </div>
 
-                {/* 3D Canvas 영역 */}
                 <div
-                    // [수정됨] 터치 이벤트가 BottomSheet의 드래그 동작으로 인식되지 않도록 차단
                     onTouchStart={stopPropagation}
                     onTouchMove={stopPropagation}
                     onTouchEnd={stopPropagation}
@@ -213,7 +201,6 @@ export default function CampusMapSheet({ open, buildingName, onClose }) {
                         border: '1px solid #d1d5db',
                         marginBottom: '16px',
                         position: 'relative',
-                        // [수정됨] 브라우저 기본 스크롤/줌 동작 차단
                         touchAction: 'none'
                     }}
                 >
@@ -221,12 +208,12 @@ export default function CampusMapSheet({ open, buildingName, onClose }) {
                         key={open}
                         camera={{ position: [0, -400, 200], fov: 55 }}
                         shadows
-                        style={{ touchAction: 'none' }} // [수정됨] 캔버스 자체에도 스타일 적용
+                        style={{ touchAction: 'none' }}
                         onCreated={({ gl }) => {
                             gl.domElement.style.touchAction = 'none';
                         }}
                     >
-                        <Suspense fallback={<Html center><div style={{ color: '#666' }}>지도 로딩중...</div></Html>}>
+                        <Suspense fallback={<Html center><div style={{ color: '#7f7f7fff' }}>지도 로딩중...</div></Html>}>
                             <ambientLight intensity={0.7} />
                             <directionalLight position={[100, 100, 50]} intensity={1.4} castShadow />
 
@@ -255,8 +242,8 @@ export default function CampusMapSheet({ open, buildingName, onClose }) {
                                     RIGHT: 0
                                 }}
                                 touches={{
-                                    ONE: 2, // 한 손가락 패닝
-                                    TWO: 1  // 두 손가락 줌
+                                    ONE: 1, // 한 손가락 패닝 (TOUCH.PAN)
+                                    TWO: 2  // 두 손가락 줌 (TOUCH.DOLLY_PAN)
                                 }}
                             />
                         </Suspense>
@@ -278,7 +265,6 @@ export default function CampusMapSheet({ open, buildingName, onClose }) {
                     </div>
                 </div>
 
-                {/* 하단 버튼 그룹 */}
                 <div style={{ display: 'flex', gap: '10px' }}>
                     <button
                         onClick={onClose}
