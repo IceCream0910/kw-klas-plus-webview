@@ -83,10 +83,6 @@ export default function Feed() {
     displayedStatusText = statusText;
   }
 
-  console.log('displayedStatusText', displayedStatusText);
-  console.log('isSemesterMismatch', isSemesterMismatch);
-  console.log('isNoSemester', isNoSemester);
-
   const canShowClassActions = (isSemesterMismatch || isNoSemester) ? false : showClassActions;
   const displayedSelectedSubj = (isSemesterMismatch || isNoSemester) ? null : selectedSubj;
   const displayedSelectedSubjName = (isSemesterMismatch || isNoSemester) ? null : selectedSubjName;
