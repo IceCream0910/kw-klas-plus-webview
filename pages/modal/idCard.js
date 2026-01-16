@@ -87,7 +87,7 @@ export default function IdCard() {
                     }}>
                         <div style={{ display: 'flex', gap: '20px', alignItems: 'start' }}>
                             <div style={{ position: 'relative', width: '100px', flexShrink: 0 }}>
-                                <motion.div onClick={() => Android.openPage('https://did-3.kw.ac.kr/std/app/myidv2_main.php?menu=info')}
+                                <motion.div onClick={() => Android.openPage('https://klas.kw.ac.kr/std/sys/optrn/MyNumberQrStdPage.do')}
 
                                     animate={{ rotateY: showPhoto ? 0 : 180 }}
                                     transition={{ duration: 0.6, type: 'spring', stiffness: 260, damping: 20 }}
