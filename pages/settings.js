@@ -13,9 +13,7 @@ export default function Settings() {
     yearHakgi,
     appVersion,
     isOpenSettingsModal,
-    hideGrades,
     setIsOpenSettingsModal,
-    handleHideGradesChange
   } = useSettings();
 
   return (
@@ -27,8 +25,6 @@ export default function Settings() {
 
       <Spacer y={5} />
       <SettingsMenuSection
-        hideGrades={hideGrades}
-        onHideGradesChange={handleHideGradesChange}
         yearHakgi={yearHakgi}
       />
 

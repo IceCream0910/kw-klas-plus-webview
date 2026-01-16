@@ -4,12 +4,10 @@ import ToggleSwitch from '../common/ToggleSwitch';
 /**
  * 설정 메뉴 섹션 컴포넌트
  * @param {Object} props
- * @param {boolean} props.hideGrades - 학점 숨김 여부
- * @param {Function} props.onHideGradesChange - 학점 숨김 변경 핸들러
  * @param {string} props.yearHakgi - 표시할 학기
  * @returns {JSX.Element}
  */
-const SettingsMenuSection = ({ hideGrades, onHideGradesChange, yearHakgi }) => {
+const SettingsMenuSection = ({ yearHakgi }) => {
     const handleYearHakgiSelect = () => {
         if (typeof window !== 'undefined' && window.Android) {
             window.Android.openYearHakgiSelectModal();
@@ -32,14 +30,6 @@ const SettingsMenuSection = ({ hideGrades, onHideGradesChange, yearHakgi }) => {
 
     return (
         <>
-            <ToggleSwitch
-                id="hideGrades"
-                checked={hideGrades}
-                onChange={onHideGradesChange}
-                label="메뉴 탭에서 학점 숨기기"
-                style={{ margin: '0 10px' }}
-            />
-
             <button
                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                 onClick={handleYearHakgiSelect}
