@@ -13,7 +13,6 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
@@ -34,11 +33,9 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       caches.match(event.request).then((response) => {
         if (response) {
-          console.log('Cache hit:', url);
           return response;
         }
 
-        console.log('Cache miss, fetching:', url);
         return fetch(event.request).then((fetchResponse) => {
           if (fetchResponse.status === 200) {
             const responseClone = fetchResponse.clone();

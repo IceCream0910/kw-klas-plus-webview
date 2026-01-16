@@ -25,8 +25,6 @@ import NoticeList from '../components/feed/NoticeList';
 import AdvisorInfo from '../components/feed/AdvisorInfo';
 import CampusMapSheet from '../components/common/CampusMapSheet';
 
-const AdSense = dynamic(() => import('../components/common/adSense'), { ssr: false });
-
 const SEMESTER_SCHEDULE = [
   { yearHakgi: '2025,2', start: new Date(2025, 8, 1), end: new Date(2025, 11, 19) },
   { yearHakgi: '2025,4', start: new Date(2025, 11, 22), end: new Date(2026, 0, 14) },
@@ -35,6 +33,7 @@ const SEMESTER_SCHEDULE = [
 ];
 
 const NO_COURSE_STATUS_TEXT = '지금은 선택된<br/>학기 중이 아니에요.';
+const NO_SEMESTER_STATUS_TEXT = '현재 진행중인<br/>학기가 없어요.';
 
 const getCurrentSemesterYearHakgi = (today = new Date()) => {
   const currentDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -73,11 +72,25 @@ export default function Feed() {
 
   const currentSemesterYearHakgi = getCurrentSemesterYearHakgi();
   const isSemesterMismatch = Boolean(currentSemesterYearHakgi && yearHakgi && currentSemesterYearHakgi !== yearHakgi);
-  const displayedStatusText = isSemesterMismatch ? NO_COURSE_STATUS_TEXT : statusText;
-  const canShowClassActions = isSemesterMismatch ? false : showClassActions;
-  const displayedSelectedSubj = isSemesterMismatch ? null : selectedSubj;
-  const displayedSelectedSubjName = isSemesterMismatch ? null : selectedSubjName;
-  const isNoCourseStatus = displayedStatusText === NO_COURSE_STATUS_TEXT;
+  const isNoSemester = !currentSemesterYearHakgi;
+
+  let displayedStatusText;
+  if (isNoSemester) {
+    displayedStatusText = NO_SEMESTER_STATUS_TEXT;
+  } else if (isSemesterMismatch) {
+    displayedStatusText = NO_COURSE_STATUS_TEXT;
+  } else {
+    displayedStatusText = statusText;
+  }
+
+  console.log('displayedStatusText', displayedStatusText);
+  console.log('isSemesterMismatch', isSemesterMismatch);
+  console.log('isNoSemester', isNoSemester);
+
+  const canShowClassActions = (isSemesterMismatch || isNoSemester) ? false : showClassActions;
+  const displayedSelectedSubj = (isSemesterMismatch || isNoSemester) ? null : selectedSubj;
+  const displayedSelectedSubjName = (isSemesterMismatch || isNoSemester) ? null : selectedSubjName;
+  const isNoCourseStatus = (isSemesterMismatch || isNoSemester);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -97,7 +110,7 @@ export default function Feed() {
     fetchData();
 
     // 더미데이터
-    if (process.env.NEXT_PUBLIC_DEVELOPMENT === 'true') {
+    if (process.env.NEXT_PUBLIC_DEVELOPMENT == 'true') {
       const dummyDeadlines = [
         {
           name: '광운인되기',
