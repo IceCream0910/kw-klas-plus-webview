@@ -110,7 +110,7 @@ export default function CalendarPage() {
     return (
         <main style={{ padding: '0px 5px 20px 5px' }}>
             <BottomNav currentTab="calendar" />
-            
+
             <div style={styles.header}>
 
                 <h2 style={{ marginBottom: '20px', marginTop: '20px' }}>{currentMonth.format('MM월')}
@@ -193,6 +193,9 @@ export default function CalendarPage() {
             }}>
                 + 일정 추가
             </button>
+
+            <Spacer y={80} />
+
             <BottomSheet
                 open={isModalOpen}
                 onDismiss={() => { closeModal(); }}

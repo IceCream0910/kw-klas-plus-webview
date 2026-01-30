@@ -22,7 +22,7 @@ export default function Timetable() {
                     onClassClick={handleClickTimetable}
                 />
             </div>
-            <Spacer y={60} />
+            <Spacer y={80} />
             <TimetableStyles />
         </>
     );

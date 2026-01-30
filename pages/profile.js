@@ -84,7 +84,7 @@ export default function Home() {
         stdInfo={stdInfo}
       />
 
-      <Spacer y={50} />
+      <Spacer y={80} />
 
     </main>
   );
