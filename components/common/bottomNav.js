@@ -60,7 +60,7 @@ function BottomNav({ currentTab }) {
                     left: 0,
                     bottom: 0,
                     width: '100%',
-                    padding: '10px 16px calc(12px + env(safe-area-inset-bottom, 0px))',
+                    padding: '10px 16px',
                     boxSizing: 'border-box',
                     zIndex: 500
                 }}
@@ -70,7 +70,7 @@ function BottomNav({ currentTab }) {
                     left: 0,
                     bottom: 0,
                     width: '100%',
-                    padding: '10px 16px calc(12px + env(safe-area-inset-bottom, 0px))',
+                    padding: '10px 16px',
                     background: 'linear-gradient(to top, var(--background) 0%, transparent 100%)',
                     boxSizing: 'border-box',
                     zIndex: 9999
