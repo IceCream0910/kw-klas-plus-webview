@@ -83,7 +83,8 @@ export default function IdCard() {
                 ) : (
                     <div style={{
                         position: 'relative',
-                        overflow: 'hidden'
+                        overflow: 'hidden',
+                        padding: '10px'
                     }}>
                         <div style={{ display: 'flex', gap: '20px', alignItems: 'start' }}>
                             <div style={{ position: 'relative', width: '100px', flexShrink: 0 }}>

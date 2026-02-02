@@ -105,9 +105,10 @@ export const SkeletonLayouts = {
     IdCard: () => (
         <div style={{
             position: 'relative',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            padding: '10px'
         }}>
-            <div style={{ display: 'flex', gap: '20px', alignItems: 'start' }}>
+            <div style={{ display: 'flex', gap: '20px', alignItems: 'start', marginBottom: '20px' }}>
                 <Skeleton width="100px" height="130px" style={{ borderRadius: '16px', flexShrink: 0 }} />
                 <div style={{ flex: 1, paddingTop: '5px' }}>
                     <Skeleton width="60%" height="30px" style={{ marginBottom: '10px' }} />
@@ -116,6 +117,7 @@ export const SkeletonLayouts = {
                     <Skeleton width="50%" height="15px" />
                 </div>
             </div>
+            <Skeleton width="100%" height="50px" />
         </div>
     )
 };
