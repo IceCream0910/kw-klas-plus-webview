@@ -23,7 +23,7 @@ const slides = [
   {
     title: <>궁금한 건<br />KLAS AI에게.</>,
     desc: <>학교 정보부터 강의 관련 현황까지 KLAS AI는 모든 걸 알고 있어요.</>,
-    note: "⚠️ AI가 생성한 답변은 부정확할 수 있습니다."
+    note: ""
   }
 ];
 
@@ -84,7 +84,7 @@ export default function Onboarding() {
         zIndex: 50
       }} />
 
-      <div style={{ position: 'absolute', height: '30dvh', padding: '20px', paddingBottom: '70px', zIndex: 99999, boxSizing: 'border-box', bottom: 0 }}>
+      <div style={{ position: 'absolute', height: '30dvh', padding: '20px', paddingBottom: '100px', paddingTop: 0, zIndex: 99999, boxSizing: 'border-box', bottom: 0 }}>
         <AnimatePresence mode="wait">
           <motion.div
             key={currentSlide}
@@ -95,7 +95,7 @@ export default function Onboarding() {
           >
             <h2 style={{ margin: '0 0 10px 0' }}>{slides[currentSlide % slides.length].title}</h2>
             <p style={{ margin: '0 0 10px 0', fontSize: '16px', opacity: .7 }}>{slides[currentSlide % slides.length].desc}</p>
-            <p style={{ margin: '0 0 10px 0', fontSize: '12px', opacity: .4, marginTop: '20px' }}>{slides[currentSlide % slides.length].note}</p>
+            <p style={{ margin: '0 0 10px 0', fontSize: '12px', opacity: .4, marginTop: '10px' }}>{slides[currentSlide % slides.length].note}</p>
           </motion.div>
         </AnimatePresence>
       </div>
