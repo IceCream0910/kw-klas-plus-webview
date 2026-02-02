@@ -84,7 +84,7 @@ export default function Onboarding() {
         zIndex: 50
       }} />
 
-      <div style={{ position: 'absolute', height: '30dvh', padding: '20px', paddingBottom: '100px', paddingTop: 0, zIndex: 99999, boxSizing: 'border-box', bottom: 0 }}>
+      <div style={{ position: 'absolute', width: '100%', height: '30dvh', padding: '20px', paddingBottom: '100px', paddingTop: 0, zIndex: 99999, boxSizing: 'border-box', bottom: 0 }}>
         <AnimatePresence mode="wait">
           <motion.div
             key={currentSlide}
