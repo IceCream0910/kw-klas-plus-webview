@@ -259,12 +259,13 @@ export default function Feed() {
 
           {showToggle && (
             <>
-              <Spacer y={5} />
+              <Spacer y={15} />
               <ToggleSwitch
                 label="아직 시작일이 되지 않은 항목 숨기기"
                 checked={excludeNotStarted}
                 onChange={handleToggleChange}
                 id="exclude-not-started"
+                style={{ padding: '0 5px' }}
               />
             </>
           )}
