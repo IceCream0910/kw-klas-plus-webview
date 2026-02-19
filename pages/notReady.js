@@ -28,7 +28,7 @@ export default function FreshmanWelcome() {
       </div>
 
       <button
-        onClick={() => Android.openPage('https://klasplus.yuntae.in/searchLecturePlan')}
+        onClick={() => Android.openPage('https://klas.kw.ac.kr/std/cps/atnlc/LectrePlanStdPage.do')}
         style={{
           position: 'fixed',
           bottom: '90px',
