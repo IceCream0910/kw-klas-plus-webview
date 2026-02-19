@@ -6,7 +6,7 @@ import IonIcon from '@reacticons/ionicons';
 
 export default function FreshmanWelcome() {
   const goFreshmanGuide = () => {
-    Android.openPage('https://www.kw.ac.kr/ko/life/notice.jsp?BoardMode=view&DUID=49337'); //매년 신입생 학사 안내 공지 링크로 변경
+    Android.openPage('https://www.kw.ac.kr/ko/life/notice.jsp?BoardMode=view&DUID=51851&tpage=1&searchKey=1&searchVal=&srCategoryId='); //매년 신입생 학사 안내 공지 링크로 변경
   };
 
   return (
