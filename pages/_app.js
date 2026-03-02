@@ -15,7 +15,7 @@ function MyApp({ Component, pageProps }) {
     }
 
     HyperDX.init({
-      apiKey: process.env.NEXT_PUBLIC_HYPERDX_API_KEY,
+      apiKey: 'c2ab0394-4519-4989-9c99-4f19587be9dd',
       service: 'klas-plus-webview',
       consoleCapture: true,
       advancedNetworkCapture: true,
