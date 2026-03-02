@@ -1,5 +1,6 @@
 import "../styles/globals.css";
 import { useEffect } from "react";
+import HyperDX from '@hyperdx/browser';
 
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
@@ -12,7 +13,14 @@ function MyApp({ Component, pageProps }) {
           console.log('Service Worker registration failed:', error);
         });
     }
-    
+
+    HyperDX.init({
+      apiKey: process.env.NEXT_PUBLIC_HYPERDX_API_KEY,
+      service: 'klas-plus-webview',
+      consoleCapture: true,
+      advancedNetworkCapture: true,
+    });
+
     try {
       Android.completePageLoad();
     } catch (error) {
