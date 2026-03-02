@@ -71,7 +71,9 @@ function Header({ title }) {
                     background: 'linear-gradient(to bottom, var(--background) 0%, transparent 100%)',
                     zIndex: 9999
                 }}>
-                    {title}
+                    <div onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                        {title}
+                    </div>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         {isAgentCompatible && (
                             <div style={{ position: 'relative' }}>
