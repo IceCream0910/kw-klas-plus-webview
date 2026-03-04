@@ -1,6 +1,6 @@
 import "../styles/globals.css";
 import { useEffect } from "react";
-import HyperDX from '@hyperdx/browser';
+import Script from 'next/script';
 
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
@@ -14,13 +14,6 @@ function MyApp({ Component, pageProps }) {
         });
     }
 
-    HyperDX.init({
-      apiKey: 'c2ab0394-4519-4989-9c99-4f19587be9dd',
-      service: 'klas-plus-webview',
-      consoleCapture: true,
-      advancedNetworkCapture: true,
-    });
-
     try {
       Android.completePageLoad();
     } catch (error) {
@@ -33,6 +26,11 @@ function MyApp({ Component, pageProps }) {
   return (
     <>
       <Component {...pageProps} />
+      <Script
+        src="https://rybbit.yuntae.in/api/script.js"
+        data-site-id="e4129eea280e"
+        strategy="afterInteractive"
+      />
     </>
   );
 }
