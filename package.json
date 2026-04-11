@@ -15,7 +15,7 @@
   "dependencies": {
     "@egjs/react-flicking": "^4.14.0",
     "@openai/chatkit-react": "^1.2.1",
-    "@opennextjs/cloudflare": "^1.17.1",
+    "@opennextjs/cloudflare": "^1.19.0",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
     "@reacticons/ionicons": "^7.1.0",
