@@ -1707,10 +1707,10 @@
   resolved "https://registry.yarnpkg.com/@openai/chatkit/-/chatkit-1.3.0.tgz#88d858c15e2308a4919284094591331d6a83397b"
   integrity sha512-b/0UmnUAvTX7Zi3juAt4+FPGVMCguFlkR7+VccvEHl1vHXM3HjN4FNMr4LEMXg4nWp0t3i+1Hi2FXIiZesO0JA==
 
-"@opennextjs/aws@3.9.16":
-  version "3.9.16"
-  resolved "https://registry.yarnpkg.com/@opennextjs/aws/-/aws-3.9.16.tgz#0e661e7678bf97e32210bf1ae8c43134d969ae8f"
-  integrity sha512-jQQStCysIllNCPqz5W2KSguXpr+ETlOcD8SyNu+h9zwpRVYk4uEPQge+ErG3avI5xsT8vKA7EGLYG59dhj/B6Q==
+"@opennextjs/aws@3.10.1":
+  version "3.10.1"
+  resolved "https://registry.yarnpkg.com/@opennextjs/aws/-/aws-3.10.1.tgz#c7cafd0a8bc6b772f558b447afead1e393a32d0a"
+  integrity sha512-Pn8hLuP3M9EWlsZnS/O7Bm41Nt+lIOEsCaW/QJ3KlmIbtAeixnSj1CS80Z9PlQe/LQCe0GnQ8vGJeOdg5a4iWg==
   dependencies:
     "@ast-grep/napi" "^0.40.5"
     "@aws-sdk/client-cloudfront" "3.984.0"
@@ -1730,14 +1730,14 @@
     urlpattern-polyfill "^10.1.0"
     yaml "^2.8.1"
 
-"@opennextjs/cloudflare@^1.17.1":
-  version "1.17.1"
-  resolved "https://registry.yarnpkg.com/@opennextjs/cloudflare/-/cloudflare-1.17.1.tgz#0062ab4447f56039eb0e0b3d73bac28c08ec55c4"
-  integrity sha512-TtmjhXUEpSbnb9kgr7IQtmlQugOeX0cHiLc/e6NYAnmqQVro3yN49WvzaclSGFZod/lJFW7pOJ0NGT6JpqypAw==
+"@opennextjs/cloudflare@^1.19.0":
+  version "1.19.1"
+  resolved "https://registry.yarnpkg.com/@opennextjs/cloudflare/-/cloudflare-1.19.1.tgz#f70615c2178e4109a1bcd57896ec474936e5a63a"
+  integrity sha512-qW6ivDkwDzomX4uBTwIHiSFMvsXjZ2GuVf/GITxGByr8sA3eyx3IMfFjWyaqBHVqcqtJaCiFo8IPxpLHv0jWbg==
   dependencies:
     "@ast-grep/napi" "^0.40.5"
     "@dotenvx/dotenvx" "1.31.0"
-    "@opennextjs/aws" "3.9.16"
+    "@opennextjs/aws" "3.10.1"
     cloudflare "^4.4.1"
     comment-json "^4.5.1"
     enquirer "^2.4.1"
@@ -5818,16 +5818,7 @@ statuses@^2.0.1, statuses@^2.0.2, statuses@~2.0.2:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-2.0.2.tgz#8f75eecef765b5e1cfcdc080da59409ed424e382"
   integrity sha512-DvEy55V3DB7uknRo+4iOGT5fP1slR8wQohVdknigZPMpMstaKJQWhwiYBACJE3Ul2pTnATihhBYnRhZQHGBiRw==
 
-"string-width-cjs@npm:string-width@^4.2.0":
-  version "4.2.3"
-  resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
-  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
-  dependencies:
-    emoji-regex "^8.0.0"
-    is-fullwidth-code-point "^3.0.0"
-    strip-ansi "^6.0.1"
-
-string-width@^4.1.0:
+"string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0:
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -5862,14 +5853,7 @@ stringify-entities@^4.0.0:
     character-entities-html4 "^2.0.0"
     character-entities-legacy "^3.0.0"
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1":
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
-  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
-  dependencies:
-    ansi-regex "^5.0.1"
-
-strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
