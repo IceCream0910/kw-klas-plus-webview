@@ -6,12 +6,9 @@ import LectureNotices from '../components/lecture/lectureNotices';
 import Spacer from '../components/common/spacer';
 import toast, { Toaster } from 'react-hot-toast';
 import { KLAS } from '../lib/core/klas';
-import Image from 'next/image';
 import Header from '../components/common/header';
 import BottomNav from '../components/common/bottomNav';
-import dynamic from 'next/dynamic';
-import { KW_NOTICE_CATEGORIES } from '../lib/core/constants';
-import { openExternalLink, openKlasPage, evaluateKlasPage, openLectureActivity } from '../lib/core/androidBridge';
+import { openKlasPage, evaluateKlasPage, openLectureActivity } from '../lib/core/androidBridge';
 import { useTimetableStatus } from '../lib/timetable/useTimetableStatus';
 import { useDeadlines } from '../lib/calendar/useDeadlines';
 import { initializePullToRefresh } from '../lib/pullToRefreshUtils';
@@ -24,6 +21,7 @@ import NoticeTabs from '../components/feed/NoticeTabs';
 import NoticeList from '../components/feed/NoticeList';
 import AdvisorInfo from '../components/feed/AdvisorInfo';
 import CampusMapSheet from '../components/common/CampusMapSheet';
+import Logo from '../components/common/Logo';
 
 const SEMESTER_SCHEDULE = [
   { yearHakgi: '2025,2', start: new Date(2025, 8, 1), end: new Date(2025, 11, 19) },
@@ -223,7 +221,7 @@ export default function Feed() {
     <>
       <div style={{ padding: '5px' }}>
         <Toaster position="top-center" />
-        <Header title={<Image src="/klasplus_icon_foreground_red.png" loading="eager" alt="Logo" width={40} height={40} style={{ borderRadius: '50%', marginLeft: '-5px' }} />} />
+        <Header title={<Logo size={45} />} />
         <BottomNav currentTab="feed" />
         <div className='pull-to-swipe-area'>
           <CurrentStatus
