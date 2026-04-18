@@ -41,7 +41,9 @@ export default function CalendarPage() {
         isAddingEvent,
         selectedDayEvents,
         currentMonth,
+        isDaySheetOpen,
         setToken,
+        setIsDaySheetOpen,
         handleSlotSelect,
         handleEventSelect,
         handleNavigate,
@@ -89,7 +91,9 @@ export default function CalendarPage() {
     const eventStyleGetter = (event) => {
         return {
             style: {
-                backgroundColor: event.schdulColor,
+                backgroundColor: event.schdulColor == "#3a051f" ? "var(--button-background)" : event.schdulColor,
+                pointerEvents: 'none',
+                color: event.schdulColor == "#3a051f" ? "var(--button-text)" : 'inherit',
             }
         };
     };
@@ -109,6 +113,13 @@ export default function CalendarPage() {
 
     return (
         <main style={{ padding: '0px 5px 20px 5px' }}>
+            <style>{`
+                .upper-sheet [data-rsbs-backdrop],
+                .upper-sheet [data-rsbs-overlay],
+                .upper-sheet [data-rsbs-root]:after {
+                    z-index: 99999 !important;
+                }
+            `}</style>
             <BottomNav currentTab="calendar" />
 
             <div style={styles.header}>
@@ -142,7 +153,7 @@ export default function CalendarPage() {
                     endAccessor="end"
                     style={styles.calendar}
                     onSelectSlot={handleSelectSlot}
-                    onSelectEvent={handleSelectEvent}
+                    onSelectEvent={(event) => handleSelectSlot({ start: event.start })}
                     selectable
                     eventPropGetter={eventStyleGetter}
                     dayPropGetter={dayPropGetter}
@@ -157,46 +168,57 @@ export default function CalendarPage() {
                 />
             </div>
 
-            {selectedDate && (
-                <div style={styles.todayView}>
-                    <div style={styles.dateHeader}>
-                        <h3>{moment(selectedDate).format('MM월 DD일, YYYY')}
-                            <button onClick={handleNextDay} disabled={moment(selectedDate).isSame(currentMonth.clone().endOf('month'), 'day')}
-                                style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-10px', borderRadius: '20px', padding: '10px 15px' }}>
-                                →
-                            </button>
-                            <button onClick={handlePrevDay} disabled={moment(selectedDate).isSame(currentMonth.clone().startOf('month'), 'day')}
-                                style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-10px', borderRadius: '20px', padding: '10px 15px', marginRight: '10px' }}>
-                                ←
-                            </button>
-                        </h3>
-                    </div>
-                    <Spacer y={15} />
-                    {selectedDayEvents.length > 0 ? (
-                        selectedDayEvents.map((event, index) => (
-                            <div key={index} style={styles.eventItem} onClick={() => handleSelectEvent(event)}>
-                                <div style={{ ...styles.eventColor, backgroundColor: event.schdulColor }}></div>
-                                <div>
-                                    <div>{event.title}</div>
-                                    <div style={{ opacity: .6 }}>{moment(event.start).format('HH:mm')} - {moment(event.end).format('HH:mm')}</div>
-                                </div>
-                            </div>
-                        ))
-                    ) : (
-                        <p>이 날은 일정이 없어요 <span className='tossface'>😎</span></p>
-                    )}
-                </div>
-            )}
-            <Spacer y={5} />
-            <button style={{ background: 'var(--card-background)' }} onClick={() => {
-                openAddEventModal();
-            }}>
-                + 일정 추가
-            </button>
 
             <Spacer y={80} />
 
             <BottomSheet
+                open={isDaySheetOpen}
+                onDismiss={() => setIsDaySheetOpen(false)}
+            >
+                <div style={{ padding: '20px', paddingBottom: '40px' }}>
+                    {selectedDate && (
+                        <>
+                            <div style={styles.dateHeader}>
+                                <h3 style={{ margin: 0 }}>{moment(selectedDate).format('YYYY년 MM월 DD일')}
+                                    <button onClick={handleNextDay} disabled={moment(selectedDate).isSame(currentMonth.clone().endOf('month'), 'day')}
+                                        style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-5px', borderRadius: '20px', padding: '10px 15px' }}>
+                                        →
+                                    </button>
+                                    <button onClick={handlePrevDay} disabled={moment(selectedDate).isSame(currentMonth.clone().startOf('month'), 'day')}
+                                        style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-5px', borderRadius: '20px', padding: '10px 15px', marginRight: '10px' }}>
+                                        ←
+                                    </button>
+                                </h3>
+                            </div>
+                            <Spacer y={25} />
+                            <div style={{ maxHeight: '50vh', overflowY: 'auto' }}>
+                                {selectedDayEvents.length > 0 ? (
+                                    selectedDayEvents.map((event, index) => (
+                                        <div key={index} style={styles.eventItem} onClick={() => handleSelectEvent(event)}>
+                                            <div style={{ ...styles.eventColor, backgroundColor: event.schdulColor }}></div>
+                                            <div>
+                                                <div>{event.title}</div>
+                                                <div style={{ opacity: .6 }}>{moment(event.start).format('HH:mm')} - {moment(event.end).format('HH:mm')}</div>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p style={{ margin: '20px 0' }}>아직 아무 일정도 없어요.</p>
+                                )}
+                            </div>
+                        </>
+                    )}
+                    <Spacer y={15} />
+                    <button style={{ background: 'var(--card-background)', width: '100%', padding: '15px', borderRadius: '15px', border: 'none', fontWeight: 'bold' }} onClick={() => {
+                        openAddEventModal();
+                    }}>
+                        + 일정 추가
+                    </button>
+                </div>
+            </BottomSheet>
+
+            <BottomSheet
+                className="upper-sheet"
                 open={isModalOpen}
                 onDismiss={() => { closeModal(); }}
             >
@@ -496,8 +518,7 @@ const styles = {
         marginBottom: '20px',
     },
     calendarContainer: {
-        height: '50dvh',
-        marginBottom: '20px',
+        height: '75dvh'
     },
     calendar: {
         height: '100%',
