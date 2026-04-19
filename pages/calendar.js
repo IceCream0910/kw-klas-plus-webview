@@ -6,19 +6,30 @@ import { BottomSheet } from 'react-spring-bottom-sheet';
 import 'react-spring-bottom-sheet/dist/style.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import IonIcon from '@reacticons/ionicons';
-import { KLAS } from "../lib/core/klas";
-import { formatCalendarEvents, getEventsForDate, getDefaultSelectedDate, getEventStyle } from '../lib/calendar/calendarUtils';
-import { openWebViewBottomSheet, closeWebViewBottomSheet } from '../lib/core/androidBridge';
 import { useCalendar } from '../lib/calendar/useCalendar';
-import EventItem from '../components/calendar/EventItem';
 import ToggleSwitch from '../components/common/ToggleSwitch';
 import BottomNav from '../components/common/bottomNav';
 
 const localizer = momentLocalizer(moment);
 var yearHakgi;
 
-const TouchCellWrapper = ({ children, value, onSelectSlot }) =>
-    cloneElement(Children.only(children), {
+const TouchCellWrapper = ({ children, value, onSelectSlot, isLoading }) => {
+    const child = Children.only(children);
+
+    const day = moment(value).day();
+    const week = moment(value).week();
+    const delay = (week % 6) * 0.2 + (day * 0.1);
+
+    let style = { ...child.props.style };
+    let className = child.props.className || '';
+
+    if (isLoading) {
+        style.animation = 'calendar-skeleton 1.5s infinite ease-in-out';
+        style.animationDelay = `${delay}s`;
+        className += ' skeleton-loading';
+    }
+
+    return cloneElement(child, {
         onTouchEnd: (event) => {
             const bounds = event.target.getBoundingClientRect();
             onSelectSlot({
@@ -28,7 +39,10 @@ const TouchCellWrapper = ({ children, value, onSelectSlot }) =>
                 action: "click",
             });
         },
+        style,
+        className
     });
+};
 
 
 export default function CalendarPage() {
@@ -42,6 +56,7 @@ export default function CalendarPage() {
         selectedDayEvents,
         currentMonth,
         isDaySheetOpen,
+        isLoading,
         setToken,
         setIsDaySheetOpen,
         handleSlotSelect,
@@ -119,6 +134,14 @@ export default function CalendarPage() {
                 .upper-sheet [data-rsbs-root]:after {
                     z-index: 99999 !important;
                 }
+                @keyframes calendar-skeleton {
+                    0% { background-color: transparent;  margin: 1px 2px; }
+                    50% { background-color: var(--card-border); opacity: 0.5;  margin: 1px 2px; }
+                    100% { background-color: transparent;  margin: 1px 2px; }
+                }
+                .skeleton-loading {
+                    pointer-events: none !important;
+                }
             `}</style>
             <BottomNav currentTab="calendar" />
 
@@ -144,7 +167,7 @@ export default function CalendarPage() {
                 <Calendar
                     components={{
                         dateCellWrapper: (props) => (
-                            <TouchCellWrapper {...props} onSelectSlot={handleSelectSlot} />
+                            <TouchCellWrapper {...props} onSelectSlot={handleSelectSlot} isLoading={isLoading} />
                         )
                     }}
                     localizer={localizer}
@@ -485,16 +508,15 @@ function EventForm({ event, date, isOpen, onSave, onDelete, onClose }) {
                         }
                         Android.openLectureActivity(place, event.title.split("::")[0].replace("[과제] ", "").trim())
                     }}>해당 강의 홈으로 이동 →</button>
-                </>) : (<>
+                </>) : event && event.typeNm == "개인일정" && (
                     <input
-                        disabled={event && event.typeNm == "개인일정" ? false : true}
                         type="text"
                         value={place}
                         onChange={(e) => setPlace(e.target.value)}
                         placeholder="메모"
                         style={styles.input}
                     />
-                </>)
+                )
                 }
             </div>
 
