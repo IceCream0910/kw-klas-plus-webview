@@ -43,6 +43,7 @@ function CurrentStatus({ statusText, showClassActions, selectedSubj, selectedSub
                     </button>
                     <button
                         id="qr_btn"
+                        data-rybbit-event="qrAttendence_clicked"
                         onClick={handleQRClick}
                         style={{
                             backgroundColor: 'var(--card-background)',
@@ -61,20 +62,20 @@ function CurrentStatus({ statusText, showClassActions, selectedSubj, selectedSub
 
         if (isNoCourse) {
             return <div id="status_btns">
-                    <button
-                        id="lecture_btn"
-                        onClick={handleYearHakgiSelect}
-                        style={{
-                            backgroundColor: 'var(--button-background)',
-                            color: 'var(--button-text)',
-                            width: 'fit-content',
-                            padding: '10px 15px',
-                            fontSize: '15px'
-                        }}
-                    >
-                        학기 선택
-                    </button>
-                </div>;
+                <button
+                    id="lecture_btn"
+                    onClick={handleYearHakgiSelect}
+                    style={{
+                        backgroundColor: 'var(--button-background)',
+                        color: 'var(--button-text)',
+                        width: 'fit-content',
+                        padding: '10px 15px',
+                        fontSize: '15px'
+                    }}
+                >
+                    학기 선택
+                </button>
+            </div>;
         }
 
         return null;

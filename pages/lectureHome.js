@@ -530,7 +530,7 @@ export default function LectureHome() {
                         zIndex: 9999
                     }}>
                         <button onClick={() => Android.openLecturePlan()} style={{ background: 'var(--button-background)', padding: '15px 20px', borderRadius: '15px', fontSize: '15px' }}>강의계획서</button>
-                        <button onClick={() => Android.openQRScan()} style={{ background: 'var(--card-background)', color: 'var(--text-color)', padding: '15px 20px', borderRadius: '15px', fontSize: '15px' }}>QR 출석</button>
+                        <button data-rybbit-event="qrAttendence_clicked" onClick={() => Android.openQRScan()} style={{ background: 'var(--card-background)', color: 'var(--text-color)', padding: '15px 20px', borderRadius: '15px', fontSize: '15px' }}>QR 출석</button>
 
                     </div>
                     <GradualBlur
