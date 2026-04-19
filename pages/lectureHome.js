@@ -11,7 +11,7 @@ export default function LectureHome() {
     const [data, setData] = useState(null);
     const [subjectInfo, setSubjectInfo] = useState(null);
     const [subjectPlaceTime, setSubjectPlaceTime] = useState(null);
-    const [attendExpand, setAttendExpand] = useState(false);
+    const [attendExpand, setAttendExpand] = useState(true);
     const [mapSheetOpen, setMapSheetOpen] = useState(false);
     const [selectedBuilding, setSelectedBuilding] = useState(null);
 
@@ -93,8 +93,8 @@ export default function LectureHome() {
                 </span>
 
                 <Spacer y={30} />
-                <h3>강의 공지사항
-                    <button onClick={() => Android.openBoardList("notice", "강의 공지사항")} style={{ float: "right", width: 'fit-content', marginTop: '-5px' }}>
+                <h3 onClick={() => Android.openBoardList("notice", "강의 공지사항")}>강의 공지사항
+                    <button style={{ float: "right", width: 'fit-content', marginTop: '-5px' }}>
                         <IonIcon name='add-outline' />
                     </button>
                 </h3>
@@ -106,7 +106,7 @@ export default function LectureHome() {
                                 <span><b>{notice.title}</b></span><br />
                                 <span style={{ opacity: 0.6, fontSize: '12px' }}>
                                     {new Date(notice.registDt).getFullYear()}-{(new Date(notice.registDt).getMonth() + 1).toString().padStart(2, '0')}-{new Date(notice.registDt).getDate().toString().padStart(2, '0')}</span><br />
-                                <hr style={{ opacity: 0.3 }} />
+                                {index == data.noticeList.length - 1 ? null : <hr style={{ opacity: 0.3 }} />}
                             </div>
                         ))}
                     </div>
@@ -131,56 +131,56 @@ export default function LectureHome() {
                     {(data.cntntCmpltCnt !== 0 || data.cntntList.length !== 0) && (
                         <div onClick={() => Android.openOnlineLecture()}
                             className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
-                            <span><b>강의 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
+                            <span><b>강의 </b></span>
                             <span style={{ opacity: .7, color: data.cntntCmpltCnt !== data.cntntList.length && 'var(--red)' }}>{data.cntntCmpltCnt}/{data.cntntList.length}</span>
                         </div>
                     )}
                     {(data.taskPrsntCnt !== 0 || data.taskCnt !== 0) && (
                         <div onClick={() => Android.evaluteKLASScript(`appModule.goTask()`)}
                             className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
-                            <span><b>과제 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
+                            <span><b>과제 </b></span>
                             <span style={{ opacity: .7, color: data.taskPrsntCnt !== data.taskCnt && 'var(--red)' }}>{data.taskPrsntCnt}/{data.taskCnt}</span>
                         </div>
                     )}
                     {(data.quizPrsntCnt !== 0 || data.quizCnt) !== 0 && (
                         <div onClick={() => Android.evaluteKLASScript(`appModule.goQuiz()`)}
                             className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
-                            <span><b>퀴즈 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
+                            <span><b>퀴즈 </b></span>
                             <span style={{ opacity: .7, color: data.quizPrsntCnt !== data.quizCnt && 'var(--red)' }}>{data.quizPrsntCnt}/{data.quizCnt}</span>
                         </div>
                     )}
                     {data.pdsCnt !== 0 && (
                         <div onClick={() => Android.openBoardList("pds", "강의 자료실")}
                             className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
-                            <span><b>자료 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
+                            <span><b>자료 </b></span>
                             <span style={{ opacity: .7, color: data.pdsNewCnt == 1 && 'var(--red)' }}>{data.pdsCnt}</span>
                         </div>
                     )}
                     {(data.examPrsntCnt !== 0 || data.examCnt !== 0) && (
                         <div onClick={() => Android.evaluteKLASScript(`appModule.goExam()`)}
                             className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
-                            <span><b>시험 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
+                            <span><b>시험 </b></span>
                             <span style={{ opacity: .7, color: data.examPrsntCnt !== data.examCnt && 'var(--red)' }}>{data.examPrsntCnt}/{data.examCnt}</span>
                         </div>
                     )}
                     {(data.prjctPrsntCnt !== 0 || data.prjctCnt !== 0) && (
                         <div onClick={() => Android.evaluteKLASScript(`appModule.goPrjct()`)}
                             className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
-                            <span><b>팀프로젝트 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
+                            <span><b>팀프로젝트 </b></span>
                             <span style={{ opacity: .7, color: data.prjctPrsntCnt !== data.prjctCnt && 'var(--red)' }}>{data.prjctPrsntCnt}/{data.prjctCnt}</span>
                         </div>
                     )}
                     {(data.dscsnJoinCnt !== 0 || data.dscsnCnt) !== 0 && (
                         <div onClick={() => Android.evaluteKLASScript(`appModule.goDscsn()`)}
                             className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
-                            <span><b>토론 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
+                            <span><b>토론 </b></span>
                             <span style={{ opacity: .7, color: data.dscsnJoinCnt !== data.dscsnCnt && 'var(--red)' }}>{data.dscsnJoinCnt}/{data.dscsnCnt}</span>
                         </div>
                     )}
                     {(data.surveyPrsntCnt !== 0 || data.surveyCnt) !== 0 && (
                         <div onClick={() => Android.evaluteKLASScript(`appModule.goSurvey()`)}
                             className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
-                            <span><b>설문 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
+                            <span><b>설문 </b></span>
                             <span style={{ opacity: .7, color: data.surveyPrsntCnt !== data.surveyCnt && 'var(--red)' }}>{data.surveyPrsntCnt}/{data.surveyCnt}</span>
                         </div>
                     )}
@@ -191,7 +191,7 @@ export default function LectureHome() {
                 Android.openPage(link);
                 `)}
                         className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
-                        <span><b>묻고답하기 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
+                        <span><b>묻고답하기 </b></span>
                     </div>
 
                     <div onClick={() => Android.evaluteKLASScript(`
@@ -200,7 +200,7 @@ export default function LectureHome() {
                 Android.openPage(link);
                 `)}
                         className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
-                        <span><b>수강생 자료실 <IonIcon style={{ position: 'relative', top: '2px' }} name='chevron-forward' /></b></span>
+                        <span><b>수강생 자료실 </b></span>
                     </div>
 
                 </div>

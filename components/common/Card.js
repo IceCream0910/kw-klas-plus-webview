@@ -22,7 +22,7 @@ function Card({
         >
             {title && (
                 <div className="card-title" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>{title}</span>
+                    <span style={{ width: '100%' }}>{title}</span>
                     {actionButton}
                 </div>
             )}
