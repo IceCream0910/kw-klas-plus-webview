@@ -1,8 +1,11 @@
 import "../styles/globals.css";
 import { useEffect } from "react";
 import Script from 'next/script';
+import { useRouter } from 'next/router';
 
 function MyApp({ Component, pageProps }) {
+  const router = useRouter();
+
   useEffect(() => {
     if (!process.env.NEXT_PUBLIC_DEVELOPMENT && 'serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
@@ -21,7 +24,21 @@ function MyApp({ Component, pageProps }) {
       if (process.env.NEXT_PUBLIC_DEVELOPMENT) return;
       window.location.replace("https://play.google.com/store/apps/details?id=com.icecream.kwklasplus");
     }
-  }, []);
+
+    const handleRouteChange = () => {
+      const hakbun = localStorage.getItem('klasplus_lastSessionID');
+      if (hakbun && window.rybbit && window.rybbit.identify) {
+        window.rybbit.identify(hakbun);
+      }
+    };
+
+    setTimeout(handleRouteChange, 1000);
+    router.events.on('routeChangeComplete', handleRouteChange);
+
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }, [router.events]);
 
   return (
     <>

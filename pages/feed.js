@@ -169,7 +169,21 @@ export default function Feed() {
     }
 
     window.receiveToken = (receivedToken) => {
-      if (receivedToken) setToken(receivedToken);
+      if (receivedToken) {
+        setToken(receivedToken);
+        KLAS("https://klas.kw.ac.kr/std/cps/inqire/AtnlcScreHakjukInfo.do", receivedToken)
+          .then((data) => {
+            if (data && data.hakbun) {
+              localStorage.setItem('klasplus_lastSessionID', data.hakbun);
+              if (window.rybbit && window.rybbit.identify) {
+                window.rybbit.identify(data.hakbun);
+              }
+            }
+          })
+          .catch((error) => {
+            console.error('Error fetching hakbun:', error);
+          });
+      }
     };
   };
 
@@ -315,14 +329,15 @@ export default function Feed() {
           <Spacer y={20} />
 
           <Card
-            title="오늘의 학식"
+            title={
+              <span
+                style={{ display: 'flex', alignItems: 'center' }}
+                onClick={() => openKlasPage('https://www.kw.ac.kr/ko/life/facility11.jsp')}
+              >
+                학식 <IonIcon name="chevron-forward" />
+              </span>}
             isAnimated={false}
             style={{ paddingBottom: '0.1em' }}
-            actionButton={
-              <button onClick={() => openKlasPage('https://www.kw.ac.kr/ko/life/facility11.jsp')} style={{ float: "right", width: 'fit-content', marginTop: '-12px' }}>
-                <IonIcon name='add-outline' />
-              </button>
-            }
           >
             {!cafeteria ? (
               <SkeletonLayouts.CafeteriaInfo />
