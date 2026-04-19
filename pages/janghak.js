@@ -1,63 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect } from "react";
 import Spacer from "../components/common/spacer";
 import LoadingComponent from "../components/common/loader";
 import { KLAS } from "../lib/core/klas";
 import { safeAndroidCall } from "../lib/core/androidBridge";
-
-const generateRandomColor = () => {
-  const hue = Math.floor(Math.random() * 360);
-  return `hsl(${hue}, 70%, 80%)`;
-};
-
-const generateRandomPattern = () => {
-  const patterns = ['axiom-pattern', '60-lines', 'ag-square', 'diamond-uphoistery', 'escheresque', 'gradient-squares', 'graphy-dark', 'inspiration-geometry'];
-  return patterns[Math.floor(Math.random() * patterns.length)];
-};
-
-const OriginalScholarshipCard = ({ scholarship, isFocused }) => {
-  const cardColor = React.useMemo(() => generateRandomColor(), []);
-  const pattern = React.useMemo(() => generateRandomPattern(), []);
-
-  return (
-    <motion.div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        padding: '16px',
-        borderRadius: '12px',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-        backdropFilter: 'blur(10px)',
-        backgroundColor: `${cardColor}33`,
-        border: `1px solid ${cardColor}`,
-        backgroundImage: `url('https://www.transparenttextures.com/patterns/${pattern}.png'), linear-gradient(to top left, ${cardColor}, #ffffff23)`,
-        width: 'calc(60vw - 40px)',
-        height: '80vw',
-        margin: '0 20px',
-        position: 'relative',
-        scale: isFocused ? 1.05 : 1,
-        transition: 'all 0.5s ease',
-        msTransition: 'all 0.5s ease',
-      }}
-      whileHover={{ scale: 1.05 }}
-    >
-      <div>
-        <Spacer y={20} />
-        <h3>{scholarship?.janghakName || "장학금"}</h3>
-        <p style={{ fontSize: '13px', opacity: .8 }}>{scholarship?.yearHakgi?.split('-')[0]}년도 {scholarship?.yearHakgi?.split('-')[1]}학기</p>
-      </div>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <h3>₩{scholarship?.janghakAmt?.toLocaleString() || ""}</h3>
-        <Spacer y={20} />
-      </motion.div>
-    </motion.div>
-  );
-};
 
 const ScholarshipListItem = ({ scholarship }) => {
   return (
@@ -84,10 +29,6 @@ export default function Janghak() {
   const [token, setToken] = useState("");
   const [janghak, setJanghak] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const containerRef = useRef(null);
-  const [focusedIndex, setFocusedIndex] = useState(1);
-  const observerRef = useRef(null);
-  const [viewType, setViewType] = useState('list');
 
   useEffect(() => {
     window.receiveToken = (receivedToken) => {
@@ -96,17 +37,10 @@ export default function Janghak() {
   }, []);
 
   useEffect(() => {
-    if (focusedIndex === 0) setFocusedIndex(1);
-    if (focusedIndex === janghak.length - 1) setFocusedIndex(janghak.length - 2);
-  }, [focusedIndex]);
-
-  useEffect(() => {
     if (!token) return;
 
     KLAS("https://klas.kw.ac.kr/std/cps/inqire/JanghakHistoryStdList.do", token)
       .then((data) => {
-        data.unshift(null);
-        data.push(null);
         setJanghak(data);
         setIsLoading(false);
       })
@@ -115,46 +49,6 @@ export default function Janghak() {
         setIsLoading(false);
       });
   }, [token]);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const options = {
-      root: container,
-      rootMargin: "0px",
-      threshold: 0.5,
-    };
-
-    const callback = (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const index = Array.from(container.children).indexOf(entry.target);
-          setFocusedIndex(index);
-        }
-      });
-    };
-
-    const observer = new IntersectionObserver(callback, options);
-    observerRef.current = observer;
-
-    Array.from(container.children).forEach((child) => {
-      observer.observe(child);
-    });
-
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-    };
-  }, [janghak]);
-
-  // 초기 스크롤 위치 설정
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container || !container.children[1]) return;
-    container.scrollLeft = container.children[0].offsetWidth;
-  }, [janghak]);
 
   const handleOpenKlas = () => {
     safeAndroidCall(() => {
@@ -183,7 +77,7 @@ export default function Janghak() {
   }
 
   return (
-    <main style={{ paddingBottom: '60px' }}>
+    <main style={{ paddingBottom: '20px' }}>
       <Spacer y={5} />
       <h2>장학 조회
         <button
@@ -230,103 +124,18 @@ export default function Janghak() {
           </div>
         </>
       ) : (
-        <>
-          {viewType === 'card' ? (
-            <>
-              <div style={{
-                position: 'absolute',
-                left: 0,
-                right: 0,
-                top: '50%',
-                transform: 'translateY(-50%)'
-              }}>
-                {janghak && <h3 style={{ textAlign: 'center' }}>지금까지 총 {janghak.length - 2}건의<br />장학금을 수여받았어요!</h3>}
-                <Spacer y={20} />
-                <div
-                  ref={containerRef}
-                  style={{
-                    display: 'flex',
-                    overflowX: 'auto',
-                    scrollbarWidth: 'none',
-                    msOverflowStyle: 'none',
-                    scrollSnapType: 'x mandatory',
-                    alignItems: 'center',
-                    height: 'fit-content',
-                    padding: '15px 0',
-                  }}
-                >
-                  {janghak.map((scholarship, index) => (
-                    <div key={index} style={{ scrollSnapAlign: 'center' }}>
-                      {scholarship ? (
-                        <OriginalScholarshipCard scholarship={scholarship} isFocused={index === focusedIndex} />
-                      ) : (
-                        <div style={{ width: 'calc(25vw - 40px)', height: '70vw' }}>
-                          <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}></div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </>
-          ) : (
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              width: '100%',
-              gap: '15px',
-              padding: '25px 0'
-            }}>
-              {janghak.slice(1, -1).map((scholarship, index) => (
-                <ScholarshipListItem key={index} scholarship={scholarship} />
-              ))}
-            </div>
-          )}
-        </>
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          width: '100%',
+          gap: '15px',
+          padding: '25px 0'
+        }}>
+          {janghak.map((scholarship, index) => (
+            <ScholarshipListItem key={index} scholarship={scholarship} />
+          ))}
+        </div>
       )}
-
-      <div style={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: '60px',
-        backgroundColor: 'var(--background)',
-        borderTop: '1px solid var(--card-background)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}>
-        <button
-          onClick={() => setViewType('list')}
-          style={{
-            width: 'fit-content',
-            padding: '8px 16px',
-            borderRadius: '20px',
-            backgroundColor: viewType === 'list' ? 'var(--card-background)' : 'transparent',
-            border: 'none',
-            fontSize: '14px',
-            textAlign: 'center'
-          }}
-        >
-          리스트
-        </button>
-
-        <button
-          onClick={() => setViewType('card')}
-          style={{
-            width: 'fit-content',
-            padding: '8px 16px',
-            borderRadius: '20px',
-            backgroundColor: viewType === 'card' ? 'var(--card-background)' : 'transparent',
-            border: 'none',
-            fontSize: '14px',
-            textAlign: 'center'
-          }}
-        >
-          카드
-        </button>
-      </div>
     </main>
   );
 }
