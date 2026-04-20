@@ -119,7 +119,7 @@ export default function Feed() {
           subj: 'MA102',
           onlineLecture: [{ hourGap: 152, startDate: null }],
           task: [{ hourGap: 60, startDate: null }],
-          teamTask: [{ hourGap: 20, startDate: null }]
+          teamTask: [{ hourGap: 0, startDate: null }]
         }
       ];
       window.receiveDeadlineData(JSON.stringify(dummyDeadlines));
