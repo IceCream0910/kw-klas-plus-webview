@@ -58,7 +58,7 @@ const TodaysCafeteriaMenu = ({ data }) => {
   };
 
   return (
-    <div style={{ marginTop: '-20px' }}>
+    <div>
       {headerNote && (
         <p style={{ marginTop: '0', fontSize: '12px', opacity: .6 }}>{headerNote}</p>
       )}

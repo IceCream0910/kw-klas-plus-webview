@@ -22,6 +22,7 @@ import NoticeList from '../components/feed/NoticeList';
 import AdvisorInfo from '../components/feed/AdvisorInfo';
 import CampusMapSheet from '../components/common/CampusMapSheet';
 import Logo from '../components/common/Logo';
+import { identifyUser } from '../lib/core/analytics';
 
 const SEMESTER_SCHEDULE = [
   { yearHakgi: '2025,2', start: new Date(2025, 8, 1), end: new Date(2025, 11, 19) },
@@ -175,9 +176,7 @@ export default function Feed() {
           .then((data) => {
             if (data && data.hakbun) {
               localStorage.setItem('klasplus_lastSessionID', data.hakbun);
-              if (window.rybbit && window.rybbit.identify) {
-                window.rybbit.identify(data.hakbun);
-              }
+              identifyUser(data.hakbun);
             }
           })
           .catch((error) => {

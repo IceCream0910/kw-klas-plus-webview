@@ -2,6 +2,7 @@ import "../styles/globals.css";
 import { useEffect } from "react";
 import Script from 'next/script';
 import { useRouter } from 'next/router';
+import { identifyUser } from '../lib/core/analytics';
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -27,8 +28,8 @@ function MyApp({ Component, pageProps }) {
 
     const handleRouteChange = () => {
       const hakbun = localStorage.getItem('klasplus_lastSessionID');
-      if (hakbun && window.rybbit && window.rybbit.identify) {
-        window.rybbit.identify(hakbun);
+      if (hakbun) {
+        identifyUser(hakbun);
       }
     };
 
