@@ -1695,17 +1695,17 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@openai/chatkit-react@^1.2.1":
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/@openai/chatkit-react/-/chatkit-react-1.4.1.tgz#ff8538fd1cd02e82c0d0338adb1173847d3abbba"
-  integrity sha512-/PvaID18iCh1cbcJTuJDzfMAAHTZ/yDdQAIL/es6D7Wju8xjjnojEy1u/N8AdWs+65Hz3YfIoeOQ5/lD2n2VpQ==
+"@openai/chatkit-react@^1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@openai/chatkit-react/-/chatkit-react-1.5.0.tgz#200e47d9d2d462cc10a25e4892518b5c3bb6f74c"
+  integrity sha512-3HnQrkEqJEJ75N0rNaArwzgLPOrTd/FwnNfGVbqRaCTq2/Eb9aHLXQzMXyNYBA5ORUiwZl3FyFqpFieG0f9YUQ==
   dependencies:
-    "@openai/chatkit" "1.3.0"
+    "@openai/chatkit" "1.6.0"
 
-"@openai/chatkit@1.3.0":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@openai/chatkit/-/chatkit-1.3.0.tgz#88d858c15e2308a4919284094591331d6a83397b"
-  integrity sha512-b/0UmnUAvTX7Zi3juAt4+FPGVMCguFlkR7+VccvEHl1vHXM3HjN4FNMr4LEMXg4nWp0t3i+1Hi2FXIiZesO0JA==
+"@openai/chatkit@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@openai/chatkit/-/chatkit-1.6.0.tgz#95f65b87e44fde855650ec04ebd1e930f0795cc5"
+  integrity sha512-lV19ocIYI7EPvP4ZpKNOtoJFmZpyf4DB5472rRd6ua7TE22ENEy0Vbi4OSCJzSD8hBa/v6KyF77qxIV7I1paAg==
 
 "@opennextjs/aws@3.10.1":
   version "3.10.1"
@@ -5819,6 +5819,7 @@ statuses@^2.0.1, statuses@^2.0.2, statuses@~2.0.2:
   integrity sha512-DvEy55V3DB7uknRo+4iOGT5fP1slR8wQohVdknigZPMpMstaKJQWhwiYBACJE3Ul2pTnATihhBYnRhZQHGBiRw==
 
 "string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0:
+  name string-width-cjs
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==

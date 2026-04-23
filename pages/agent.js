@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import Script from 'next/script';
 import Head from 'next/head';
 import { ChatKit, useChatKit } from '@openai/chatkit-react';
+import toast, { Toaster } from 'react-hot-toast';
 import { parse } from 'node-html-parser';
 import { KLAS } from '../lib/core/klas';
 import { CHATKIT_API_URL, STARTER_PROMPTS, } from '../lib/chatkit-config';
@@ -230,36 +231,68 @@ export default function ChatKitComponent() {
             const { name, params } = toolCall;
             console.log('Client tool called:', name, params);
 
+            let toolDesc = '정보를 검색하는 중...';
             switch (name) {
-                case 'getSubjectList':
-                    return await getSubjectList();
-                case 'searchCourseInfo':
-                    return await searchCourseInfo(params);
-                case 'searchTaskList':
-                    return await searchTaskList(params);
-                case 'getKWNoticeList':
-                    return await getKWNoticeList();
-                case 'searchKWNoticeList':
-                    return await searchKWNoticeList(params);
-                case 'getSchedules':
-                    return await getSchedules();
-                case 'getHaksik':
-                    return await getHaksik();
-                case 'getHomepageSitemap':
-                    return await getHomepageSitemap();
-                case 'getContentFromUrl':
-                    return await getContentFromUrl(params);
-                case 'getPortalMenus':
-                    return await getPortalMenus();
-                default:
-                    console.warn(`Unhandled client tool: ${name}`);
-                    throw new Error(`Unhandled client tool: ${name}`);
+                case 'getSubjectList': toolDesc = '수강 과목 목록을 가져오는 중...'; break;
+                case 'searchCourseInfo': toolDesc = '강의 정보를 검색하는 중...'; break;
+                case 'searchTaskList': toolDesc = '과제 목록을 검색하는 중...'; break;
+                case 'getKWNoticeList': toolDesc = '광운대학교 공지사항을 가져오는 중...'; break;
+                case 'searchKWNoticeList': toolDesc = '공지사항을 검색하는 중...'; break;
+                case 'getSchedules': toolDesc = '학사 일정을 가져오는 중...'; break;
+                case 'getHaksik': toolDesc = '학식 메뉴를 가져오는 중...'; break;
+                case 'getHomepageSitemap': toolDesc = '홈페이지 사이트맵을 가져오는 중...'; break;
+                case 'getContentFromUrl': toolDesc = '웹 페이지 내용을 읽는 중...'; break;
+                case 'getPortalMenus': toolDesc = 'KLAS 메뉴를 확인하는 중...'; break;
+            }
+
+            const toastId = toast.loading(toolDesc, {
+                style: {
+                    borderRadius: '999px',
+                    background: prefersDark ? '#333' : '#fff',
+                    color: prefersDark ? '#fff' : '#333',
+                    fontSize: '14px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                },
+            });
+
+            try {
+
+                switch (name) {
+                    case 'getSubjectList':
+                        return await getSubjectList();
+                    case 'searchCourseInfo':
+                        return await searchCourseInfo(params);
+                    case 'searchTaskList':
+                        return await searchTaskList(params);
+                    case 'getKWNoticeList':
+                        return await getKWNoticeList();
+                    case 'searchKWNoticeList':
+                        return await searchKWNoticeList(params);
+                    case 'getSchedules':
+                        return await getSchedules();
+                    case 'getHaksik':
+                        return await getHaksik();
+                    case 'getHomepageSitemap':
+                        return await getHomepageSitemap();
+                    case 'getContentFromUrl':
+                        return await getContentFromUrl(params);
+                    case 'getPortalMenus':
+                        return await getPortalMenus();
+                    default:
+                        console.warn(`Unhandled client tool: ${name}`);
+                        throw new Error(`Unhandled client tool: ${name}`);
+                }
+            } catch (error) {
+                console.error('Error calling client tool:', error);
+            } finally {
+                setTimeout(() => toast.dismiss(toastId), 3000);
             }
         },
     });
 
     return (
         <main>
+            <Toaster position="top-center" />
             <ChatKit control={chatkit.control} style={{ height: '100dvh', width: 'calc(100% + 2em)', margin: '-1em' }} />
 
             <Script
