@@ -1,12 +1,29 @@
-import { useCallback } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import Script from 'next/script';
 import Head from 'next/head';
 import { ChatKit, useChatKit } from '@openai/chatkit-react';
 import toast, { Toaster } from 'react-hot-toast';
+import { motion, AnimatePresence } from 'framer-motion';
 import { parse } from 'node-html-parser';
 import { KLAS } from '../lib/core/klas';
 import { CHATKIT_API_URL, STARTER_PROMPTS, } from '../lib/chatkit-config';
 import { menuItems } from "../lib/profile/menuItems";
+import IonIcon from '@reacticons/ionicons';
+
+const LoadingSpinner = () => (
+    <motion.svg
+        animate={{ rotate: 360 }}
+        transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+        style={{ width: '18px', height: '18px', color: '#3b82f6' }}
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+        <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </motion.svg>
+);
+
 
 async function getSubjectList() {
     const sessionId = localStorage.getItem('klasSessionToken');
@@ -150,12 +167,37 @@ async function getContentFromUrl({ urls }) {
 }
 
 export default function ChatKitComponent() {
+    const [agentProcess, setAgentProcess] = useState({
+        visible: false,
+        title: '생각 중...',
+        steps: []
+    });
+
+    useEffect(() => {
+        if (!agentProcess.visible) {
+            const timer = setTimeout(() => {
+                setAgentProcess(prev => ({ ...prev, steps: [] }));
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+    }, [agentProcess.visible]);
+
+    const handleResponseStart = useCallback(() => {
+        setAgentProcess(prev => ({ ...prev, visible: true }));
+    }, []);
+
+    const handleMessageChunk = useCallback(() => {
+        setAgentProcess(prev => ({ ...prev, visible: true }));
+    }, []);
+
     const handleResponseEnd = useCallback(() => {
         console.log('AI response completed');
+        setAgentProcess(prev => ({ ...prev, visible: false }));
     }, []);
 
     const handleError = useCallback(({ error }) => {
         console.error('ChatKit error:', error);
+        setAgentProcess(prev => ({ ...prev, visible: false }));
     }, []);
 
     const getClientSecret = useCallback(async (existingSecret) => {
@@ -211,7 +253,7 @@ export default function ChatKitComponent() {
                 enabled: true,
                 maxCount: 5,
                 maxSize: 10485760
-            },
+            }
         },
         threadItemActions: {
             feedback: true,
@@ -225,11 +267,14 @@ export default function ChatKitComponent() {
             prompts: STARTER_PROMPTS,
 
         },
+        onResponseStart: handleResponseStart,
+        onMessage: handleMessageChunk, // or try catching onMessage
         onResponseEnd: handleResponseEnd,
         onError: handleError,
         onClientTool: async (toolCall) => {
             const { name, params } = toolCall;
             console.log('Client tool called:', name, params);
+            const stepId = Math.random().toString(36).substring(7);
 
             let toolDesc = '정보를 검색하는 중...';
             switch (name) {
@@ -245,18 +290,13 @@ export default function ChatKitComponent() {
                 case 'getPortalMenus': toolDesc = 'KLAS 메뉴를 확인하는 중...'; break;
             }
 
-            const toastId = toast.loading(toolDesc, {
-                style: {
-                    borderRadius: '999px',
-                    background: prefersDark ? '#333' : '#fff',
-                    color: prefersDark ? '#fff' : '#333',
-                    fontSize: '14px',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                },
-            });
+            setAgentProcess(prev => ({
+                visible: true,
+                title: '필요한 도구 호출 중',
+                steps: [...prev.steps, { id: stepId, text: toolDesc, status: 'loading' }]
+            }));
 
             try {
-
                 switch (name) {
                     case 'getSubjectList':
                         return await getSubjectList();
@@ -284,8 +324,16 @@ export default function ChatKitComponent() {
                 }
             } catch (error) {
                 console.error('Error calling client tool:', error);
+                setAgentProcess(prev => ({
+                    ...prev,
+                    steps: prev.steps.map(step => step.id === stepId ? { ...step, status: 'error', text: '오류가 발생했습니다.' } : step)
+                }));
             } finally {
-                setTimeout(() => toast.dismiss(toastId), 3000);
+                setAgentProcess(prev => ({
+                    ...prev,
+                    title: '답변 생성 중...',
+                    steps: prev.steps.map(step => step.id === stepId ? { ...step, status: 'completed' } : step)
+                }));
             }
         },
     });
@@ -293,6 +341,74 @@ export default function ChatKitComponent() {
     return (
         <main>
             <Toaster position="top-center" />
+
+            <AnimatePresence>
+                {agentProcess.visible && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -20, scale: 0.9, filter: 'blur(10px)' }}
+                        animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+                        exit={{ opacity: 0, y: -20, scale: 0.9, filter: 'blur(10px)' }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                        style={{
+                            position: 'fixed',
+                            bottom: '100px',
+                            left: '50%',
+                            x: '-50%',
+                            zIndex: 9999,
+                            width: '85%',
+                            background: prefersDark ? 'rgba(28, 28, 30, 0.85)' : 'rgba(255, 255, 255, 0.85)',
+                            backdropFilter: 'blur(16px)',
+                            WebkitBackdropFilter: 'blur(16px)',
+                            color: prefersDark ? '#ffffff' : '#000000',
+                            borderRadius: '32px',
+                            boxShadow: prefersDark ? '0 8px 32px rgba(0,0,0,0.5)' : '0 8px 32px rgba(0,0,0,0.1)',
+                            padding: '16px 20px',
+                            border: prefersDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '5px',
+                        }}
+                    >
+                        <motion.div layout="position" style={{ display: 'flex', alignItems: 'center', gap: '16px', fontWeight: 600, fontSize: '14px' }}>
+                            <span className='shimmering'>{agentProcess.title}</span>
+                        </motion.div>
+                        {agentProcess.steps.length > 0 && (
+                            <motion.div layout style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                <AnimatePresence mode="popLayout">
+                                    {agentProcess.steps.map((step, idx) => (
+                                        <motion.div
+                                            key={step.id}
+                                            layout
+                                            initial={{ opacity: 0, x: -10, height: 0 }}
+                                            animate={{ opacity: 1, x: 0, height: 'auto' }}
+                                            exit={{ opacity: 0, scale: 0.9, height: 0 }}
+                                            style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', fontSize: '14px', position: 'relative', overflow: 'hidden' }}
+                                        >
+                                            {/* Connecting Line */}
+                                            {idx !== agentProcess.steps.length - 1 && (
+                                                <div style={{ position: 'absolute', left: '8.5px', top: '22px', bottom: '-14px', width: '2px', backgroundColor: prefersDark ? '#374151' : '#e5e7eb', borderRadius: '9999px' }} />
+                                            )}
+                                            <div style={{ position: 'relative', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', backgroundColor: 'transparent' }}>
+                                                {step.status === 'loading' ? <LoadingSpinner /> : <IonIcon name="checkmark-circle" style={{ color: '#22c55e', fontSize: '18px' }} />}
+                                            </div>
+                                            <div style={{
+                                                transition: 'color 300ms cubic-bezier(0.4, 0, 0.2, 1)',
+                                                width: '100%',
+                                                color: step.status === 'completed'
+                                                    ? (prefersDark ? '#9ca3af' : '#6b7280')
+                                                    : (prefersDark ? '#f3f4f6' : '#111827')
+                                            }}>
+                                                {step.text}
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </AnimatePresence>
+                            </motion.div>
+                        )}
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             <ChatKit control={chatkit.control} style={{ height: '100dvh', width: 'calc(100% + 2em)', margin: '-1em' }} />
 
             <Script
