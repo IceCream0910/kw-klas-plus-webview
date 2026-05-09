@@ -36,6 +36,14 @@ function Header({ title }) {
         }
     }, []);
 
+    const handleChangelogClick = () => {
+        try {
+            openKlasPage("https://klasplus.yuntae.in/changelog")
+        } catch (error) {
+            toast("앱을 최신버전으로 업데이트해주세요.")
+        }
+    };
+
     const handleAiClick = () => {
         try {
             openKlasPage("https://klasplus.yuntae.in/agent")
@@ -77,7 +85,7 @@ function Header({ title }) {
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <button
                             style={{ width: 'fit-content' }}
-                            onClick={() => openExternalLink('https://klasplus.yuntae.in/changelog')}
+                            onClick={handleChangelogClick}
                             aria-label="업데이트 내역 열기"
                         >
                             <released-badge channel-id="b8696cec-f681-43a8-9baa-d5737483003e"></released-badge>
