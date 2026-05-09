@@ -4,7 +4,7 @@
 안드로이드 앱: [icecream0910/kw-klas-plus](https://github.com/icecream0910/kw-klas-plus)
 
 
-## 🚀 시작하기
+## 시작하기
 
 ### 설치 및 실행
 
@@ -31,23 +31,8 @@
    # 개발 모드 여부 (true/false)
    NEXT_PUBLIC_DEVELOPMENT=true
 
-   # API URL
-   NEXT_PUBLIC_NODE_API_URL=https://klasplus-node.vercel.app
-
-   # AI 관련 API 키
+   # OPENAI API키(KLAS AI)
    NEXT_PUBLIC_OPENAI_API_KEY=your_openai_api_key
-   
-   # 안드로이드 앱 최신 버전 (버전 체크용)
-   NEXT_PUBLIC_ANDROID_LATEST_VERSION=20
-   
-   # 공지사항 텍스트 (앱 내 공지용)
-   NEXT_PUBLIC_NOTICE_TEXT=""
-   
-   # AI 챗봇 일일 질문 제한 수
-   NEXT_PUBLIC_MAX_DAILY_QUESTIONS=1000
-   
-   # 최신 개인정보처리방침 날짜 (YYYYMMDD 형식)
-   NEXT_PUBLIC_LATEST_POLICY_DATE=20250413
    ```
 
 4. **개발 서버 실행**
@@ -56,7 +41,6 @@
    # 또는
    yarn dev
    ```
-
 ### 빌드 및 배포
 
 ```bash
@@ -114,14 +98,14 @@ kw-klas-plus-webview/
 │   ├── onlineLecture.js       # 온라인 강의 목록 페이지
 │   ├── ranking.js             # 석차 페이지
 │   ├── janghak.js             # 장학 조회 페이지
-│   ├── ai.js                  # KLAS AI 페이지
+│   ├── agent.js               # KLAS AI 페이지
 │   └── settings.js            # 설정 페이지
 ├── 📁 public/                 
 └── 📁 styles/                 
 ```
 
 
-## 🛠️ 안드로이드 앱 연동
+## 안드로이드 앱 연동
 
 WebView 페이지들은 안드로이드 네이티브 앱과 JavaScript Interface를 통해 데이터를 주고받습니다.
 
@@ -172,7 +156,7 @@ window.receivedData = function (token, subj, yearHakgi, path) {
 };
 ```
 
-#### KLAS AI (`/ai`)
+#### KLAS AI (`/agent`)
 ```javascript
 window.receiveSubjList = function (receivedSubjList) {
    // 과목 리스트 데이터를 수신하여 처리하는 함수
@@ -196,7 +180,7 @@ window.receiveVersion = function (version) {
 };
 ```
 
-## 🤝 기여하기
+## 기여하기
 
 1. 이 저장소를 포크합니다
 2. 기능 브랜치를 생성합니다 (`git checkout -b feat/새기능`)

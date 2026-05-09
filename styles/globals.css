@@ -315,10 +315,12 @@ select {
 }
 
 @keyframes ptr-bounce {
+
   0%,
   100% {
     transform: translateY(0) scale(1);
   }
+
   40% {
     transform: translateY(-10px) scale(0.96);
   }
@@ -470,7 +472,7 @@ div[role="dialog"] {
 
 #remaining-deadline {
   display: grid;
-  grid-gap: 10px;
+  grid-gap: 20px;
   flex-wrap: wrap;
   grid-template-columns: repeat(3, 1fr);
 }
@@ -761,22 +763,6 @@ input[type="datetime-local"] {
   overflow-wrap: break-word;
 }
 
-
-.kakao_ad_area {
-  box-sizing: border-box;
-  min-width: 50px !important;
-}
-
-.kakao_ad_area>div {
-  width: 100% !important;
-  min-width: 50px !important;
-}
-
-.kakao_ad_area>div iframe {
-  border-radius: 15px !important;
-  min-width: 50px !important;
-}
-
 .ptr--ptr {
   box-shadow: none !important;
   opacity: 0.6;
@@ -790,4 +776,48 @@ input[type="datetime-local"] {
 .ptr--text {
   color: var(--text-color) !important;
   font-size: 14px;
+}
+
+.feed-bottom-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .feed-bottom-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "lecture notices"
+      "cafeteria advisor"
+      "cafeteria advisor";
+    align-items: start;
+    gap: 20px;
+  }
+}
+
+.area-lecture {
+  grid-area: lecture;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.area-cafeteria {
+  grid-area: cafeteria;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.area-notices {
+  grid-area: notices;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.area-advisor {
+  grid-area: advisor;
+  width: 100%;
+  box-sizing: border-box;
 }

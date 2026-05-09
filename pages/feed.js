@@ -110,7 +110,7 @@ export default function Feed() {
         {
           name: '광운인되기',
           subj: 'CS101',
-          onlineLecture: [{ hourGap: 10, startDate: null }],
+          onlineLecture: [{ hourGap: 10, startDate: '2026-06-05' }],
           task: [],
           teamTask: []
         },
@@ -247,27 +247,6 @@ export default function Feed() {
 
           <Spacer y={10} />
 
-          {process.env.NEXT_PUBLIC_NOTICE_TEXT && (<>
-            <Card
-              style={{ padding: '15px' }}
-              onClick={() => {
-                try {
-                  Android.openExternalPage("https://blog.klasplus.yuntae.in")
-                } catch (e) {
-                  toast('앱을 최신버전으로 업데이트 해주세요');
-                }
-              }}
-            >
-              <div style={{ width: '100%', display: 'flex', alignContent: 'center', gap: '5px' }}>
-                <IonIcon name="notifications" style={{ opacity: .7 }} />
-                <b style={{ fontSize: '14px', position: 'relative', top: '1px' }}>{process.env.NEXT_PUBLIC_NOTICE_TEXT}</b>
-                <IonIcon name="chevron-forward-outline" />
-              </div>
-            </Card>
-            <Spacer y={20} />
-          </>
-          )}
-
           {showToggle && (
             <>
               <Spacer y={15} />
@@ -323,58 +302,64 @@ export default function Feed() {
             )}
           </div>
 
-          <LectureNotices token={token} />
-
           <Spacer y={20} />
+          <div className="feed-bottom-layout">
+            <div className="area-lecture">
+              <LectureNotices token={token} />
+            </div>
 
-          <Card
-            title={
-              <span
-                style={{ display: 'flex', alignItems: 'center' }}
-                onClick={() => openKlasPage('https://www.kw.ac.kr/ko/life/facility11.jsp')}
+            <div className="area-cafeteria">
+              <Card
+                title={
+                  <span
+                    style={{ display: 'flex', alignItems: 'center' }}
+                    onClick={() => openKlasPage('https://www.kw.ac.kr/ko/life/facility11.jsp')}
+                  >
+                    학식 <IonIcon name="chevron-forward" />
+                  </span>}
+                isAnimated={false}
+                style={{ paddingBottom: '0.1em' }}
               >
-                학식 <IonIcon name="chevron-forward" />
-              </span>}
-            isAnimated={false}
-            style={{ paddingBottom: '0.1em' }}
-          >
-            {!cafeteria ? (
-              <SkeletonLayouts.CafeteriaInfo />
-            ) : (
-              <TodaysCafeteriaMenu data={cafeteria} />
-            )}
-          </Card>
-          <Spacer y={20} />
+                {!cafeteria ? (
+                  <SkeletonLayouts.CafeteriaInfo />
+                ) : (
+                  <TodaysCafeteriaMenu data={cafeteria} />
+                )}
+              </Card>
+            </div>
 
-          <Card
-            isAnimated={false}
-            id="notices"
-            style={{ paddingBottom: '20px', position: 'relative' }}
-            title={
-              <span
-                style={{ display: 'flex', alignItems: 'center' }}
-                onClick={() => openKlasPage('https://www.kw.ac.kr/ko/life/notice.jsp?srCategoryId=&mode=list&searchKey=1&searchVal=')}
+            <div className="area-notices">
+              <Card
+                isAnimated={false}
+                id="notices"
+                style={{ paddingBottom: '20px', position: 'relative', height: '100%' }}
+                title={
+                  <span
+                    style={{ display: 'flex', alignItems: 'center' }}
+                    onClick={() => openKlasPage('https://www.kw.ac.kr/ko/life/notice.jsp?srCategoryId=&mode=list&searchKey=1&searchVal=')}
+                  >
+                    학교 공지사항 <IonIcon name="chevron-forward" />
+                  </span>
+                }
               >
-                공지사항 <IonIcon name="chevron-forward" />
-              </span>
-            }
-          >
-            <NoticeTabs
-              activeTab={kwNoticeTab}
-              onTabChange={setKwNoticeTab}
-            />
-            <NoticeList
-              notices={kwNotice}
-              isLoading={!kwNotice}
-            />
-          </Card>
+                <NoticeTabs
+                  activeTab={kwNoticeTab}
+                  onTabChange={setKwNoticeTab}
+                />
+                <NoticeList
+                  notices={kwNotice}
+                  isLoading={!kwNotice}
+                />
+              </Card>
+            </div>
 
-          <Spacer y={20} />
-
-          <AdvisorInfo
-            advisor={advisor}
-            isLoading={!advisor && token}
-          />
+            <div className="area-advisor">
+              <AdvisorInfo
+                advisor={advisor}
+                isLoading={!advisor && token}
+              />
+            </div>
+          </div>
 
           <br /> <br />
           <br />

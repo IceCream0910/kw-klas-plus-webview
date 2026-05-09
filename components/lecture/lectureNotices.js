@@ -89,7 +89,6 @@ const LectureNotices = ({ token }) => {
     if (!loading && (!notices || notices.length === 0)) {
         return (
             <>
-                <Spacer y={20} />
                 <div className="card non-anim" id="notices" style={{ paddingBottom: '30px' }}>
                     <div className='card-title'>
                         <span>강의 알림</span>
@@ -113,7 +112,6 @@ const LectureNotices = ({ token }) => {
     return (
         <>
             <div id="notices-section" />
-            <Spacer y={20} />
             <div className="card non-anim" style={{ paddingBottom: '20px' }}>
                 <div className='card-title'>
                     <span>강의 알림</span>
