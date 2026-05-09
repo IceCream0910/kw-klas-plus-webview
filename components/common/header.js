@@ -90,9 +90,9 @@ function Header({ title }) {
                         >
                             <released-badge channel-id="b8696cec-f681-43a8-9baa-d5737483003e"></released-badge>
                             <IonIcon
-                                name='gift-outline'
+                                name='rocket'
                                 style={{
-                                    fontSize: '22px',
+                                    fontSize: '20px',
                                     color: 'var(--text-color)',
                                     position: 'relative',
                                     top: '2px'
