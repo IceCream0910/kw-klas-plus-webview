@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import IonIcon from "@reacticons/ionicons";
 import Spacer from "../common/spacer";
-import { openOptionsMenu, openKlasPage } from "../../lib/core/androidBridge";
+import { openOptionsMenu, openKlasPage, openExternalLink } from "../../lib/core/androidBridge";
 import toast, { Toaster } from 'react-hot-toast';
 import GradualBlur from "../common/GradualBlur";
 
@@ -75,6 +75,24 @@ function Header({ title }) {
                         {title}
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <button
+                            style={{ width: 'fit-content' }}
+                            onClick={() => openExternalLink('https://klasplus.yuntae.in/changelog')}
+                            aria-label="업데이트 내역 열기"
+                        >
+                            <released-badge channel-id="b8696cec-f681-43a8-9baa-d5737483003e"></released-badge>
+                            <IonIcon
+                                name='gift-outline'
+                                style={{
+                                    fontSize: '22px',
+                                    color: 'var(--text-color)',
+                                    position: 'relative',
+                                    top: '2px'
+                                }}
+                            />
+                        </button>
+
+
                         {isAgentCompatible && (
                             <div style={{ position: 'relative' }}>
                                 <button

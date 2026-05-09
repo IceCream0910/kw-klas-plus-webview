@@ -49,6 +49,7 @@ function MyApp({ Component, pageProps }) {
         data-site-id="e4129eea280e"
         strategy="afterInteractive"
       />
+      <Script src="https://embed.released.so/1/embed.js" />
     </>
   );
 }

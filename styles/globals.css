@@ -821,3 +821,9 @@ input[type="datetime-local"] {
   width: 100%;
   box-sizing: border-box;
 }
+
+released-badge {
+  position: relative;
+  top: -8px;
+  right: -30px;
+}
