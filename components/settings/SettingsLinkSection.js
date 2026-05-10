@@ -4,7 +4,7 @@ const SettingsLinkSection = () => {
         {
             emoji: '🔔',
             text: '공지사항',
-            url: 'https://blog.klasplus.yuntae.in'
+            url: 'https://klasplus.yuntae.in/changelog'
         },
         {
             emoji: '📶',
