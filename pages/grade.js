@@ -8,6 +8,7 @@ import 'react-spring-bottom-sheet/dist/style.css'
 import { KLAS } from "../lib/core/klas";
 import Skeleton, { SkeletonLayouts } from "../components/common/Skeleton";
 import GradeCard from "../components/grade/GradeCard";
+import { openWebViewBottomSheet, closeWebViewBottomSheet } from "../lib/core/androidBridge";
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 export default function Grade() {
@@ -26,7 +27,17 @@ export default function Grade() {
       if (!receivedToken) return;
       setToken(receivedToken);
     };
+
+    window.closeWebViewBottomSheet = function () {
+      setIsModalOpen(false);
+    };
+
     setPrefersDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+    return () => {
+      window.receiveToken = undefined;
+      window.closeWebViewBottomSheet = undefined;
+    };
   }, [])
 
   useEffect(() => {
@@ -63,8 +74,10 @@ export default function Grade() {
   useEffect(() => {
     if (isModalOpen) {
       window.scrollTo(0, document.body.scrollHeight);
+      openWebViewBottomSheet();
     } else {
       window.scrollTo(0, 0);
+      closeWebViewBottomSheet();
     }
   }, [isModalOpen]);
 

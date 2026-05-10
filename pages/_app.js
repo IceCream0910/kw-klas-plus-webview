@@ -21,7 +21,7 @@ function MyApp({ Component, pageProps }) {
     try {
       Android.completePageLoad();
     } catch (error) {
-      if (window.location.href.includes("privacy")) return;
+      if (window.location.href.includes("privacy") || window.location.href.includes("changelog")) return;
       if (process.env.NEXT_PUBLIC_DEVELOPMENT) return;
       window.location.replace("https://play.google.com/store/apps/details?id=com.icecream.kwklasplus");
     }
