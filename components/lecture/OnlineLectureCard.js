@@ -26,9 +26,10 @@ const OnlineLectureCard = ({ item }) => {
             alignContent: 'center',
             padding: '15px',
             border: item.prog === 100 ? '0.5px solid var(--green)' : undefined
-        }}>
-            <div>
-                <span><b>{item.sbjt}</b></span>
+        }}
+            onClick={() => isBeforeStartDate(item.startDate) ? handlePreview() : handleLectureOpen()}>
+            <div style={{ width: '100%' }}>
+                <span style={{ wordBreak: 'break-all' }}><b>{item.sbjt}</b></span>
                 <Spacer y={5} />
                 <span style={{ fontSize: '15px' }}>
                     <IonIcon style={{

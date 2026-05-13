@@ -13,7 +13,7 @@ const BoardListItem = ({ item }) => {
             onClick={handleClick}
             style={{ paddingLeft: 0 }}
         >
-            <span>{item.title}</span><br />
+            <span style={{ wordBreak: 'break-all' }}>{item.title}</span><br />
             <span style={{ opacity: 0.5, fontSize: '14px' }}>
                 {item.userNm} | {item.registDt.substring(0, 10)}
             </span>
