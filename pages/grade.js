@@ -152,22 +152,22 @@ export default function Grade() {
           <div className="profile-card grade-card" style={{ padding: '10px 0', flexDirection: 'row', alignItems: 'space-between' }}>
             <div style={{ textAlign: 'center', width: '100%' }}>
               <span style={{ opacity: .8, fontSize: '12px' }}>신청학점</span>
-              <h3 style={{ margin: 0 }}>{totGradeIncludeEmptyGrade.applyHakjum}</h3>
-              <span style={{ opacity: .5, fontSize: '12px' }}>전공 {totGradeIncludeEmptyGrade.majorApplyHakjum}</span>
+              <h3 style={{ margin: 0 }} className="rr-mask">{totGradeIncludeEmptyGrade.applyHakjum}</h3>
+              <span style={{ opacity: .5, fontSize: '12px' }} className="rr-mask">전공 {totGradeIncludeEmptyGrade.majorApplyHakjum}</span>
             </div>
             <div style={{ textAlign: 'center', width: '100%' }}>
               <span style={{ opacity: .8, fontSize: '12px' }}>삭제학점</span>
-              <h3 style={{ margin: 0 }}>{totGradeIncludeEmptyGrade.delHakjum}</h3>
-              <span style={{ opacity: .5, fontSize: '12px' }}>전공 {totGradeIncludeEmptyGrade.majorDelHakjum}</span>
+              <h3 style={{ margin: 0 }} className="rr-mask">{totGradeIncludeEmptyGrade.delHakjum}</h3>
+              <span style={{ opacity: .5, fontSize: '12px' }} className="rr-mask">전공 {totGradeIncludeEmptyGrade.majorDelHakjum}</span>
             </div>
             <div style={{ textAlign: 'center', width: '100%' }}>
               <span style={{ opacity: .8, fontSize: '12px' }}>취득학점</span>
-              <h3 style={{ margin: 0 }}>{totGradeIncludeEmptyGrade.chidukHakjum}</h3>
-              <span style={{ opacity: .5, fontSize: '12px' }}>전공 {totGradeIncludeEmptyGrade.majorChidukHakjum}</span>
+              <h3 style={{ margin: 0 }} className="rr-mask">{totGradeIncludeEmptyGrade.chidukHakjum}</h3>
+              <span style={{ opacity: .5, fontSize: '12px' }} className="rr-mask">전공 {totGradeIncludeEmptyGrade.majorChidukHakjum}</span>
             </div>
             <div style={{ textAlign: 'center', width: '100%' }}>
               <span style={{ opacity: .8, fontSize: '12px' }}>평량평균</span>
-              <h3 style={{ marginTop: '10px' }}>{totGradeIncludeEmptyGrade.jaechulScoresum}</h3>
+              <h3 style={{ marginTop: '10px' }} className="rr-mask">{totGradeIncludeEmptyGrade.jaechulScoresum}</h3>
             </div>
           </div>
         ) : (
@@ -178,7 +178,7 @@ export default function Grade() {
       }
 
       <span style={{ opacity: .5, fontSize: '12px', float: 'right', padding: '10px', textAlign: 'right' }}>*위 평량평균은 성적증명서 기준임<br />
-        학적부 기준: {totGradeIncludeEmptyGrade && totGradeIncludeEmptyGrade.hwakinScoresum}</span>
+        학적부 기준: <span className="rr-mask">{totGradeIncludeEmptyGrade && totGradeIncludeEmptyGrade.hwakinScoresum}</span></span>
 
       <br /><br /><br />
 
@@ -223,7 +223,7 @@ export default function Grade() {
       <h4 style={{ marginTop: '30px', marginBottom: '10px' }}>성적 추이</h4>
       {synthesisGPAs ? (
         synthesisGPAs.length >= 1 && (
-          <div style={{ margin: '25px 0' }}>
+          <div style={{ margin: '25px 0' }} className="rr-block">
             <Line data={chartDatasets} options={{
               scales: {
                 y: {

@@ -28,9 +28,9 @@ function GradeCard({
     const renderStatItem = (label, value, subValue = null) => (
         <div style={{ textAlign: 'center', width: '100%' }}>
             <span style={{ opacity: .8, fontSize: '12px' }}>{label}</span>
-            <h3 style={{ margin: 0 }}>{value}</h3>
+            <h3 style={{ margin: 0 }} className="rr-mask">{value}</h3>
             {subValue && (
-                <span style={{ opacity: .5, fontSize: '12px' }}>{subValue}</span>
+                <span style={{ opacity: .5, fontSize: '12px' }} className="rr-mask">{subValue}</span>
             )}
         </div>
     );

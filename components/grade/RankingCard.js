@@ -7,7 +7,7 @@ const RankingCard = ({ data }) => {
         }}>
             <h3 style={{ width: '100%', fontSize: '15px' }}>
                 <span>{data.thisYear}년도 {data.hakgi}학기</span>
-                <span style={{ float: 'right', fontSize: '18px' }}>
+                <span style={{ float: 'right', fontSize: '18px' }} className="rr-mask">
                     {data.classOrder}위
                     <span style={{ opacity: .3 }}>/{data.manNum}명</span>
                 </span>
@@ -23,19 +23,19 @@ const RankingCard = ({ data }) => {
             }}>
                 <div style={{ textAlign: 'center', width: '100%' }}>
                     <span style={{ opacity: .8, fontSize: '12px' }}>신청학점</span>
-                    <h3 style={{ margin: 0 }}>{data.applyHakjum}</h3>
+                    <h3 style={{ margin: 0 }} className="rr-mask">{data.applyHakjum}</h3>
                 </div>
                 <div style={{ textAlign: 'center', width: '100%' }}>
                     <span style={{ opacity: .8, fontSize: '12px' }}>총점</span>
-                    <h3 style={{ margin: 0 }}>{data.applySum}</h3>
+                    <h3 style={{ margin: 0 }} className="rr-mask">{data.applySum}</h3>
                 </div>
                 <div style={{ textAlign: 'center', width: '100%' }}>
                     <span style={{ opacity: .8, fontSize: '12px' }}>평점</span>
-                    <h3 style={{ margin: 0 }}>{data.applyPoint}</h3>
+                    <h3 style={{ margin: 0 }} className="rr-mask">{data.applyPoint}</h3>
                 </div>
                 <div style={{ textAlign: 'center', width: '100%' }}>
                     <span style={{ opacity: .8, fontSize: '12px' }}>백분율</span>
-                    <h3 style={{ margin: 0 }}>{data.pcnt}</h3>
+                    <h3 style={{ margin: 0 }} className="rr-mask">{data.pcnt}</h3>
                 </div>
             </div>
         </div>

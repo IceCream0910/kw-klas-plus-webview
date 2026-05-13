@@ -20,7 +20,7 @@ const ScholarshipListItem = ({ scholarship }) => {
           {scholarship.yearHakgi?.split('-')[0]}년도 {scholarship.yearHakgi?.split('-')[1]}학기
         </p>
       </div>
-      <h3>₩{scholarship.janghakAmt?.toLocaleString()}</h3>
+      <h3 className="rr-mask">₩{scholarship.janghakAmt?.toLocaleString()}</h3>
     </div>
   );
 };

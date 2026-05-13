@@ -35,14 +35,14 @@ const ProfileCard = ({ data, stdInfo, totGrade, onCardClick, onGradeClick }) => 
                 <div style={{ opacity: 0.8, fontSize: '14px' }}>
                     <Spacer y={5} />
                     <motion.h3 layoutId="name" style={{ marginBottom: '5px', fontSize: '18px' }}>
-                        {data.kname}
+                        <span className="rr-mask">{data.kname}</span>
                     </motion.h3>
                     <div style={{ display: 'flex', gap: '5px' }}>
-                        <motion.div layoutId="hakgwa">{stdInfo && stdInfo.hakgwa}</motion.div>
-                        <motion.div layoutId="number">| {data.hakbun}</motion.div><br />
+                        <motion.div layoutId="hakgwa" className="rr-mask">{stdInfo && stdInfo.hakgwa}</motion.div>
+                        <motion.div layoutId="number" className="rr-mask">| {data.hakbun}</motion.div><br />
                     </div>
-                    <motion.div layoutId="status" style={{ opacity: 0.5, fontSize: '12px' }}>
-                        {data.hakjukStatu}
+                    <motion.div style={{ opacity: 0.5, fontSize: '12px' }}>
+                        <span className="rr-mask">{data.hakjukStatu}</span>
                     </motion.div>
                 </div>
                 <IonIcon name="chevron-forward-outline" style={{ position: 'relative', top: '2px', fontSize: '20px' }} />
@@ -74,15 +74,15 @@ const ProfileCard = ({ data, stdInfo, totGrade, onCardClick, onGradeClick }) => 
                 >
                     <div style={{ textAlign: 'center', width: '100%' }}>
                         <span style={{ opacity: 0.8, fontSize: '12px' }}>취득학점</span>
-                        <h3>{totGrade.credit}</h3>
+                        <h3 className="rr-mask">{totGrade.credit}</h3>
                     </div>
                     <div style={{ textAlign: 'center', width: '100%' }}>
                         <span style={{ opacity: 0.8, fontSize: '12px' }}>평균평점</span>
-                        <h3>{totGrade.averageGPA.includeF}</h3>
+                        <h3 className="rr-mask">{totGrade.averageGPA.includeF}</h3>
                     </div>
                     <div style={{ textAlign: 'center', width: '100%' }}>
                         <span style={{ opacity: 0.8, fontSize: '12px' }}>전공평점</span>
-                        <h3>{totGrade.majorGPA.includeF}</h3>
+                        <h3 className="rr-mask">{totGrade.majorGPA.includeF}</h3>
                     </div>
                 </div>
             )}

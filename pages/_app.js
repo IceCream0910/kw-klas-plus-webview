@@ -47,6 +47,7 @@ function MyApp({ Component, pageProps }) {
       <Script
         src="https://rybbit.yuntae.in/api/script.js"
         data-site-id="e4129eea280e"
+        data-replay-mask-text-selectors='[".rr-mask"]'
         strategy="afterInteractive"
       />
       <Script src="https://embed.released.so/1/embed.js" />

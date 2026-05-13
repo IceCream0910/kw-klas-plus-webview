@@ -101,6 +101,7 @@ export default function IdCard() {
                                     }}
                                 >
                                     <div
+                                        className="rr-block"
                                         style={{
                                             width: '100%',
                                             height: '100%',
@@ -152,15 +153,15 @@ export default function IdCard() {
 
                             <div style={{ flex: 1, paddingTop: '5px' }}>
                                 <motion.div layoutId="name" style={{ fontSize: '24px', fontWeight: '800', marginBottom: '4px' }}>
-                                    {data.kname}
+                                    <span className="rr-mask">{data.kname}</span>
                                 </motion.div>
                                 <motion.div layoutId="number" style={{ fontSize: '16px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: '800', opacity: 0.6 }}>
-                                    {data.hakbun}
+                                    <span className="rr-mask">{data.hakbun}</span>
                                 </motion.div>
                                 <div style={{ fontSize: '13px', lineHeight: '1.5', opacity: 0.8 }}>
-                                    <div style={{ fontWeight: '600' }}>{stdInfo.compNm}</div>
-                                    <div>{data.hakgwa}</div>
-                                    <div>{data.hakjukStatu}</div>
+                                    <div style={{ fontWeight: '600' }}><span className="rr-mask">{stdInfo.compNm}</span></div>
+                                    <div><span className="rr-mask">{data.hakgwa}</span></div>
+                                    <div><span className="rr-mask">{data.hakjukStatu}</span></div>
                                 </div>
                             </div>
                         </div>
