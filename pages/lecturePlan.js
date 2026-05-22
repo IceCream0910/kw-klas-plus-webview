@@ -92,7 +92,6 @@ export default function LecturePlan() {
             <h3>강사진</h3>
             <Spacer y={15} />
 
-            {/* 강사진 정보 */}
             <LectureInstructorInfo
                 lecturePlan={lecturePlan}
                 lectureTeam={data.lectureTeam}
@@ -117,6 +116,57 @@ export default function LecturePlan() {
                 <p style={{ opacity: .6, fontSize: '15px' }}>
                     {formatTextWithBreaks(lecturePlan.purpose)}
                 </p>
+            </div>
+
+            <Spacer y={30} />
+            <h3>반영 비율</h3>
+            <Spacer y={15} />
+            <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
+                <span><b>성적 평가</b></span><br />
+                <GradeChart data={lecturePlan} type="grade" />
+                <GradeLegend data={lecturePlan} type="grade" />
+                <Spacer y={10} />
+                <span style={{ opacity: 0.6, fontSize: '14px' }}><b>세부설명: </b>
+                    <span>
+                        {lecturePlan.gitaDetail ? lecturePlan.gitaDetail?.split('\r\n').map((line, i) => (
+                            <span key={i}>
+                                {line}
+                                {i < lecturePlan.gitaDetail.split('\r\n').length - 1 && <br />}
+                            </span>
+                        )) : "내용 없음"}
+                    </span>
+                </span>
+
+
+                {(lecturePlan.openCode == '11' || lecturePlan.openCode == '13' || lecturePlan.openCode == '91' || lecturePlan.openCode == '93' || lecturePlan.openCode == '21') && (
+                    <>
+                        <Spacer y={20} />
+                        <span><b>VL역량</b></span><br />
+                        <GradeChart data={lecturePlan} type="vl" />
+                        <GradeLegend data={lecturePlan} type="vl" />
+                    </>
+                )}
+            </div>
+
+            <Spacer y={30} />
+            <h3>강의 일정</h3>
+            <Spacer y={15} />
+            <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
+                {[...Array(16)].map((_, i) => (
+                    <WeeklyScheduleItem
+                        key={i + 1}
+                        week={i + 1}
+                        lecture={lecturePlan[`week${i + 1}Lecture`]}
+                        bigo={lecturePlan[`week${i + 1}Bigo`]}
+                        subs={lecturePlan[`week${i + 1}Subs`]}
+                    />
+                ))}
+                <div className="notice-item">
+                    <span><b>기타</b></span><br />
+                    <span style={{ opacity: 0.6, fontSize: '13px' }}>- 학기 중 결강이 있을 경우에는 15주차에 보강을 실시하고, 16주차에 기말고사 시행.<br />- 학기 중 결강이 없을 경우에는 15주차에 기말고사 시행 가능.<br />
+                    </span>
+                    <span style={{ opacity: 0.6, fontSize: '13px' }}>{lecturePlan.weekGita}</span>
+                </div>
             </div>
 
 
@@ -169,37 +219,6 @@ export default function LecturePlan() {
                 </>
             )}
 
-
-            <Spacer y={30} />
-            <h3>반영 비율</h3>
-            <Spacer y={15} />
-            <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
-                <span><b>성적 평가</b></span><br />
-                <GradeChart data={lecturePlan} type="grade" />
-                <GradeLegend data={lecturePlan} type="grade" />
-                <Spacer y={10} />
-                <span style={{ opacity: 0.6, fontSize: '14px' }}><b>세부설명: </b>
-                    <span>
-                        {lecturePlan.gitaDetail ? lecturePlan.gitaDetail?.split('\r\n').map((line, i) => (
-                            <span key={i}>
-                                {line}
-                                {i < lecturePlan.gitaDetail.split('\r\n').length - 1 && <br />}
-                            </span>
-                        )) : "내용 없음"}
-                    </span>
-                </span>
-
-
-                {(lecturePlan.openCode == '11' || lecturePlan.openCode == '13' || lecturePlan.openCode == '91' || lecturePlan.openCode == '93' || lecturePlan.openCode == '21') && (
-                    <>
-                        <Spacer y={20} />
-                        <span><b>VL역량</b></span><br />
-                        <GradeChart data={lecturePlan} type="vl" />
-                        <GradeLegend data={lecturePlan} type="vl" />
-                    </>
-                )}
-            </div>
-
             <Spacer y={30} />
             <h3>교재</h3>
             <Spacer y={15} />
@@ -238,26 +257,6 @@ export default function LecturePlan() {
                 />
             </div>
 
-            <Spacer y={30} />
-            <h3>강의 일정</h3>
-            <Spacer y={15} />
-            <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
-                {[...Array(16)].map((_, i) => (
-                    <WeeklyScheduleItem
-                        key={i + 1}
-                        week={i + 1}
-                        lecture={lecturePlan[`week${i + 1}Lecture`]}
-                        bigo={lecturePlan[`week${i + 1}Bigo`]}
-                        subs={lecturePlan[`week${i + 1}Subs`]}
-                    />
-                ))}
-                <div className="notice-item">
-                    <span><b>기타</b></span><br />
-                    <span style={{ opacity: 0.6, fontSize: '13px' }}>- 학기 중 결강이 있을 경우에는 15주차에 보강을 실시하고, 16주차에 기말고사 시행.<br />- 학기 중 결강이 없을 경우에는 15주차에 기말고사 시행 가능.<br />
-                    </span>
-                    <span style={{ opacity: 0.6, fontSize: '13px' }}>{lecturePlan.weekGita}</span>
-                </div>
-            </div>
 
             {
                 (lecturePlan.cqiNow || lecturePlan.cqiSummary) && (<>
