@@ -29,7 +29,8 @@ const ProfileCard = ({ data, stdInfo, totGrade, onCardClick, onGradeClick }) => 
                     flexDirection: 'row',
                     justifyContent: "space-between",
                     alignItems: 'center',
-                    width: '100%'
+                    width: '100%',
+                    boxShadow: 'none'
                 }}
             >
                 <div style={{ opacity: 0.8, fontSize: '14px' }}>
@@ -41,22 +42,12 @@ const ProfileCard = ({ data, stdInfo, totGrade, onCardClick, onGradeClick }) => 
                         <motion.div layoutId="hakgwa" className="rr-mask">{stdInfo && stdInfo.hakgwa}</motion.div>
                         <motion.div layoutId="number" className="rr-mask">| {data.hakbun}</motion.div><br />
                     </div>
-                    <motion.div style={{ opacity: 0.5, fontSize: '12px' }}>
+                    <motion.div layoutId="status" style={{ opacity: 0.5, fontSize: '12px' }}>
                         <span className="rr-mask">{data.hakjukStatu}</span>
                     </motion.div>
                 </div>
                 <IonIcon name="chevron-forward-outline" style={{ position: 'relative', top: '2px', fontSize: '20px' }} />
             </motion.div>
-
-            <Spacer y={10} />
-
-            <button
-                onClick={onCardClick}
-                style={{ background: 'var(--notice-hover)', borderRadius: '10px' }}
-            >
-                <span className="tossface">🪪</span>모바일 학생증
-                <IonIcon name="chevron-forward-outline" style={{ position: 'relative', top: '2px' }} />
-            </button>
 
             <Spacer y={15} />
 

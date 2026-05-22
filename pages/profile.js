@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { AnimatePresence } from "framer-motion";
 import Header from "../components/common/header";
 import ProfileCard from "../components/profile/ProfileCard";
 import SearchBar from "../components/profile/SearchBar";
@@ -39,6 +40,8 @@ export default function Home() {
     }))
     .filter(category => category.items.length > 0);
 
+
+
   const handleMenuClick = (url) => {
     Android.openPage(url);
   };
@@ -77,12 +80,15 @@ export default function Home() {
         />
       ))}
 
-      <StudentIDModal
-        isOpen={isCardOpen}
-        onClose={() => setIsCardOpen(false)}
-        data={data}
-        stdInfo={stdInfo}
-      />
+      <AnimatePresence>
+        {isCardOpen && (
+          <StudentIDModal
+            onClose={() => setIsCardOpen(false)}
+            data={data}
+            stdInfo={stdInfo}
+          />
+        )}
+      </AnimatePresence>
 
       <Spacer y={80} />
 

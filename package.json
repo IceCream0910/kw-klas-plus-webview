@@ -30,6 +30,7 @@
     "node-html-parser": "^6.1.13",
     "postcss": "^8.5.10",
     "pulltorefreshjs": "^0.1.22",
+    "qrcode": "^1.5.4",
     "react": "^19.2.3",
     "react-big-calendar": "^1.15.0",
     "react-chartjs-2": "^5.2.0",
