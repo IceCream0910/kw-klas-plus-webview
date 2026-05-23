@@ -7,7 +7,6 @@ export default function Changelog() {
                     body {
                         margin:0;
                         padding: 0;
-                        background: #211e1e;
                     }
                 `}
             </style>
