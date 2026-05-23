@@ -86,19 +86,25 @@ const DummyQR = ({ isDarkMode }) => (
 
 const StudentIDModal = ({ onClose, data, stdInfo }) => {
     const [showPhoto, setShowPhoto] = useState(true);
-    const [activeTab, setActiveTab] = useState('idCard'); // 'idCard' | 'library'
-    const [qrValues, setQrValues] = useState({ qr1: '', qr2: '' });
+    const [activeTab, setActiveTab] = useState('library'); // 'library' | 'idCard'
+    const [qrValues, setQrValues] = useState({ library: '', idCard: '' });
     const [isQrRequestFailed, setIsQrRequestFailed] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [qrDataUrl, setQrDataUrl] = useState('');
     const [timeLeft, setTimeLeft] = useState(30);
+    const [idCardTimeLeft, setIdCardTimeLeft] = useState(180);
+    const [lastRequestTime, setLastRequestTime] = useState(null);
     const [isLegacyVersion, setIsLegacyVersion] = useState(false);
 
     const triggerQrRequest = useCallback(() => {
+        setQrValues({ library: 'pending', idCard: 'pending' });
+        setQrDataUrl('');
         try {
             if (typeof window !== 'undefined' && typeof window.Android !== 'undefined' && typeof window.Android.requestIdCardQRValue === 'function') {
                 window.Android.requestIdCardQRValue();
                 setIsQrRequestFailed(false);
+                setLastRequestTime(Date.now());
+                setIdCardTimeLeft(180);
             } else {
                 setIsQrRequestFailed(true);
             }
@@ -126,8 +132,8 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
             const isLegacy = !appVersion || appVersion <= 30;
             setIsLegacyVersion(isLegacy);
 
-            window.receiveIdCardQRValue = (qr1, qr2) => {
-                setQrValues({ qr1: qr1 || '', qr2: qr2 || '' });
+            window.receiveIdCardQRValue = (libraryQRValue, idCardQRValue) => {
+                setQrValues({ library: libraryQRValue || '', idCard: idCardQRValue || '' });
             };
 
             if (!isLegacy) {
@@ -141,36 +147,58 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
         }
     }, [triggerQrRequest]);
 
-    // Reset timer back to 30 seconds when tab changes
     useEffect(() => {
         setTimeLeft(30);
     }, [activeTab]);
 
-    const activeQrValue = activeTab === 'idCard' ? qrValues.qr1 : qrValues.qr2;
-    const isBlurred = (activeTab === 'idCard' && isQrRequestFailed) || (activeTab === 'library' && !qrValues.qr2);
+    useEffect(() => {
+        if (activeTab === 'idCard' && lastRequestTime) {
+            const elapsed = Math.floor((Date.now() - lastRequestTime) / 1000);
+            setIdCardTimeLeft(Math.max(0, 180 - elapsed));
+        }
+    }, [activeTab, lastRequestTime]);
 
-    // Countdown interval effect
+    const activeQrValue = activeTab === 'idCard' ? qrValues.idCard : qrValues.library;
+    const isBlurred = (activeTab === 'idCard' && isQrRequestFailed) || (activeTab === 'library' && !qrValues.library) || activeQrValue === 'pending';
+
     useEffect(() => {
         if (isBlurred || !activeQrValue) {
             return;
         }
 
         const timer = setInterval(() => {
-            setTimeLeft((prev) => {
-                if (prev <= 1) {
-                    triggerQrRequest();
-                    return 30;
+            if (activeTab === 'library') {
+                setTimeLeft((prev) => {
+                    if (prev <= 1) {
+                        triggerQrRequest();
+                        return 30;
+                    }
+                    return prev - 1;
+                });
+            } else if (activeTab === 'idCard') {
+                if (lastRequestTime) {
+                    const elapsed = Math.floor((Date.now() - lastRequestTime) / 1000);
+                    const remaining = Math.max(0, 180 - elapsed);
+                    setIdCardTimeLeft(remaining);
+                    if (remaining <= 0) {
+                        triggerQrRequest();
+                    }
                 }
-                return prev - 1;
-            });
+            }
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [isBlurred, activeQrValue, triggerQrRequest]);
+    }, [isBlurred, activeQrValue, activeTab, lastRequestTime, triggerQrRequest]);
 
     const handleRefresh = () => {
         triggerQrRequest();
         setTimeLeft(30);
+    };
+
+    const formatTime = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
     };
 
     const togglePhotoVisibility = () => {
@@ -244,10 +272,8 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                     flexDirection: 'column'
                 }}
             >
-                {/* Hologram Gradient Sheen */}
                 <div className="hologram-overlay" />
 
-                {/* Background Watermark */}
                 <div className="watermark" />
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', zIndex: 1, position: 'relative' }}>
@@ -275,9 +301,8 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
 
                 {data && stdInfo && (
                     <div style={{ zIndex: 2, position: 'relative', display: 'flex', flexDirection: 'column', height: '100%' }}>
-                        {/* Student Details Section */}
                         <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '20px' }}>
-                            <div style={{ position: 'relative', width: '70px', height: '91px', flexShrink: 0 }}>
+                            <div style={{ position: 'relative', width: '90px', height: '120px', flexShrink: 0 }}>
                                 <motion.div
                                     onClick={() => {
                                         try {
@@ -293,8 +318,8 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                     animate={{ rotateY: showPhoto ? 0 : 180 }}
                                     transition={{ duration: 0.6, type: 'spring', stiffness: 260, damping: 20 }}
                                     style={{
-                                        width: '70px',
-                                        height: '91px',
+                                        width: '90px',
+                                        height: '120px',
                                         transformStyle: 'preserve-3d',
                                         perspective: '1000px',
                                         cursor: 'pointer'
@@ -424,29 +449,27 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                             </div>
                         ) : (
                             <>
-                                {/* Floating Tab UI */}
                                 <div className="tab-capsule">
                                     <div
                                         className="tab-bg-pill"
                                         style={{
-                                            transform: activeTab === 'idCard' ? 'translateX(0%)' : 'translateX(100%)'
+                                            transform: activeTab === 'library' ? 'translateX(0%)' : 'translateX(100%)'
                                         }}
                                     />
-                                    <button
-                                        className={`tab-item-btn ${activeTab === 'idCard' ? 'active' : ''}`}
-                                        onClick={() => setActiveTab('idCard')}
-                                    >
-                                        학생증
-                                    </button>
                                     <button
                                         className={`tab-item-btn ${activeTab === 'library' ? 'active' : ''}`}
                                         onClick={() => setActiveTab('library')}
                                     >
                                         도서관 출입증
                                     </button>
+                                    <button
+                                        className={`tab-item-btn ${activeTab === 'idCard' ? 'active' : ''}`}
+                                        onClick={() => setActiveTab('idCard')}
+                                    >
+                                        학생증
+                                    </button>
                                 </div>
 
-                                {/* QR Code Container */}
                                 <div style={{
                                     width: '200px',
                                     height: '200px',
@@ -488,7 +511,29 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                         <div className="spinner" style={{ position: 'absolute' }} />
                                     )}
 
-                                    {/* Failure Overlay for ID Card QR */}
+                                    {activeQrValue === 'pending' && !isQrRequestFailed && (
+                                        <div style={{
+                                            position: 'absolute',
+                                            top: 0, left: 0, right: 0, bottom: 0,
+                                            background: overlayBg,
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            padding: '12px',
+                                            zIndex: 3
+                                        }}>
+                                            <div className="spinner" style={{ borderLeftColor: isDarkMode ? '#ff8888' : '#c70000', borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)', marginBottom: '10px' }} />
+                                            <span style={{
+                                                color: isDarkMode ? '#cccccc' : '#666666',
+                                                fontSize: '12px',
+                                                fontWeight: '600'
+                                            }}>
+                                                QR 코드를 불러오는 중...
+                                            </span>
+                                        </div>
+                                    )}
+
                                     {activeTab === 'idCard' && isQrRequestFailed && (
                                         <div style={{
                                             position: 'absolute',
@@ -522,8 +567,7 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                         </div>
                                     )}
 
-                                    {/* Failure Overlay for Library Gate QR */}
-                                    {activeTab === 'library' && !qrValues.qr2 && (
+                                    {activeTab === 'library' && !qrValues.library && (
                                         <div style={{
                                             position: 'absolute',
                                             top: 0, left: 0, right: 0, bottom: 0,
@@ -536,35 +580,6 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                             zIndex: 2
                                         }}>
                                             {isQrRequestFailed ? (
-                                                <button
-                                                    onClick={() => {
-                                                        try {
-                                                            if (typeof window.Android !== 'undefined') {
-                                                                window.Android.openLibraryQRSettingsModal();
-                                                            }
-                                                        } catch (e) {
-                                                            console.error("Failed to open library QR settings modal:", e);
-                                                        }
-                                                    }}
-                                                    style={{
-                                                        background: isDarkMode ? '#ff6b6b' : 'var(--button-background, #ffd2d2)',
-                                                        color: isDarkMode ? '#1a0507' : 'var(--button-text, #c70000)',
-                                                        padding: '8px 16px',
-                                                        borderRadius: '20px',
-                                                        fontSize: '13px',
-                                                        fontWeight: '800',
-                                                        border: isDarkMode ? 'none' : '1px solid rgba(199, 0, 0, 0.15)',
-                                                        cursor: 'pointer',
-                                                        width: 'auto',
-                                                        display: 'inline-block',
-                                                        textAlign: 'center',
-                                                        boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
-                                                    }}
-                                                    className="badge-btn"
-                                                >
-                                                    출입증 설정
-                                                </button>
-                                            ) : (
                                                 <>
                                                     <button
                                                         onClick={() => {
@@ -596,13 +611,41 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                                         QR코드 열기
                                                     </button>
                                                 </>
+                                            ) : (
+                                                <button
+                                                    onClick={() => {
+                                                        try {
+                                                            if (typeof window.Android !== 'undefined') {
+                                                                window.Android.openLibraryQRSettingsModal();
+                                                            }
+                                                        } catch (e) {
+                                                            console.error("Failed to open library QR settings modal:", e);
+                                                        }
+                                                    }}
+                                                    style={{
+                                                        background: isDarkMode ? '#ff6b6b' : 'var(--button-background, #ffd2d2)',
+                                                        color: isDarkMode ? '#1a0507' : 'var(--button-text, #c70000)',
+                                                        padding: '8px 16px',
+                                                        borderRadius: '20px',
+                                                        fontSize: '13px',
+                                                        fontWeight: '800',
+                                                        border: isDarkMode ? 'none' : '1px solid rgba(199, 0, 0, 0.15)',
+                                                        cursor: 'pointer',
+                                                        width: 'auto',
+                                                        display: 'inline-block',
+                                                        textAlign: 'center',
+                                                        boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
+                                                    }}
+                                                    className="badge-btn"
+                                                >
+                                                    출입증 설정
+                                                </button>
                                             )}
                                         </div>
                                     )}
                                 </div>
 
-                                {/* Countdown UI */}
-                                {!isBlurred && activeQrValue && (
+                                {!isBlurred && activeQrValue && activeTab === 'library' && (
                                     <div style={{
                                         display: 'flex',
                                         alignItems: 'center',
@@ -640,7 +683,15 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                         <span style={{ opacity: 0.3, fontSize: '10px', marginLeft: '3px' }}>|</span>
 
                                         <button
-                                            onClick={() => Android.openLibraryQRSettingsModal()}
+                                            onClick={() => {
+                                                try {
+                                                    if (typeof window !== 'undefined' && typeof window.Android !== 'undefined') {
+                                                        window.Android.openLibraryQRSettingsModal();
+                                                    }
+                                                } catch (e) {
+                                                    console.error("Failed to open library QR settings modal:", e);
+                                                }
+                                            }}
                                             style={{
                                                 background: 'none',
                                                 border: 'none',
@@ -661,6 +712,23 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                             <IonIcon name="settings-outline" style={{ fontSize: '16px', marginRight: '5px' }} />
                                             출입증 설정
                                         </button>
+                                    </div>
+                                )}
+
+                                {!isBlurred && activeQrValue && activeTab === 'idCard' && (
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '6px',
+                                        marginTop: '14px',
+                                        color: 'var(--text-secondary)',
+                                        opacity: 0.85,
+                                        fontSize: '13px',
+                                        height: '28px'
+                                    }}>
+                                        <IonIcon name="time-outline" style={{ fontSize: '16px' }} />
+                                        <span>남은 시간&nbsp; {formatTime(idCardTimeLeft)}</span>
                                     </div>
                                 )}
                             </>
@@ -684,11 +752,11 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                         rgba(199, 0, 57, 0.08) 100%
                     );
                     background-size: 300% 300%;
-                    animation: hologramShift 12s ease infinite;
+                    animation: hologramShift 5s ease infinite;
                     pointer-events: none;
                     mix-blend-mode: normal;
-                    opacity: 0.65;
-                    filter: blur(20px);
+                    opacity: 1;
+                    filter: blur(10px);
                 }
 
                 .watermark {
