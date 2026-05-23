@@ -44,7 +44,7 @@ const SettingsMenuSection = ({ yearHakgi }) => {
                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                 onClick={handleLibraryQRSettings}
             >
-                <span>모바일 학생증 설정</span>
+                <span>중앙도서관 출입증 설정</span>
                 <span style={{ opacity: .8, fontSize: '14px' }}>
                     <IonIcon name="chevron-forward-outline" />
                 </span>
