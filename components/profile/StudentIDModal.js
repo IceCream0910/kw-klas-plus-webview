@@ -85,8 +85,9 @@ const DummyQR = ({ isDarkMode }) => (
 );
 
 const StudentIDModal = ({ onClose, data, stdInfo }) => {
+    const [isAnimationComplete, setIsAnimationComplete] = useState(false);
     const [showPhoto, setShowPhoto] = useState(true);
-    const [activeTab, setActiveTab] = useState('library'); // 'library' | 'idCard'
+    const [activeTab, setActiveTab] = useState('idCard'); // 'library' | 'idCard'
     const [qrValues, setQrValues] = useState({ library: '', idCard: '' });
     const [isQrRequestFailed, setIsQrRequestFailed] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
@@ -208,7 +209,7 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
     };
 
     useEffect(() => {
-        if (!activeQrValue) {
+        if (!isAnimationComplete || !activeQrValue || activeQrValue === 'pending') {
             setQrDataUrl('');
             return;
         }
@@ -235,7 +236,7 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                 console.error("QRCode.toDataURL is not a function", m);
             }
         });
-    }, [activeQrValue, isDarkMode]);
+    }, [activeQrValue, isDarkMode, isAnimationComplete]);
 
     const overlayBg = isDarkMode ? 'rgba(34, 26, 27, 0.93)' : 'rgba(255, 255, 255, 0.93)';
 
@@ -257,7 +258,9 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
         >
             <motion.div
                 layoutId="card"
+                onLayoutAnimationComplete={() => setIsAnimationComplete(true)}
                 onClick={(e) => e.stopPropagation()}
+                className={`modal-card ${isAnimationComplete ? 'modal-card-shadow' : ''}`}
                 transition={{
                     type: 'spring',
                     stiffness: 400,
@@ -269,7 +272,6 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                     maxWidth: '340px',
                     background: 'var(--background)',
                     borderRadius: '24px',
-                    boxShadow: '0px 15px 45px rgba(0,0,0,0.3)',
                     padding: '24px',
                     boxSizing: 'border-box',
                     position: 'relative',
@@ -279,482 +281,504 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                     willChange: 'transform, opacity'
                 }}
             >
-                <div className="watermark" />
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: isAnimationComplete ? 1 : 0 }}
+                    transition={{ duration: 0.25, ease: 'easeOut' }}
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        height: '100%',
+                        width: '100%',
+                        pointerEvents: isAnimationComplete ? 'auto' : 'none'
+                    }}
+                >
+                    <div className="watermark" />
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', zIndex: 1, position: 'relative' }}>
-                    <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '800', letterSpacing: '-0.5px' }}>모바일 학생증</h2>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <button
-                            onClick={onClose}
-                            style={{
-                                background: 'var(--notice-hover)',
-                                border: 'none',
-                                borderRadius: '50%',
-                                width: '32px',
-                                height: '32px',
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                cursor: 'pointer',
-                                padding: 0
-                            }}
-                        >
-                            <IonIcon name="close-outline" style={{ fontSize: '18px' }} />
-                        </button>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', zIndex: 1, position: 'relative' }}>
+                        <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '800', letterSpacing: '-0.5px' }}>모바일 학생증</h2>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <button
+                                onClick={onClose}
+                                style={{
+                                    background: 'var(--notice-hover)',
+                                    border: 'none',
+                                    borderRadius: '50%',
+                                    width: '32px',
+                                    height: '32px',
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    cursor: 'pointer',
+                                    padding: 0
+                                }}
+                            >
+                                <IonIcon name="close-outline" style={{ fontSize: '18px' }} />
+                            </button>
+                        </div>
                     </div>
-                </div>
 
-                {data && stdInfo && (
-                    <div style={{ zIndex: 2, position: 'relative', display: 'flex', flexDirection: 'column', height: '100%' }}>
-                        <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '20px' }}>
-                            <div style={{ position: 'relative', width: '90px', height: '120px', flexShrink: 0 }}>
-                                <motion.div
-                                    onClick={() => {
-                                        try {
-                                            if (typeof window.Android !== 'undefined') {
-                                                window.Android.openPage('https://klas.kw.ac.kr/std/sys/optrn/MyNumberQrStdPage.do');
-                                            } else {
+                    {data && stdInfo && (
+                        <div style={{ zIndex: 2, position: 'relative', display: 'flex', flexDirection: 'column', height: '100%' }}>
+                            <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '20px' }}>
+                                <div style={{ position: 'relative', width: '90px', height: '120px', flexShrink: 0 }}>
+                                    <motion.div
+                                        onClick={() => {
+                                            try {
+                                                if (typeof window.Android !== 'undefined') {
+                                                    window.Android.openPage('https://klas.kw.ac.kr/std/sys/optrn/MyNumberQrStdPage.do');
+                                                } else {
+                                                    window.open('https://klas.kw.ac.kr/std/sys/optrn/MyNumberQrStdPage.do', '_blank');
+                                                }
+                                            } catch (e) {
                                                 window.open('https://klas.kw.ac.kr/std/sys/optrn/MyNumberQrStdPage.do', '_blank');
                                             }
-                                        } catch (e) {
-                                            window.open('https://klas.kw.ac.kr/std/sys/optrn/MyNumberQrStdPage.do', '_blank');
-                                        }
-                                    }}
-                                    animate={{ rotateY: showPhoto ? 0 : 180 }}
-                                    transition={{ duration: 0.6, type: 'spring', stiffness: 260, damping: 20 }}
-                                    style={{
-                                        width: '90px',
-                                        height: '120px',
-                                        transformStyle: 'preserve-3d',
-                                        perspective: '1000px',
-                                        cursor: 'pointer'
-                                    }}
-                                >
-                                    <div
-                                        className="rr-block"
+                                        }}
+                                        animate={{ rotateY: showPhoto ? 0 : 180 }}
+                                        transition={{ duration: 0.6, type: 'spring', stiffness: 260, damping: 20 }}
                                         style={{
+                                            width: '90px',
+                                            height: '120px',
+                                            transformStyle: 'preserve-3d',
+                                            perspective: '1000px',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        <div
+                                            className="rr-block"
+                                            style={{
+                                                width: '100%',
+                                                height: '100%',
+                                                position: 'absolute',
+                                                backfaceVisibility: 'hidden',
+                                                borderRadius: '12px',
+                                                overflow: 'hidden',
+                                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                                background: '#f0f0f0'
+                                            }}
+                                        >
+                                            <img src={stdInfo.fileUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        </div>
+
+                                        <div style={{
                                             width: '100%',
                                             height: '100%',
                                             position: 'absolute',
                                             backfaceVisibility: 'hidden',
                                             borderRadius: '12px',
-                                            overflow: 'hidden',
-                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                                            background: '#f0f0f0'
-                                        }}
-                                    >
-                                        <img src={stdInfo.fileUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                    </div>
-
-                                    <div style={{
-                                        width: '100%',
-                                        height: '100%',
-                                        position: 'absolute',
-                                        backfaceVisibility: 'hidden',
-                                        borderRadius: '12px',
-                                        background: 'var(--background)',
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        transform: 'rotateY(180deg)',
-                                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                                    }}>
-                                        <IonIcon name="person" style={{ fontSize: '30px', opacity: 0.3 }} />
-                                    </div>
-                                </motion.div>
-
-                                <div
-                                    onClick={togglePhotoVisibility}
-                                    style={{
-                                        position: 'absolute',
-                                        bottom: '-6px',
-                                        right: '-6px',
-                                        background: 'var(--background)',
-                                        borderRadius: '50%',
-                                        width: '24px',
-                                        height: '24px',
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        boxShadow: '0 2px 5px rgba(0,0,0,0.15)',
-                                        zIndex: 10,
-                                        cursor: 'pointer'
-                                    }}
-                                >
-                                    <IonIcon name={showPhoto ? "eye-outline" : "eye-off-outline"} style={{ fontSize: '12px', opacity: 0.7 }} />
-                                </div>
-                            </div>
-
-                            <div style={{ flex: 1 }}>
-                                <div style={{ fontSize: '20px', fontWeight: '800', marginBottom: '2px' }}>
-                                    <span className="rr-mask">{data.kname}</span>
-                                </div>
-                                <div style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: '700', opacity: 0.6 }}>
-                                    <span className="rr-mask">{data.hakbun}</span>
-                                </div>
-                                <div style={{ fontSize: '12px', lineHeight: '1.4', opacity: 0.8 }}>
-                                    <div style={{ fontWeight: '600' }}><span className="rr-mask">{stdInfo.compNm}</span></div>
-                                    <div><span className="rr-mask">{data.hakgwa}</span></div>
-                                    <div style={{ opacity: 0.6, fontSize: '11px', marginTop: '2px' }}><span className="rr-mask">{data.hakjukStatu}</span></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {isLegacyVersion ? (
-                            <div style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                gap: '12px',
-                                marginTop: '10px',
-                                marginBottom: '10px'
-                            }}>
-                                <button
-                                    onClick={() => {
-                                        try {
-                                            if (typeof window.Android !== 'undefined') {
-                                                window.Android.openLibraryQR();
-                                            }
-                                        } catch (e) {
-                                            console.error("Failed to open library QR:", e);
-                                        }
-                                    }}
-                                    style={{
-                                        background: 'var(--card-background)',
-                                        border: '1px solid var(--card-border)',
-                                        borderRadius: '16px',
-                                        width: '100%',
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        cursor: 'pointer',
-                                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-                                        color: 'var(--text-color)',
-                                        transition: 'transform 0.1s ease, background-color 0.2s'
-                                    }}
-                                    className="qr-btn"
-                                >
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                        <div style={{
-                                            background: 'var(--notice-hover)',
-                                            width: '32px',
-                                            height: '32px',
-                                            borderRadius: '12px',
+                                            background: 'var(--background)',
                                             display: 'flex',
                                             justifyContent: 'center',
                                             alignItems: 'center',
-                                            boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+                                            transform: 'rotateY(180deg)',
+                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                                         }}>
-                                            <IonIcon name="qr-code-outline" style={{ fontSize: '18px' }} />
+                                            <IonIcon name="person" style={{ fontSize: '30px', opacity: 0.3 }} />
                                         </div>
-                                        <span style={{ fontSize: '15px', fontWeight: '700' }}>중앙도서관 출입증 QR 열기</span>
-                                    </div>
-                                    <IonIcon name="chevron-forward-outline" style={{ opacity: 0.4 }} />
-                                </button>
-                            </div>
-                        ) : (
-                            <>
-                                <div className="tab-capsule">
+                                    </motion.div>
+
                                     <div
-                                        className="tab-bg-pill"
+                                        onClick={togglePhotoVisibility}
                                         style={{
-                                            transform: activeTab === 'library' ? 'translateX(0%)' : 'translateX(100%)'
+                                            position: 'absolute',
+                                            bottom: '-6px',
+                                            right: '-6px',
+                                            background: 'var(--background)',
+                                            borderRadius: '50%',
+                                            width: '24px',
+                                            height: '24px',
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            boxShadow: '0 2px 5px rgba(0,0,0,0.15)',
+                                            zIndex: 10,
+                                            cursor: 'pointer'
                                         }}
-                                    />
-                                    <button
-                                        className={`tab-item-btn ${activeTab === 'library' ? 'active' : ''}`}
-                                        onClick={() => setActiveTab('library')}
                                     >
-                                        도서관 출입증
-                                    </button>
-                                    <button
-                                        className={`tab-item-btn ${activeTab === 'idCard' ? 'active' : ''}`}
-                                        onClick={() => setActiveTab('idCard')}
-                                    >
-                                        학생증
-                                    </button>
+                                        <IonIcon name={showPhoto ? "eye-outline" : "eye-off-outline"} style={{ fontSize: '12px', opacity: 0.7 }} />
+                                    </div>
                                 </div>
 
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ fontSize: '20px', fontWeight: '800', marginBottom: '2px' }}>
+                                        <span className="rr-mask">{data.kname}</span>
+                                    </div>
+                                    <div style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: '700', opacity: 0.6 }}>
+                                        <span className="rr-mask">{data.hakbun}</span>
+                                    </div>
+                                    <div style={{ fontSize: '12px', lineHeight: '1.4', opacity: 0.8 }}>
+                                        <div style={{ fontWeight: '600' }}><span className="rr-mask">{stdInfo.compNm}</span></div>
+                                        <div><span className="rr-mask">{data.hakgwa}</span></div>
+                                        <div style={{ opacity: 0.6, fontSize: '11px', marginTop: '2px' }}><span className="rr-mask">{data.hakjukStatu}</span></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {isLegacyVersion ? (
                                 <div style={{
-                                    width: '200px',
-                                    height: '200px',
-                                    margin: '0 auto',
-                                    background: isDarkMode ? '#221a1b' : '#ffffff',
-                                    borderRadius: '24px',
-                                    padding: '16px',
-                                    boxSizing: 'border-box',
-                                    boxShadow: isDarkMode ? 'none' : '0 8px 24px rgba(0,0,0,0.06)',
-                                    border: isDarkMode ? '1px solid #4a3335' : 'none',
                                     display: 'flex',
+                                    flexDirection: 'column',
                                     alignItems: 'center',
-                                    justifyContent: 'center',
-                                    position: 'relative',
-                                    overflow: 'hidden'
+                                    gap: '12px',
+                                    marginTop: '10px',
+                                    marginBottom: '10px'
                                 }}>
+                                    <button
+                                        onClick={() => {
+                                            try {
+                                                if (typeof window.Android !== 'undefined') {
+                                                    window.Android.openLibraryQR();
+                                                }
+                                            } catch (e) {
+                                                console.error("Failed to open library QR:", e);
+                                            }
+                                        }}
+                                        style={{
+                                            background: 'var(--card-background)',
+                                            border: '1px solid var(--card-border)',
+                                            borderRadius: '16px',
+                                            width: '100%',
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            cursor: 'pointer',
+                                            boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                                            color: 'var(--text-color)',
+                                            transition: 'transform 0.1s ease, background-color 0.2s'
+                                        }}
+                                        className="qr-btn"
+                                    >
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                            <div style={{
+                                                background: 'var(--notice-hover)',
+                                                width: '32px',
+                                                height: '32px',
+                                                borderRadius: '12px',
+                                                display: 'flex',
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                                boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+                                            }}>
+                                                <IonIcon name="qr-code-outline" style={{ fontSize: '18px' }} />
+                                            </div>
+                                            <span style={{ fontSize: '15px', fontWeight: '700' }}>중앙도서관 출입증 QR 열기</span>
+                                        </div>
+                                        <IonIcon name="chevron-forward-outline" style={{ opacity: 0.4 }} />
+                                    </button>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="tab-capsule">
+                                        <div
+                                            className="tab-bg-pill"
+                                            style={{
+                                                transform: activeTab === 'idCard' ? 'translateX(0%)' : 'translateX(100%)'
+                                            }}
+                                        />
+                                        <button
+                                            className={`tab-item-btn ${activeTab === 'idCard' ? 'active' : ''}`}
+                                            onClick={() => setActiveTab('idCard')}
+                                        >
+                                            학생증
+                                        </button>
+                                        <button
+                                            className={`tab-item-btn ${activeTab === 'library' ? 'active' : ''}`}
+                                            onClick={() => setActiveTab('library')}
+                                        >
+                                            도서관 출입증
+                                        </button>
+                                    </div>
+
                                     <div style={{
-                                        width: '100%',
-                                        height: '100%',
-                                        filter: isBlurred ? 'blur(6px)' : 'none',
-                                        opacity: isBlurred ? 0.45 : 1,
-                                        transition: 'filter 0.3s, opacity 0.3s',
+                                        width: '200px',
+                                        height: '200px',
+                                        margin: '0 auto',
+                                        background: isDarkMode ? '#221a1b' : '#ffffff',
+                                        borderRadius: '24px',
+                                        padding: '16px',
+                                        boxSizing: 'border-box',
+                                        boxShadow: isDarkMode ? 'none' : '0 8px 24px rgba(0,0,0,0.06)',
+                                        border: isDarkMode ? '1px solid #4a3335' : 'none',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        justifyContent: 'center'
+                                        justifyContent: 'center',
+                                        position: 'relative',
+                                        overflow: 'hidden'
                                     }}>
-                                        {qrDataUrl ? (
-                                            <img
-                                                src={qrDataUrl}
-                                                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                                                alt="QR Code"
-                                            />
-                                        ) : (
-                                            <DummyQR isDarkMode={isDarkMode} />
+                                        <div style={{
+                                            width: '100%',
+                                            height: '100%',
+                                            filter: isBlurred ? 'blur(6px)' : 'none',
+                                            opacity: isBlurred ? 0.45 : 1,
+                                            transition: 'filter 0.3s, opacity 0.3s',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}>
+                                            {qrDataUrl ? (
+                                                <img
+                                                    src={qrDataUrl}
+                                                    className="rr-block"
+                                                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                                                    alt="QR Code"
+                                                />
+                                            ) : (
+                                                <DummyQR isDarkMode={isDarkMode} />
+                                            )}
+                                        </div>
+
+                                        {!isBlurred && activeQrValue && !qrDataUrl && (
+                                            <div className="spinner" style={{ position: 'absolute' }} />
+                                        )}
+
+                                        {activeQrValue === 'pending' && !isQrRequestFailed && (
+                                            <div style={{
+                                                position: 'absolute',
+                                                top: 0, left: 0, right: 0, bottom: 0,
+                                                background: overlayBg,
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                padding: '12px',
+                                                zIndex: 3
+                                            }}>
+                                                <div className="spinner" style={{ borderLeftColor: isDarkMode ? '#ff8888' : '#c70000', borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)', marginBottom: '10px' }} />
+                                                <span style={{
+                                                    color: isDarkMode ? '#cccccc' : '#666666',
+                                                    fontSize: '12px',
+                                                    fontWeight: '600'
+                                                }}>
+                                                    QR 코드를 불러오는 중...
+                                                </span>
+                                            </div>
+                                        )}
+
+                                        {isQrRequestFailed && (
+                                            <div style={{
+                                                position: 'absolute',
+                                                top: 0, left: 0, right: 0, bottom: 0,
+                                                background: overlayBg,
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                padding: '12px',
+                                                zIndex: 2
+                                            }}>
+                                                <div style={{
+                                                    background: isDarkMode ? 'rgba(255, 122, 122, 0.15)' : 'rgba(199, 0, 57, 0.08)',
+                                                    color: isDarkMode ? '#ff8888' : '#c70000',
+                                                    padding: '6px 14px',
+                                                    borderRadius: '20px',
+                                                    fontSize: '12px',
+                                                    fontWeight: '800',
+                                                    marginBottom: '6px'
+                                                }}>
+                                                    오류 발생
+                                                </div>
+                                                <span style={{
+                                                    color: isDarkMode ? '#cccccc' : '#666666',
+                                                    fontSize: '11px',
+                                                    fontWeight: '600'
+                                                }}>
+                                                    나중에 다시 시도해보세요
+                                                </span>
+                                            </div>
+                                        )}
+
+                                        {activeTab === 'library' && !qrValues.library && (
+                                            <div style={{
+                                                position: 'absolute',
+                                                top: 0, left: 0, right: 0, bottom: 0,
+                                                background: overlayBg,
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                padding: '12px',
+                                                zIndex: 2
+                                            }}>
+                                                {isQrRequestFailed ? (
+                                                    <>
+                                                        <button
+                                                            onClick={() => {
+                                                                try {
+                                                                    if (typeof window.Android !== 'undefined') {
+                                                                        window.Android.openLibraryQR();
+                                                                    }
+                                                                } catch (e) {
+                                                                    console.error("Failed to open library QR:", e);
+                                                                }
+                                                            }}
+                                                            style={{
+                                                                background: isDarkMode ? '#ff6b6b' : 'var(--button-background, #ffd2d2)',
+                                                                color: isDarkMode ? '#1a0507' : 'var(--button-text, #c70000)',
+                                                                padding: '8px 16px',
+                                                                borderRadius: '20px',
+                                                                fontSize: '13px',
+                                                                fontWeight: '800',
+                                                                border: isDarkMode ? 'none' : '1px solid rgba(199, 0, 0, 0.15)',
+                                                                cursor: 'pointer',
+                                                                width: 'auto',
+                                                                display: 'inline-block',
+                                                                textAlign: 'center',
+                                                                boxShadow: '0 3px 8px rgba(0,0,0,0.15)',
+                                                                marginBottom: '8px'
+                                                            }}
+                                                            className="badge-btn"
+                                                        >
+                                                            QR코드 열기
+                                                        </button>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <button
+                                                            onClick={() => {
+                                                                try {
+                                                                    if (typeof window.Android !== 'undefined') {
+                                                                        window.Android.openLibraryQRSettingsModal();
+                                                                    }
+                                                                } catch (e) {
+                                                                    console.error("Failed to open library QR settings modal:", e);
+                                                                }
+                                                            }}
+                                                            style={{
+                                                                background: isDarkMode ? '#ff6b6b' : 'var(--button-background, #ffd2d2)',
+                                                                color: isDarkMode ? '#1a0507' : 'var(--button-text, #c70000)',
+                                                                padding: '8px 16px',
+                                                                borderRadius: '20px',
+                                                                fontSize: '13px',
+                                                                fontWeight: '800',
+                                                                border: isDarkMode ? 'none' : '1px solid rgba(199, 0, 0, 0.15)',
+                                                                cursor: 'pointer',
+                                                                width: 'auto',
+                                                                display: 'inline-block',
+                                                                textAlign: 'center',
+                                                                boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
+                                                            }}
+                                                            className="badge-btn"
+                                                        >
+                                                            출입증 설정
+                                                        </button>
+                                                        <span style={{
+                                                            color: isDarkMode ? '#cccccc' : '#666666',
+                                                            fontSize: '11px',
+                                                            fontWeight: '600',
+                                                            marginTop: '10px',
+                                                            textAlign: 'center',
+                                                        }}>
+                                                            모든 정보가 정확하게<br />입력되었는지 확인해주세요.
+                                                        </span>
+
+                                                    </>
+                                                )}
+                                            </div>
                                         )}
                                     </div>
 
-                                    {!isBlurred && activeQrValue && !qrDataUrl && (
-                                        <div className="spinner" style={{ position: 'absolute' }} />
-                                    )}
-
-                                    {activeQrValue === 'pending' && !isQrRequestFailed && (
+                                    {!isBlurred && activeQrValue && activeTab === 'library' && (
                                         <div style={{
-                                            position: 'absolute',
-                                            top: 0, left: 0, right: 0, bottom: 0,
-                                            background: overlayBg,
                                             display: 'flex',
-                                            flexDirection: 'column',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            padding: '12px',
-                                            zIndex: 3
+                                            gap: '6px',
+                                            marginTop: '14px',
+                                            color: 'var(--text-secondary)',
+                                            fontWeight: '700',
+                                            opacity: 0.85
                                         }}>
-                                            <div className="spinner" style={{ borderLeftColor: isDarkMode ? '#ff8888' : '#c70000', borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)', marginBottom: '10px' }} />
-                                            <span style={{
-                                                color: isDarkMode ? '#cccccc' : '#666666',
-                                                fontSize: '12px',
-                                                fontWeight: '600'
-                                            }}>
-                                                QR 코드를 불러오는 중...
-                                            </span>
-                                        </div>
-                                    )}
+                                            <button
+                                                onClick={handleRefresh}
+                                                style={{
+                                                    background: 'none',
+                                                    border: 'none',
+                                                    padding: '4px 0',
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    color: 'var(--text-secondary)',
+                                                    borderRadius: '50%',
+                                                    outline: 'none',
+                                                    width: 'fit-content',
+                                                    height: '28px',
+                                                    fontSize: '13px'
+                                                }}
+                                                className={`refresh-btn`}
+                                                aria-label="QR 코드 새로고침"
+                                            >
+                                                <IonIcon name="refresh-outline" style={{ fontSize: '16px', marginRight: '5px' }} />
+                                                <span>{timeLeft}초 후 새로고침</span>
+                                            </button>
 
-                                    {isQrRequestFailed && (
-                                        <div style={{
-                                            position: 'absolute',
-                                            top: 0, left: 0, right: 0, bottom: 0,
-                                            background: overlayBg,
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            padding: '12px',
-                                            zIndex: 2
-                                        }}>
-                                            <div style={{
-                                                background: isDarkMode ? 'rgba(255, 122, 122, 0.15)' : 'rgba(199, 0, 57, 0.08)',
-                                                color: isDarkMode ? '#ff8888' : '#c70000',
-                                                padding: '6px 14px',
-                                                borderRadius: '20px',
-                                                fontSize: '12px',
-                                                fontWeight: '800',
-                                                marginBottom: '6px'
-                                            }}>
-                                                오류 발생
-                                            </div>
-                                            <span style={{
-                                                color: isDarkMode ? '#cccccc' : '#666666',
-                                                fontSize: '11px',
-                                                fontWeight: '600'
-                                            }}>
-                                                나중에 다시 시도해보세요
-                                            </span>
-                                        </div>
-                                    )}
+                                            <span style={{ opacity: 0.3, fontSize: '10px', marginLeft: '3px' }}>|</span>
 
-                                    {activeTab === 'library' && !qrValues.library && (
-                                        <div style={{
-                                            position: 'absolute',
-                                            top: 0, left: 0, right: 0, bottom: 0,
-                                            background: overlayBg,
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            padding: '12px',
-                                            zIndex: 2
-                                        }}>
-                                            {isQrRequestFailed ? (
-                                                <>
-                                                    <button
-                                                        onClick={() => {
-                                                            try {
-                                                                if (typeof window.Android !== 'undefined') {
-                                                                    window.Android.openLibraryQR();
-                                                                }
-                                                            } catch (e) {
-                                                                console.error("Failed to open library QR:", e);
-                                                            }
-                                                        }}
-                                                        style={{
-                                                            background: isDarkMode ? '#ff6b6b' : 'var(--button-background, #ffd2d2)',
-                                                            color: isDarkMode ? '#1a0507' : 'var(--button-text, #c70000)',
-                                                            padding: '8px 16px',
-                                                            borderRadius: '20px',
-                                                            fontSize: '13px',
-                                                            fontWeight: '800',
-                                                            border: isDarkMode ? 'none' : '1px solid rgba(199, 0, 0, 0.15)',
-                                                            cursor: 'pointer',
-                                                            width: 'auto',
-                                                            display: 'inline-block',
-                                                            textAlign: 'center',
-                                                            boxShadow: '0 3px 8px rgba(0,0,0,0.15)',
-                                                            marginBottom: '8px'
-                                                        }}
-                                                        className="badge-btn"
-                                                    >
-                                                        QR코드 열기
-                                                    </button>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <button
-                                                        onClick={() => {
-                                                            try {
-                                                                if (typeof window.Android !== 'undefined') {
-                                                                    window.Android.openLibraryQRSettingsModal();
-                                                                }
-                                                            } catch (e) {
-                                                                console.error("Failed to open library QR settings modal:", e);
-                                                            }
-                                                        }}
-                                                        style={{
-                                                            background: isDarkMode ? '#ff6b6b' : 'var(--button-background, #ffd2d2)',
-                                                            color: isDarkMode ? '#1a0507' : 'var(--button-text, #c70000)',
-                                                            padding: '8px 16px',
-                                                            borderRadius: '20px',
-                                                            fontSize: '13px',
-                                                            fontWeight: '800',
-                                                            border: isDarkMode ? 'none' : '1px solid rgba(199, 0, 0, 0.15)',
-                                                            cursor: 'pointer',
-                                                            width: 'auto',
-                                                            display: 'inline-block',
-                                                            textAlign: 'center',
-                                                            boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
-                                                        }}
-                                                        className="badge-btn"
-                                                    >
-                                                        출입증 설정
-                                                    </button>
-                                                    <span style={{
-                                                        color: isDarkMode ? '#cccccc' : '#666666',
-                                                        fontSize: '11px',
-                                                        fontWeight: '600',
-                                                        marginTop: '10px',
-                                                        textAlign: 'center',
-                                                    }}>
-                                                        모든 정보가 정확하게<br />입력되었는지 확인해주세요.
-                                                    </span>
-
-                                                </>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-
-                                {!isBlurred && activeQrValue && activeTab === 'library' && (
-                                    <div style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        gap: '6px',
-                                        marginTop: '14px',
-                                        color: 'var(--text-secondary)',
-                                        fontWeight: '700',
-                                        opacity: 0.85
-                                    }}>
-                                        <button
-                                            onClick={handleRefresh}
-                                            style={{
-                                                background: 'none',
-                                                border: 'none',
-                                                padding: '4px 0',
-                                                cursor: 'pointer',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                color: 'var(--text-secondary)',
-                                                borderRadius: '50%',
-                                                outline: 'none',
-                                                width: 'fit-content',
-                                                height: '28px',
-                                                fontSize: '13px'
-                                            }}
-                                            className={`refresh-btn`}
-                                            aria-label="QR 코드 새로고침"
-                                        >
-                                            <IonIcon name="refresh-outline" style={{ fontSize: '16px', marginRight: '5px' }} />
-                                            <span>{timeLeft}초 후 새로고침</span>
-                                        </button>
-
-                                        <span style={{ opacity: 0.3, fontSize: '10px', marginLeft: '3px' }}>|</span>
-
-                                        <button
-                                            onClick={() => {
-                                                try {
-                                                    if (typeof window !== 'undefined' && typeof window.Android !== 'undefined') {
-                                                        window.Android.openLibraryQRSettingsModal();
+                                            <button
+                                                onClick={() => {
+                                                    try {
+                                                        if (typeof window !== 'undefined' && typeof window.Android !== 'undefined') {
+                                                            window.Android.openLibraryQRSettingsModal();
+                                                        }
+                                                    } catch (e) {
+                                                        console.error("Failed to open library QR settings modal:", e);
                                                     }
-                                                } catch (e) {
-                                                    console.error("Failed to open library QR settings modal:", e);
-                                                }
-                                            }}
-                                            style={{
-                                                background: 'none',
-                                                border: 'none',
-                                                padding: '4px',
-                                                cursor: 'pointer',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                color: 'var(--text-secondary)',
-                                                outline: 'none',
-                                                width: 'fit-content',
-                                                height: '28px',
-                                                fontSize: '13px'
-                                            }}
-                                            className={`refresh-btn`}
-                                            aria-label="출입증 설정"
-                                        >
-                                            <IonIcon name="settings-outline" style={{ fontSize: '16px', marginRight: '5px' }} />
-                                            출입증 설정
-                                        </button>
-                                    </div>
-                                )}
+                                                }}
+                                                style={{
+                                                    background: 'none',
+                                                    border: 'none',
+                                                    padding: '4px',
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    color: 'var(--text-secondary)',
+                                                    outline: 'none',
+                                                    width: 'fit-content',
+                                                    height: '28px',
+                                                    fontSize: '13px'
+                                                }}
+                                                className={`refresh-btn`}
+                                                aria-label="출입증 설정"
+                                            >
+                                                <IonIcon name="settings-outline" style={{ fontSize: '16px', marginRight: '5px' }} />
+                                                출입증 설정
+                                            </button>
+                                        </div>
+                                    )}
 
-                                {!isBlurred && activeQrValue && activeTab === 'idCard' && (
-                                    <div style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        gap: '6px',
-                                        marginTop: '14px',
-                                        color: 'var(--text-secondary)',
-                                        opacity: 0.85,
-                                        fontSize: '13px',
-                                        height: '28px'
-                                    }}>
-                                        <IonIcon name="time-outline" style={{ fontSize: '16px' }} />
-                                        <span>남은 시간&nbsp; {formatTime(idCardTimeLeft)}</span>
-                                    </div>
-                                )}
-                            </>
-                        )}
-                    </div>
-                )}
+                                    {!isBlurred && activeQrValue && activeTab === 'idCard' && (
+                                        <div style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '6px',
+                                            marginTop: '14px',
+                                            color: 'var(--text-secondary)',
+                                            opacity: 0.85,
+                                            fontSize: '13px',
+                                            height: '28px'
+                                        }}>
+                                            <IonIcon name="time-outline" style={{ fontSize: '16px' }} />
+                                            <span>남은 시간&nbsp; {formatTime(idCardTimeLeft)}</span>
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </div>
+                    )}
+                </motion.div>
             </motion.div>
 
             <style jsx>{`
+                .modal-card {
+                    transition: box-shadow 0.4s ease-out;
+                    box-shadow: 0px 0px 0px rgba(0,0,0,0);
+                }
+                .modal-card-shadow {
+                    box-shadow: 0px 15px 45px rgba(0,0,0,0.3) !important;
+                }
+
                 .watermark {
                     position: absolute;
                     bottom: -30px;
