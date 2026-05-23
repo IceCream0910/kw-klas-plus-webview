@@ -258,6 +258,12 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
             <motion.div
                 layoutId="card"
                 onClick={(e) => e.stopPropagation()}
+                transition={{
+                    type: 'spring',
+                    stiffness: 400,
+                    damping: 38,
+                    mass: 0.8
+                }}
                 style={{
                     width: '90%',
                     maxWidth: '340px',
@@ -269,11 +275,10 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                     position: 'relative',
                     overflow: 'hidden',
                     display: 'flex',
-                    flexDirection: 'column'
+                    flexDirection: 'column',
+                    willChange: 'transform, opacity'
                 }}
             >
-                <div className="hologram-overlay" />
-
                 <div className="watermark" />
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', zIndex: 1, position: 'relative' }}>
@@ -381,16 +386,16 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                             </div>
 
                             <div style={{ flex: 1 }}>
-                                <motion.div layoutId="name" style={{ fontSize: '20px', fontWeight: '800', marginBottom: '2px' }}>
+                                <div style={{ fontSize: '20px', fontWeight: '800', marginBottom: '2px' }}>
                                     <span className="rr-mask">{data.kname}</span>
-                                </motion.div>
-                                <motion.div layoutId="number" style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: '700', opacity: 0.6 }}>
+                                </div>
+                                <div style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: '700', opacity: 0.6 }}>
                                     <span className="rr-mask">{data.hakbun}</span>
-                                </motion.div>
+                                </div>
                                 <div style={{ fontSize: '12px', lineHeight: '1.4', opacity: 0.8 }}>
                                     <div style={{ fontWeight: '600' }}><span className="rr-mask">{stdInfo.compNm}</span></div>
-                                    <motion.div layoutId="hakgwa"><span className="rr-mask">{data.hakgwa}</span></motion.div>
-                                    <motion.div layoutId="status" style={{ opacity: 0.6, fontSize: '11px', marginTop: '2px' }}><span className="rr-mask">{data.hakjukStatu}</span></motion.div>
+                                    <div><span className="rr-mask">{data.hakgwa}</span></div>
+                                    <div style={{ opacity: 0.6, fontSize: '11px', marginTop: '2px' }}><span className="rr-mask">{data.hakjukStatu}</span></div>
                                 </div>
                             </div>
                         </div>
@@ -534,7 +539,7 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                         </div>
                                     )}
 
-                                    {activeTab === 'idCard' && isQrRequestFailed && (
+                                    {isQrRequestFailed && (
                                         <div style={{
                                             position: 'absolute',
                                             top: 0, left: 0, right: 0, bottom: 0,
@@ -612,34 +617,46 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                                     </button>
                                                 </>
                                             ) : (
-                                                <button
-                                                    onClick={() => {
-                                                        try {
-                                                            if (typeof window.Android !== 'undefined') {
-                                                                window.Android.openLibraryQRSettingsModal();
+                                                <>
+                                                    <button
+                                                        onClick={() => {
+                                                            try {
+                                                                if (typeof window.Android !== 'undefined') {
+                                                                    window.Android.openLibraryQRSettingsModal();
+                                                                }
+                                                            } catch (e) {
+                                                                console.error("Failed to open library QR settings modal:", e);
                                                             }
-                                                        } catch (e) {
-                                                            console.error("Failed to open library QR settings modal:", e);
-                                                        }
-                                                    }}
-                                                    style={{
-                                                        background: isDarkMode ? '#ff6b6b' : 'var(--button-background, #ffd2d2)',
-                                                        color: isDarkMode ? '#1a0507' : 'var(--button-text, #c70000)',
-                                                        padding: '8px 16px',
-                                                        borderRadius: '20px',
-                                                        fontSize: '13px',
-                                                        fontWeight: '800',
-                                                        border: isDarkMode ? 'none' : '1px solid rgba(199, 0, 0, 0.15)',
-                                                        cursor: 'pointer',
-                                                        width: 'auto',
-                                                        display: 'inline-block',
+                                                        }}
+                                                        style={{
+                                                            background: isDarkMode ? '#ff6b6b' : 'var(--button-background, #ffd2d2)',
+                                                            color: isDarkMode ? '#1a0507' : 'var(--button-text, #c70000)',
+                                                            padding: '8px 16px',
+                                                            borderRadius: '20px',
+                                                            fontSize: '13px',
+                                                            fontWeight: '800',
+                                                            border: isDarkMode ? 'none' : '1px solid rgba(199, 0, 0, 0.15)',
+                                                            cursor: 'pointer',
+                                                            width: 'auto',
+                                                            display: 'inline-block',
+                                                            textAlign: 'center',
+                                                            boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
+                                                        }}
+                                                        className="badge-btn"
+                                                    >
+                                                        출입증 설정
+                                                    </button>
+                                                    <span style={{
+                                                        color: isDarkMode ? '#cccccc' : '#666666',
+                                                        fontSize: '11px',
+                                                        fontWeight: '600',
+                                                        marginTop: '10px',
                                                         textAlign: 'center',
-                                                        boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
-                                                    }}
-                                                    className="badge-btn"
-                                                >
-                                                    출입증 설정
-                                                </button>
+                                                    }}>
+                                                        모든 정보가 정확하게<br />입력되었는지 확인해주세요.
+                                                    </span>
+
+                                                </>
                                             )}
                                         </div>
                                     )}
@@ -738,27 +755,6 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
             </motion.div>
 
             <style jsx>{`
-                .hologram-overlay { 
-                    position: absolute;
-                    top: 0; left: 0; right: 0; bottom: 0;
-                    z-index: 1;
-                    background: linear-gradient( 
-                        125deg,
-                        rgba(199, 0, 57, 0.08) 0%,
-                        rgba(227, 38, 54, 0.08) 20%,
-                        rgba(255, 99, 71, 0.06) 40%,
-                        rgba(141, 15, 36, 0.08) 60%,
-                        rgba(219, 112, 147, 0.06) 80%,
-                        rgba(199, 0, 57, 0.08) 100%
-                    );
-                    background-size: 300% 300%;
-                    animation: hologramShift 5s ease infinite;
-                    pointer-events: none;
-                    mix-blend-mode: normal;
-                    opacity: 1;
-                    filter: blur(10px);
-                }
-
                 .watermark {
                     position: absolute;
                     bottom: -30px;

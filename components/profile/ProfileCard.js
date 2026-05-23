@@ -35,16 +35,16 @@ const ProfileCard = ({ data, stdInfo, totGrade, onCardClick, onGradeClick }) => 
             >
                 <div style={{ opacity: 0.8, fontSize: '14px' }}>
                     <Spacer y={5} />
-                    <motion.h3 layoutId="name" style={{ marginBottom: '5px', fontSize: '18px' }}>
+                    <h3 style={{ marginBottom: '5px', fontSize: '18px' }}>
                         <span className="rr-mask">{data.kname}</span>
-                    </motion.h3>
+                    </h3>
                     <div style={{ display: 'flex', gap: '5px' }}>
-                        <motion.div layoutId="hakgwa" className="rr-mask">{stdInfo && stdInfo.hakgwa}</motion.div>
-                        <motion.div layoutId="number" className="rr-mask">| {data.hakbun}</motion.div><br />
+                        <div className="rr-mask">{stdInfo && stdInfo.hakgwa}</div>
+                        <div className="rr-mask">| {data.hakbun}</div><br />
                     </div>
-                    <motion.div layoutId="status" style={{ opacity: 0.5, fontSize: '12px' }}>
+                    <div style={{ opacity: 0.5, fontSize: '12px' }}>
                         <span className="rr-mask">{data.hakjukStatu}</span>
-                    </motion.div>
+                    </div>
                 </div>
                 <IonIcon name="chevron-forward-outline" style={{ position: 'relative', top: '2px', fontSize: '20px' }} />
             </motion.div>
