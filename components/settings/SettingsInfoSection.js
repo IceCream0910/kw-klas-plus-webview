@@ -41,15 +41,13 @@ const SettingsInfoSection = ({ appVersion = 'n/a' }) => {
 
     return (
         <>
-            <Toaster position="bottom-center" />
             <button
                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                 onClick={() => copyToClipboard('앱 버전', appVersion)}
             >
                 <span style={{ fontSize: '16px' }}>앱 버전</span>
                 <div>
-
-                    <button
+                    <span
                         onClick={(e) => {
                             e.stopPropagation();
                             Android.openExternalLink('https://klasplus.yuntae.in');
@@ -60,13 +58,14 @@ const SettingsInfoSection = ({ appVersion = 'n/a' }) => {
                             backgroundColor: 'var(--button-background)',
                             width: 'fit-content',
                             height: '24px',
-                            padding: '0 8px',
+                            padding: '4px 8px',
                             border: 'none',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            borderRadius: '15px',
                         }}
                     >
                         업데이트 확인
-                    </button>
+                    </span>
                     <span style={{ opacity: .8, fontSize: '14px' }}>&nbsp;v{appVersion}</span>
                 </div>
             </button>

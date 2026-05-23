@@ -6,6 +6,7 @@ import SettingsInfoSection from '../components/settings/SettingsInfoSection';
 import Spacer from "../components/common/spacer";
 import { BottomSheet } from 'react-spring-bottom-sheet';
 import 'react-spring-bottom-sheet/dist/style.css';
+import { Toaster } from 'react-hot-toast';
 
 export default function Settings() {
   const {
@@ -61,6 +62,7 @@ export default function Settings() {
           <button onClick={() => setIsOpenSettingsModal(false)}>확인</button>
         </div>
       </BottomSheet>
+      <Toaster position="bottom-center" />
     </main>
   );
 }
