@@ -30,8 +30,7 @@ const ProfileCard = ({ data, stdInfo, totGrade, onCardClick, onGradeClick }) => 
                     justifyContent: "space-between",
                     alignItems: 'center',
                     width: '100%',
-                    boxShadow: 'none',
-                    willChange: 'transform, opacity'
+                    boxShadow: 'none'
                 }}
             >
                 <div style={{ opacity: 0.8, fontSize: '14px' }}>

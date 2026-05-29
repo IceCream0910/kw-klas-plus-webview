@@ -277,8 +277,7 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                     position: 'relative',
                     overflow: 'hidden',
                     display: 'flex',
-                    flexDirection: 'column',
-                    willChange: 'transform, opacity'
+                    flexDirection: 'column'
                 }}
             >
                 <motion.div
@@ -700,7 +699,6 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                                     justifyContent: 'center',
                                                     color: 'var(--text-secondary)',
                                                     borderRadius: '50%',
-                                                    outline: 'none',
                                                     width: 'fit-content',
                                                     height: '28px',
                                                     fontSize: '13px'
@@ -733,7 +731,6 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
                                                     color: 'var(--text-secondary)',
-                                                    outline: 'none',
                                                     width: 'fit-content',
                                                     height: '28px',
                                                     fontSize: '13px'
