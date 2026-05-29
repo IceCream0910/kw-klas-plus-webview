@@ -544,6 +544,7 @@ export default function LectureHome() {
             </main>
 
             <CampusMapSheet
+                key={selectedBuilding?.name || 'empty'}
                 open={mapSheetOpen}
                 buildingName={selectedBuilding?.name}
                 onClose={() => {

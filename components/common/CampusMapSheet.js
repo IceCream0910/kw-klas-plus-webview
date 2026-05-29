@@ -142,10 +142,6 @@ export default function CampusMapSheet({ open, buildingName, onClose }) {
     const controlsRef = useRef(null);
 
     useEffect(() => {
-        setSelectedId(buildingName || null);
-    }, [buildingName]);
-
-    useEffect(() => {
         if (controlsRef.current) {
             const controls = controlsRef.current;
             const initialY = controls.target.y;
