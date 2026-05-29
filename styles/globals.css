@@ -16,6 +16,7 @@
   --skeleton-base: rgba(0, 0, 0, 0.06);
   --skeleton-mid: rgba(0, 0, 0, 0.12);
   --skeleton-highlight: rgba(0, 0, 0, 0.18);
+  --vaul-handle-bg: lab(84.9837% .601262 -2.17986);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -37,6 +38,7 @@
     --skeleton-base: rgba(255, 255, 255, 0.07);
     --skeleton-mid: rgba(255, 255, 255, 0.14);
     --skeleton-highlight: rgba(255, 255, 255, 0.25);
+    --vaul-handle-bg: lab(26.8019% 1.35387 -4.68303);
   }
 }
 
@@ -431,21 +433,71 @@ select {
   margin-bottom: 10px;
 }
 
-div[role="dialog"] {
-  z-index: 9999;
-  background-color: var(--background) !important;
+/* Vaul Bottom Sheet Styles */
+body[data-scroll-locked],
+html[data-scroll-locked] {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
 }
 
-[data-rsbs-backdrop] {
-  z-index: 99999;
+[data-vaul-handle] {
+  width: 48px !important;
+  height: 6px !important;
+  background-color: var(--vaul-handle-bg) !important;
+  margin: 4px auto 4px auto !important;
+}
+
+.vaul-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(1px);
+  z-index: 9999;
+}
+
+.vaul-content {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-height: 96%;
+  background-color: var(--background);
+  border-radius: 25px 25px 0 0;
+  box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.15);
+  padding: 10px 0 0 0;
+  z-index: 10000;
+  outline: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.vaul-close {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 35px;
+  height: 35px;
+  padding: 0;
+  font-size: 18px;
+  border-radius: 50%;
+  background-color: var(--card-background);
+  cursor: pointer;
+}
+
+/* For nested upper sheet */
+.upper-sheet-overlay {
+  z-index: 100000 !important;
+}
+
+.vaul-content.upper-sheet {
+  z-index: 100001 !important;
 }
 
 .rbc-row-content {
   z-index: unset !important;
-}
-
-[data-rsbs-header]:before {
-  background-color: #eeeeee48 !important;
 }
 
 .bottom-sheet {
@@ -456,6 +508,7 @@ div[role="dialog"] {
   display: none;
 }
 
+/*
 .bottom-sheet button {
   width: 100%;
   padding: 10px;
@@ -464,7 +517,7 @@ div[role="dialog"] {
   background-color: var(--card-border);
   cursor: pointer;
   transition: all 0.3s;
-}
+}*/
 
 .message a {
   color: var(--text-color);

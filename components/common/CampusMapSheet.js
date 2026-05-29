@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo, Suspense, useRef } from 'react';
-import { BottomSheet } from 'react-spring-bottom-sheet';
-import 'react-spring-bottom-sheet/dist/style.css';
+import BottomSheet from './BottomSheet';
 import { Canvas, useLoader } from '@react-three/fiber';
 import { OrbitControls, Html, Edges, Center } from '@react-three/drei';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
@@ -175,8 +174,6 @@ export default function CampusMapSheet({ open, buildingName, onClose }) {
         <BottomSheet
             open={open}
             onDismiss={onClose}
-            expandOnContentDrag={false}
-            scrollLocking={false}
         >
             <div style={{ padding: '4px 16px 30px 16px', pointerEvents: 'auto' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
@@ -235,7 +232,7 @@ export default function CampusMapSheet({ open, buildingName, onClose }) {
                                 enableZoom={true}
                                 zoomSpeed={1}
                                 maxDistance={750}
-                                minDistance={320}
+                                minDistance={120}
                                 mouseButtons={{
                                     LEFT: 2,
                                     MIDDLE: 0,
@@ -266,12 +263,13 @@ export default function CampusMapSheet({ open, buildingName, onClose }) {
                 </div>
 
                 <div style={{ display: 'flex', gap: '10px' }}>
-                    <button
-                        onClick={onClose}
-                        style={{ background: 'var(--card-background)', color: 'var(--text-color)', padding: '15px 20px', borderRadius: '15px', fontSize: '15px', textAlign: 'center', flex: 1 }}
-                    >
-                        닫기
-                    </button>
+                    <BottomSheet.Close asChild>
+                        <button
+                            style={{ background: 'var(--card-background)', color: 'var(--text-color)', padding: '15px 20px', borderRadius: '15px', fontSize: '15px', textAlign: 'center', flex: 1 }}
+                        >
+                            닫기
+                        </button>
+                    </BottomSheet.Close>
                     <button
                         onClick={() => openExternalMap(selectedId)}
                         disabled={!currentLabel || !hasExternalLink}

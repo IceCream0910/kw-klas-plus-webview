@@ -4,8 +4,8 @@ import SettingsMenuSection from '../components/settings/SettingsMenuSection';
 import SettingsLinkSection from '../components/settings/SettingsLinkSection';
 import SettingsInfoSection from '../components/settings/SettingsInfoSection';
 import Spacer from "../components/common/spacer";
-import { BottomSheet } from 'react-spring-bottom-sheet';
-import 'react-spring-bottom-sheet/dist/style.css';
+import BottomSheet from '../components/common/BottomSheet';
+import IonIcon from '@reacticons/ionicons';
 import { Toaster } from 'react-hot-toast';
 
 export default function Settings() {
@@ -50,16 +50,18 @@ export default function Settings() {
       <Spacer y={20} />
 
       <BottomSheet
+        title="옵션"
         open={isOpenSettingsModal}
         onDismiss={() => { setIsOpenSettingsModal(false); }}
         draggable={false}
       >
-        <div style={{ maxHeight: '90dvh', padding: '20px', overflow: 'hidden' }}>
-          <h2>옵션</h2>
-        </div>
-
-        <div className='bottom-sheet-footer'>
-          <button onClick={() => setIsOpenSettingsModal(false)}>확인</button>
+        <BottomSheet.Close asChild>
+          <div style={{ position: 'absolute', top: '20px', right: '20px' }}><IonIcon name='close'></IonIcon></div>
+        </BottomSheet.Close>
+        <div className='bottom-sheet'>
+          <div style={{ maxHeight: '90dvh', overflow: 'hidden' }}>
+            {/* option content if any will go here */}
+          </div>
         </div>
       </BottomSheet>
       <Toaster position="bottom-center" />

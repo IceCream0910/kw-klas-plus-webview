@@ -3,8 +3,7 @@ import { Line } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import handleCalculateGPA, { calculateGPA } from "../lib/grade/calculateGPA";
 import IonIcon from '@reacticons/ionicons';
-import { BottomSheet } from 'react-spring-bottom-sheet';
-import 'react-spring-bottom-sheet/dist/style.css'
+import BottomSheet from '../components/common/BottomSheet';
 import { KLAS } from "../lib/core/klas";
 import Skeleton, { SkeletonLayouts } from "../components/common/Skeleton";
 import GradeCard from "../components/grade/GradeCard";
@@ -73,10 +72,8 @@ export default function Grade() {
 
   useEffect(() => {
     if (isModalOpen) {
-      window.scrollTo(0, document.body.scrollHeight);
       openWebViewBottomSheet();
     } else {
-      window.scrollTo(0, 0);
       closeWebViewBottomSheet();
     }
   }, [isModalOpen]);
@@ -259,17 +256,15 @@ export default function Grade() {
         )
       ) : <SkeletonLayouts.Chart />}
 
-      <BottomSheet open={isModalOpen} expandOnContentDrag={false} scrollLocking={false} onDismiss={() => setIsModalOpen(false)}
-        data-body-scroll-lock-ignore="true">
-        <div className="bottom-sheet"
-          style={{
-            WebkitOverflowScrolling: 'touch'
-          }}>
-          <h2>{subjects && subjects.name}</h2>
-          <br />
+      <BottomSheet open={isModalOpen} onDismiss={() => setIsModalOpen(false)}>
+        <BottomSheet.Close className="vaul-close" asChild>
+          <div style={{ position: 'absolute', top: '40px', right: '20px' }}><IonIcon name='close'></IonIcon></div>
+        </BottomSheet.Close>
+        <div className='bottom-sheet'>
+          <h2 style={{ marginBottom: '30px' }}>{subjects && subjects.name}</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: "70dvh", overflowY: 'scroll', msOverflowStyle: 'none' }}>
-            {subjects && subjects.subjects.map((value) => (
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '10px', borderBottom: '1px solid var(--card-border)' }}>
+            {subjects && subjects.subjects.map((value, index) => (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '10px', borderBottom: index !== subjects.subjects.length - 1 ? `1px solid var(--card-border)` : 'none' }}>
                 <div>
                   <h3>{value.gwamokKname}</h3>
                   <span style={{ opacity: .8, fontSize: '14px' }}>{value.codeName1}, {value.hakjumNum}학점</span><br />
@@ -284,12 +279,8 @@ export default function Grade() {
             ))}
           </div>
           <br />
-          <button onClick={() => setIsModalOpen(false)}>닫기</button>
         </div>
       </BottomSheet>
-
-      {isModalOpen &&
-        <div style={{ height: '100dvh' }} />}
     </main >
   );
 }

@@ -2,8 +2,7 @@ import React, { useState, useEffect, cloneElement, Children } from 'react';
 import Spacer from "../components/common/spacer";
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
-import { BottomSheet } from 'react-spring-bottom-sheet';
-import 'react-spring-bottom-sheet/dist/style.css';
+import BottomSheet from '../components/common/BottomSheet';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import IonIcon from '@reacticons/ionicons';
 import { useCalendar } from '../lib/calendar/useCalendar';
@@ -198,7 +197,7 @@ export default function CalendarPage() {
                 open={isDaySheetOpen}
                 onDismiss={() => setIsDaySheetOpen(false)}
             >
-                <div style={{ padding: '20px', paddingBottom: '40px' }}>
+                <div className='bottom-sheet'>
                     {selectedDate && (
                         <>
                             <div style={styles.dateHeader}>
@@ -238,25 +237,26 @@ export default function CalendarPage() {
                         + 일정 추가
                     </button>
                 </div>
-            </BottomSheet>
 
-            <BottomSheet
-                className="upper-sheet"
-                open={isModalOpen}
-                onDismiss={() => { closeModal(); }}
-            >
-                <EventForm
-                    event={isAddingEvent ? {
-                        start: moment(selectedDate).startOf('day').toDate(),
-                        end: moment(selectedDate).endOf('day').toDate(),
-                        typeNm: "개인일정"
-                    } : selectedEvent}
-                    date={selectedDate}
-                    isOpen={isModalOpen}
-                    onSave={handleSaveEvent}
-                    onDelete={handleDeleteEvent}
-                    onClose={() => { closeModal(); }}
-                />
+                <BottomSheet
+                    className="upper-sheet"
+                    open={isModalOpen}
+                    onDismiss={() => { closeModal(); }}
+                    nested={true}
+                >
+                    <EventForm
+                        event={isAddingEvent ? {
+                            start: moment(selectedDate).startOf('day').toDate(),
+                            end: moment(selectedDate).endOf('day').toDate(),
+                            typeNm: "개인일정"
+                        } : selectedEvent}
+                        date={selectedDate}
+                        isOpen={isModalOpen}
+                        onSave={handleSaveEvent}
+                        onDelete={handleDeleteEvent}
+                        onClose={() => { closeModal(); }}
+                    />
+                </BottomSheet>
             </BottomSheet>
         </main>
     );
@@ -522,10 +522,14 @@ function EventForm({ event, date, isOpen, onSave, onDelete, onClose }) {
 
             <div className='bottom-sheet-footer'>
                 {event && event.typeNm == "개인일정" ? (<>
-                    <button type="button" onClick={onClose} style={styles.button}>취소</button>
+                    <BottomSheet.Close asChild>
+                        <button type="button" style={styles.button}>취소</button>
+                    </BottomSheet.Close>
                     <button type="submit" disabled={isSubmitting} onClick={handleSubmit} style={styles.primaryButton}>{isSubmitting ? '저장 중...' : '저장'}</button>
                 </>) : (<>
-                    <button type="button" onClick={onClose} style={styles.button}>닫기</button>
+                    <BottomSheet.Close asChild>
+                        <button type="button" style={styles.button}>닫기</button>
+                    </BottomSheet.Close>
                 </>)
                 }
 

@@ -13,7 +13,7 @@ import {
   useMenuSettings,
   useModalSettings
 } from "../lib/profile/useProfileData";
-import 'react-spring-bottom-sheet/dist/style.css';
+
 import BottomNav from "../components/common/bottomNav";
 import Spacer from "../components/common/spacer";
 
