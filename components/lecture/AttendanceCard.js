@@ -69,7 +69,7 @@ const AttendanceCard = ({ attendanceData, stats, isExpanded, onToggleExpand }) =
                                             return (
                                                 <div
                                                     key={idx}
-                                                    className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                                                    className="size-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
                                                     style={{ backgroundColor: getAttendanceColor(status) }}
                                                 >
                                                     {status}

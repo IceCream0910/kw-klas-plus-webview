@@ -298,6 +298,7 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                         <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '800', letterSpacing: '-0.5px' }}>모바일 학생증</h2>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <button
+                                type="button"
                                 onClick={onClose}
                                 style={{
                                     background: 'var(--notice-hover)',
@@ -423,6 +424,7 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                     marginBottom: '10px'
                                 }}>
                                     <button
+                                        type="button"
                                         onClick={() => {
                                             try {
                                                 if (typeof window.Android !== 'undefined') {
@@ -475,12 +477,14 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                             }}
                                         />
                                         <button
+                                            type="button"
                                             className={`tab-item-btn ${activeTab === 'idCard' ? 'active' : ''}`}
                                             onClick={() => setActiveTab('idCard')}
                                         >
                                             학생증
                                         </button>
                                         <button
+                                            type="button"
                                             className={`tab-item-btn ${activeTab === 'library' ? 'active' : ''}`}
                                             onClick={() => setActiveTab('library')}
                                         >
@@ -601,6 +605,7 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                                 {isQrRequestFailed ? (
                                                     <>
                                                         <button
+                                                            type="button"
                                                             onClick={() => {
                                                                 try {
                                                                     if (typeof window.Android !== 'undefined') {
@@ -633,6 +638,7 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                                 ) : (
                                                     <>
                                                         <button
+                                                            type="button"
                                                             onClick={() => {
                                                                 try {
                                                                     if (typeof window.Android !== 'undefined') {
@@ -688,6 +694,7 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                             opacity: 0.85
                                         }}>
                                             <button
+                                                type="button"
                                                 onClick={handleRefresh}
                                                 style={{
                                                     background: 'none',
@@ -713,6 +720,7 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                             <span style={{ opacity: 0.3, fontSize: '10px', marginLeft: '3px' }}>|</span>
 
                                             <button
+                                                type="button"
                                                 onClick={() => {
                                                     try {
                                                         if (typeof window !== 'undefined' && typeof window.Android !== 'undefined') {
