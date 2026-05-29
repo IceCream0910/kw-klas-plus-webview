@@ -70,7 +70,7 @@ const TodaysCafeteriaMenu = ({ data }) => {
           <Spacer y={10} />
 
           {formatMenu(restaurant.pickedMenu.menu).map((item, idx, arr) => (
-            <span style={{ opacity: .6 }}>{item}{idx < arr.length - 1 && ", "}</span>
+            <span key={idx} style={{ opacity: .6 }}>{item}{idx < arr.length - 1 && ", "}</span>
           ))}
 
           <Spacer y={10} />

@@ -357,7 +357,7 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                                 background: '#f0f0f0'
                                             }}
                                         >
-                                            <img src={stdInfo.fileUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            <img src={stdInfo.fileUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="학생 증명사진" />
                                         </div>
 
                                         <div style={{

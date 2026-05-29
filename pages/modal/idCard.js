@@ -112,7 +112,7 @@ export default function IdCard() {
                                             boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                                             background: '#f0f0f0'
                                         }}>
-                                        <img src={stdInfo.fileUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        <img src={stdInfo.fileUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="학생 증명사진" />
                                     </div>
 
                                     <div style={{

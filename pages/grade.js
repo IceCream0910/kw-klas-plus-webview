@@ -264,7 +264,7 @@ export default function Grade() {
           <h2 style={{ marginBottom: '30px' }}>{subjects && subjects.name}</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: "70dvh", overflowY: 'scroll', msOverflowStyle: 'none' }}>
             {subjects && subjects.subjects.map((value, index) => (
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '10px', borderBottom: index !== subjects.subjects.length - 1 ? `1px solid var(--card-border)` : 'none' }}>
+              <div key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '10px', borderBottom: index !== subjects.subjects.length - 1 ? `1px solid var(--card-border)` : 'none' }}>
                 <div>
                   <h3>{value.gwamokKname}</h3>
                   <span style={{ opacity: .8, fontSize: '14px' }}>{value.codeName1}, {value.hakjumNum}학점</span><br />
