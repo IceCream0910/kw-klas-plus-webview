@@ -6,10 +6,10 @@ import {
 } from '../../lib/timetable/timetableHelpers';
 import { SkeletonLayouts } from '../common/Skeleton';
 
+const days = ['월', '화', '수', '목', '금'];
+
 const TimetableRenderer = ({ timetableData, onClassClick }) => {
     if (!timetableData) return <SkeletonLayouts.Timetable />;
-
-    const days = ['월', '화', '수', '목', '금'];
     const colorMap = {};
     const flatClasses = Object.values(timetableData).flat();
     const uniqueClasses = [...new Set(flatClasses.map(item => item.title))];

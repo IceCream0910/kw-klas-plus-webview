@@ -160,15 +160,17 @@ async function getContentFromUrl({ urls }) {
         return { error: 'urls parameter must be an array' };
     }
 
-    const fetchPromises = urls.map(async (singleUrl) => {
-        try {
-            const response = await fetch('/api/crawler/turndown?url=' + singleUrl);
-            const json = await response.json();
-            return json.markdown;
-        } catch (error) {
-            console.error('에러 발생:', error.message);
-            return null;
-        }
+    const fetchPromises = urls.map((singleUrl) => {
+        return fetch('/api/crawler/turndown?url=' + singleUrl)
+            .then((res) => {
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                return res.json();
+            })
+            .then((json) => json.markdown)
+            .catch((error) => {
+                console.error('에러 발생:', error.message);
+                return null;
+            });
     });
 
     const results = await Promise.all(fetchPromises);

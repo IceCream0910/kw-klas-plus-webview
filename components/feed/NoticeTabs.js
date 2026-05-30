@@ -1,10 +1,9 @@
+const tabs = [
+    { id: "", label: "전체" },
+    { id: "1", label: "학사" }
+];
 
 function NoticeTabs({ activeTab, onTabChange }) {
-    const tabs = [
-        { id: "", label: "전체" },
-        { id: "1", label: "학사" }
-    ];
-
     return (
         <div style={{
             display: 'flex',

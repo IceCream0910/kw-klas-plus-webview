@@ -1,5 +1,42 @@
 import { useState, useEffect } from 'react';
 
+const themes = [
+    { id: 'light', label: '밝은' },
+    { id: 'dark', label: '어두운' },
+    { id: 'system', label: '시스템 설정' }
+];
+
+const containerStyle = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    gap: '10px',
+    padding: '0 10px',
+    boxSizing: 'border-box',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    flexWrap: 'wrap',
+};
+
+const labelStyle = {
+    fontSize: '14px',
+    marginTop: '4px',
+    opacity: .8
+};
+
+const checkmarkStyle = {
+    position: 'absolute',
+    bottom: '8px',
+    right: '8px',
+    width: '20px',
+    height: '20px',
+    borderRadius: '50%',
+    backgroundColor: '#007AFF',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: 'white',
+    fontSize: '14px'
+};
+
 const ThemeSelector = ({ active = "system" }) => {
     const [selectedTheme, setSelectedTheme] = useState('system');
 
@@ -7,22 +44,6 @@ const ThemeSelector = ({ active = "system" }) => {
         if (!active) return;
         setSelectedTheme(active);
     }, [active]);
-
-    const themes = [
-        { id: 'light', label: '밝은' },
-        { id: 'dark', label: '어두운' },
-        { id: 'system', label: '시스템 설정' }
-    ];
-
-    const containerStyle = {
-        display: 'flex',
-        justifyContent: 'space-between',
-        gap: '10px',
-        padding: '0 10px',
-        boxSizing: 'border-box',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        flexWrap: 'wrap',
-    };
 
     const themeItemStyle = (themeId) => ({
         width: '30%',
@@ -45,12 +66,6 @@ const ThemeSelector = ({ active = "system" }) => {
         position: 'relative'
     });
 
-    const labelStyle = {
-        fontSize: '14px',
-        marginTop: '4px',
-        opacity: .8
-    };
-
     const textStyle = (themeId) => ({
         color: themeId === 'light' ? '#333' : '#fff',
         fontSize: '24px',
@@ -60,21 +75,6 @@ const ThemeSelector = ({ active = "system" }) => {
         left: '50%',
         transform: 'translate(-50%, -50%)'
     });
-
-    const checkmarkStyle = {
-        position: 'absolute',
-        bottom: '8px',
-        right: '8px',
-        width: '20px',
-        height: '20px',
-        borderRadius: '50%',
-        backgroundColor: '#007AFF',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: 'white',
-        fontSize: '14px'
-    };
 
     const handleThemeChange = (themeId) => {
         setSelectedTheme(themeId);

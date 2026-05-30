@@ -1,15 +1,16 @@
 
-const RankingHeader = () => {
-    const handleKLASOpen = () => {
-        if (typeof window !== 'undefined' && window.Android) {
-            window.Android.openPage('https://klas.kw.ac.kr/std/cps/inqire/StandStdPage.do');
-        }
-    };
+const handleKLASOpen = () => {
+    if (typeof window !== 'undefined' && window.Android) {
+        window.Android.openPage('https://klas.kw.ac.kr/std/cps/inqire/StandStdPage.do');
+    }
+};
 
+const RankingHeader = () => {
     return (
         <h2 style={{ marginBottom: '20px', marginTop: '20px' }}>
             석차
             <button
+                type="button"
                 onClick={handleKLASOpen}
                 style={{
                     float: 'right',

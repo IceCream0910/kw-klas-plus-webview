@@ -274,6 +274,19 @@ function EventForm({ event, date, isOpen, onSave, onDelete, onClose }) {
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+
+    if (isOpen !== prevIsOpen) {
+        setPrevIsOpen(isOpen);
+        if (isOpen) {
+            setErrorMessage('');
+            setIsSubmitting(false);
+            setIsAllDay(false);
+            setIsEditingStart(false);
+            setIsEditingEnd(false);
+            setIsEditingTitle(false);
+        }
+    }
 
     useEffect(() => {
         window.setDateTime = (dateTimeStr, isStart) => {
@@ -294,17 +307,6 @@ function EventForm({ event, date, isOpen, onSave, onDelete, onClose }) {
             setEnd(date);
         }
     }, [event, date]);
-
-    // Modal open 시마다 상태 초기화
-    useEffect(() => {
-        if (!isOpen) return;
-        setErrorMessage('');
-        setIsSubmitting(false);
-        setIsAllDay(false);
-        setIsEditingStart(false);
-        setIsEditingEnd(false);
-        setIsEditingTitle(false);
-    }, [isOpen]);
 
 
     const handleSubmit = async (e) => {

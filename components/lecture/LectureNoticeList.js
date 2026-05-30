@@ -1,5 +1,5 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { LazyMotion, domAnimation, m } from "framer-motion";
 import Card from '../common/Card';
 import IonIcon from '@reacticons/ionicons';
 
@@ -25,6 +25,7 @@ const LectureNoticeList = ({ notices, title, onAddClick, emptyMessage = "아직 
                 <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
                 {onAddClick && (
                     <button
+                        type="button"
                         onClick={onAddClick}
                         className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                     >
@@ -37,56 +38,57 @@ const LectureNoticeList = ({ notices, title, onAddClick, emptyMessage = "아직 
             <Card>
                 {notices && notices.length > 0 ? (
                     <div className="divide-y">
-                        {notices.map((notice, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.1 }}
-                                className="p-4 hover:bg-gray-50 transition-colors cursor-pointer"
-                            >
-                                <div className="space-y-2">
-                                    <h4 className="font-semibold text-gray-800 leading-tight">
-                                        {notice.title || notice.papernm}
-                                    </h4>
+                        {notices.map((notice, idx) => (
+                            <LazyMotion features={domAnimation} key={notice.seq || notice.id || notice.title || notice.papernm || idx}>
+                                <m.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: idx * 0.1 }}
+                                    className="p-4 hover:bg-gray-50 transition-colors cursor-pointer"
+                                >
+                                    <div className="space-y-2">
+                                        <h4 className="font-semibold text-gray-800 leading-tight">
+                                            {notice.title || notice.papernm}
+                                        </h4>
 
-                                    {/* 날짜 정보 */}
-                                    {(notice.regdate || notice.started || notice.sdates) && (
-                                        <div className="flex items-center text-sm text-gray-500">
-                                            <IonIcon name="time-outline" className="mr-1" />
-                                            <span>
-                                                {notice.regdate ||
-                                                    (notice.started && notice.ended ? `${notice.started} ~ ${notice.ended}` : '') ||
-                                                    (notice.sdates && notice.edates ? `${notice.sdates} ~ ${notice.edates}` : '')}
-                                            </span>
-                                        </div>
-                                    )}
+                                        {/* 날짜 정보 */}
+                                        {(notice.regdate || notice.started || notice.sdates) && (
+                                            <div className="flex items-center text-sm text-gray-500">
+                                                <IonIcon name="time-outline" className="mr-1" />
+                                                <span>
+                                                    {notice.regdate ||
+                                                        (notice.started && notice.ended ? `${notice.started} ~ ${notice.ended}` : '') ||
+                                                        (notice.sdates && notice.edates ? `${notice.sdates} ~ ${notice.edates}` : '')}
+                                                </span>
+                                            </div>
+                                        )}
 
-                                    {/* 추가 정보 */}
-                                    {notice.submit && (
-                                        <div className="flex items-center text-sm">
-                                            <IonIcon name="checkmark-outline" className="mr-1" />
-                                            <span className={notice.submit === 'Y' ? 'text-green-600' : 'text-red-600'}>
-                                                {notice.submit === 'Y' ? '제출 완료' : '미제출'}
-                                            </span>
-                                        </div>
-                                    )}
+                                        {/* 추가 정보 */}
+                                        {notice.submit && (
+                                            <div className="flex items-center text-sm">
+                                                <IonIcon name="checkmark-outline" className="mr-1" />
+                                                <span className={notice.submit === 'Y' ? 'text-green-600' : 'text-red-600'}>
+                                                    {notice.submit === 'Y' ? '제출 완료' : '미제출'}
+                                                </span>
+                                            </div>
+                                        )}
 
-                                    {notice.toroncnt && (
-                                        <div className="flex items-center text-sm text-gray-500">
-                                            <IonIcon name="chatbubble-outline" className="mr-1" />
-                                            <span>토론 {notice.toroncnt}개</span>
-                                        </div>
-                                    )}
+                                        {notice.toroncnt && (
+                                            <div className="flex items-center text-sm text-gray-500">
+                                                <IonIcon name="chatbubble-outline" className="mr-1" />
+                                                <span>토론 {notice.toroncnt}개</span>
+                                            </div>
+                                        )}
 
-                                    {/* 내용 미리보기 */}
-                                    {notice.content && (
-                                        <p className="text-sm text-gray-600 line-clamp-2 mt-2">
-                                            {notice.content}
-                                        </p>
-                                    )}
-                                </div>
-                            </motion.div>
+                                        {/* 내용 미리보기 */}
+                                        {notice.content && (
+                                            <p className="text-sm text-gray-600 line-clamp-2 mt-2">
+                                                {notice.content}
+                                            </p>
+                                        )}
+                                    </div>
+                                </m.div>
+                            </LazyMotion>
                         ))}
                     </div>
                 ) : (

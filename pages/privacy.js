@@ -1,47 +1,47 @@
 import React from 'react';
 
+const containerStyle = {
+  margin: '0 auto',
+  paddingLeft: '1rem',
+  paddingRight: '1rem',
+  paddingTop: '2rem',
+  paddingBottom: '2rem',
+  maxWidth: '80%',
+};
+
+const heading1Style = {
+  fontSize: '1.5rem',
+  fontWeight: 'bold',
+  marginBottom: '1.5rem',
+};
+
+const paragraphStyle = {
+  marginBottom: '1rem',
+  lineHeight: '1.6',
+};
+
+const heading2Style = {
+  fontSize: '1.25rem',
+  fontWeight: 'semibold',
+  marginTop: '2.5rem',
+  marginBottom: '1rem',
+};
+
+const listStyle = {
+  marginBottom: '1.5rem',
+  paddingLeft: '20px',
+};
+
+const listItemStyle = {
+  marginBottom: '0.5rem',
+};
+
+const nestedListStyle = {
+  listStyleType: 'disc',
+  paddingLeft: '20px',
+};
+
 const PrivacyPolicy = () => {
-  const containerStyle = {
-    margin: '0 auto',
-    paddingLeft: '1rem',
-    paddingRight: '1rem',
-    paddingTop: '2rem',
-    paddingBottom: '2rem',
-    maxWidth: '80%',
-  };
-
-  const heading1Style = {
-    fontSize: '1.5rem',
-    fontWeight: 'bold',
-    marginBottom: '1.5rem',
-  };
-
-  const paragraphStyle = {
-    marginBottom: '1rem',
-    lineHeight: '1.6',
-  };
-
-  const heading2Style = {
-    fontSize: '1.25rem',
-    fontWeight: 'semibold',
-    marginTop: '2.5rem',
-    marginBottom: '1rem',
-  };
-
-  const listStyle = {
-    marginBottom: '1.5rem',
-    paddingLeft: '20px',
-  };
-
-  const listItemStyle = {
-    marginBottom: '0.5rem',
-  };
-
-  const nestedListStyle = {
-    listStyleType: 'disc',
-    paddingLeft: '20px',
-  };
-
   return (
     <div style={containerStyle}>
       <h1 style={heading1Style}>개인정보 처리방침</h1>

@@ -27,6 +27,12 @@ const slides = [
   }
 ];
 
+const imageStyle = {
+  width: '100%',
+  objectFit: 'cover',
+  objectPosition: 'top'
+};
+
 export default function Onboarding() {
   const flickingRef = useRef(null);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -42,12 +48,6 @@ export default function Onboarding() {
       clearInterval(interval);
     };
   }, []);
-
-  const imageStyle = {
-    width: '100%',
-    objectFit: 'cover',
-    objectPosition: 'top'
-  };
 
   return (
     <main style={{ margin: '-15px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>

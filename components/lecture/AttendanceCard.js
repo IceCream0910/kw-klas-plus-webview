@@ -1,5 +1,5 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { LazyMotion, domAnimation, m } from "framer-motion";
 import Card from "../common/Card";
 import { getAttendanceColor } from "../../lib/lecture/lectureUtils";
 
@@ -12,6 +12,7 @@ const AttendanceCard = ({ attendanceData, stats, isExpanded, onToggleExpand }) =
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="text-lg font-semibold text-gray-800">출석 현황</h3>
                     <button
+                        type="button"
                         onClick={onToggleExpand}
                         className="px-3 py-1 text-sm bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
                     >
@@ -50,37 +51,39 @@ const AttendanceCard = ({ attendanceData, stats, isExpanded, onToggleExpand }) =
                 </div>
 
                 {isExpanded && (
-                    <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="mt-4 pt-4 border-t"
-                    >
-                        <h4 className="font-semibold text-gray-700 mb-3">출석 기록</h4>
-                        <div className="space-y-2">
-                            {attendanceData.map((item, index) => (
-                                <div key={index} className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
-                                    <span className="text-sm font-medium">{item.dates || `${index + 1}주차`}</span>
-                                    <div className="flex space-x-2">
-                                        {['pgr1', 'pgr2', 'pgr3', 'pgr4'].map((key, idx) => {
-                                            const status = item[key];
-                                            if (!status || status === '-') return null;
+                    <LazyMotion features={domAnimation}>
+                        <m.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="mt-4 pt-4 border-t"
+                        >
+                            <h4 className="font-semibold text-gray-700 mb-3">출석 기록</h4>
+                            <div className="space-y-2">
+                                {attendanceData.map((item, index) => (
+                                    <div key={item.dates ? `attendance-${item.dates}` : `idx-${index}`} className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
+                                        <span className="text-sm font-medium">{item.dates || `${index + 1}주차`}</span>
+                                        <div className="flex gap-x-2">
+                                            {['pgr1', 'pgr2', 'pgr3', 'pgr4'].map((key) => {
+                                                const status = item[key];
+                                                if (!status || status === '-') return null;
 
-                                            return (
-                                                <div
-                                                    key={idx}
-                                                    className="size-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                                                    style={{ backgroundColor: getAttendanceColor(status) }}
-                                                >
-                                                    {status}
-                                                </div>
-                                            );
-                                        })}
+                                                return (
+                                                    <div
+                                                        key={key}
+                                                        className="size-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                                                        style={{ backgroundColor: getAttendanceColor(status) }}
+                                                    >
+                                                        {status}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
-                        </div>
-                    </motion.div>
+                                ))}
+                            </div>
+                        </m.div>
+                    </LazyMotion>
                 )}
             </div>
         </Card>

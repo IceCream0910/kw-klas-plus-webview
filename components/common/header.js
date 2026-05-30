@@ -22,6 +22,22 @@ const getAppVersionFromUserAgent = () => {
     return match ? parseInt(match[1], 10) : null;
 };
 
+const handleChangelogClick = () => {
+    try {
+        openKlasPage("https://klasplus.yuntae.in/changelog")
+    } catch (error) {
+        toast("앱을 최신버전으로 업데이트해주세요.")
+    }
+};
+
+const handleAiClick = () => {
+    try {
+        openKlasPage("https://klasplus.yuntae.in/agent")
+    } catch (error) {
+        toast("앱을 최신버전으로 업데이트해주세요.")
+    }
+};
+
 function Header({ title }) {
     const [version, setVersion] = useState("");
     const [isCompatible, setIsCompatible] = useState(false);
@@ -35,22 +51,6 @@ function Header({ title }) {
             setIsAgentCompatible(checkAgentCompatibility(appVersion));
         }
     }, []);
-
-    const handleChangelogClick = () => {
-        try {
-            openKlasPage("https://klasplus.yuntae.in/changelog")
-        } catch (error) {
-            toast("앱을 최신버전으로 업데이트해주세요.")
-        }
-    };
-
-    const handleAiClick = () => {
-        try {
-            openKlasPage("https://klasplus.yuntae.in/agent")
-        } catch (error) {
-            toast("앱을 최신버전으로 업데이트해주세요.")
-        }
-    };
 
     if (!isCompatible) {
         return null;
@@ -84,6 +84,7 @@ function Header({ title }) {
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <button
+                            type="button"
                             style={{ width: 'fit-content' }}
                             onClick={handleChangelogClick}
                             aria-label="업데이트 내역 열기"
@@ -104,6 +105,7 @@ function Header({ title }) {
                         {isAgentCompatible && (
                             <div style={{ position: 'relative' }}>
                                 <button
+                                    type="button"
                                     style={{ width: 'fit-content' }}
                                     onClick={handleAiClick}
                                     aria-label="AI 챗봇 열기"
@@ -122,6 +124,7 @@ function Header({ title }) {
                         )}
 
                         <button
+                            type="button"
                             style={{ width: 'fit-content' }}
                             onClick={openOptionsMenu}
                             aria-label="메뉴 열기"

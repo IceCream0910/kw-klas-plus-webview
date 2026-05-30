@@ -18,6 +18,16 @@ const PRESETS = {
     footer: { position: 'bottom', height: '8rem' }
 };
 
+const blurLayers = [
+    { blur: 57.97, maskStart: 0, maskMid1: 12.5, maskMid2: 25 },
+    { blur: 26.25, maskStart: 12.5, maskMid1: 25, maskMid2: 37.5 },
+    { blur: 11.89, maskStart: 25, maskMid1: 37.5, maskMid2: 50 },
+    { blur: 5.38, maskStart: 37.5, maskMid1: 50, maskMid2: 62.5 },
+    { blur: 2.44, maskStart: 50, maskMid1: 62.5, maskMid2: 75 },
+    { blur: 1.10, maskStart: 62.5, maskMid1: 75, maskMid2: 87.5 },
+    { blur: 0.5, maskStart: 75, maskMid1: 87.5, maskMid2: 100 }
+];
+
 const mergeConfigs = (...configs) => configs.reduce((acc, c) => ({ ...acc, ...c }), {});
 
 function GradualBlur(props) {
@@ -27,16 +37,6 @@ function GradualBlur(props) {
         const presetConfig = props.preset && PRESETS[props.preset] ? PRESETS[props.preset] : {};
         return mergeConfigs(DEFAULT_CONFIG, presetConfig, props);
     }, [props]);
-
-    const blurLayers = [
-        { blur: 57.97, maskStart: 0, maskMid1: 12.5, maskMid2: 25 },
-        { blur: 26.25, maskStart: 12.5, maskMid1: 25, maskMid2: 37.5 },
-        { blur: 11.89, maskStart: 25, maskMid1: 37.5, maskMid2: 50 },
-        { blur: 5.38, maskStart: 37.5, maskMid1: 50, maskMid2: 62.5 },
-        { blur: 2.44, maskStart: 50, maskMid1: 62.5, maskMid2: 75 },
-        { blur: 1.10, maskStart: 62.5, maskMid1: 75, maskMid2: 87.5 },
-        { blur: 0.5, maskStart: 75, maskMid1: 87.5, maskMid2: 100 }
-    ];
 
     const adjustedBlurLayers = useMemo(() => {
         return blurLayers.map(layer => ({

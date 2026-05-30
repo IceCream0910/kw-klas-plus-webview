@@ -1,22 +1,22 @@
 import { useRouter } from "next/router";
 import IonIcon from '@reacticons/ionicons';
 
+const formatFileSize = (size) => {
+    if (size < 1024) return `${size} B`;
+    if (size < 1048576) return `${(size / 1024).toFixed(2)} KB`;
+    if (size < 1073741824) return `${(size / 1048576).toFixed(2)} MB`;
+    return `${(size / 1073741824).toFixed(2)} GB`;
+};
+
 const AttachmentItem = ({ file }) => {
     const router = useRouter();
-
-    const formatFileSize = (size) => {
-        if (size < 1024) return `${size} B`;
-        if (size < 1048576) return `${(size / 1024).toFixed(2)} KB`;
-        if (size < 1073741824) return `${(size / 1048576).toFixed(2)} MB`;
-        return `${(size / 1073741824).toFixed(2)} GB`;
-    };
 
     const handleDownload = () => {
         router.push(`https://klas.kw.ac.kr/${file.download}`);
     };
 
     return (
-        <button onClick={handleDownload}>
+        <button type="button" onClick={handleDownload}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <span style={{
                     display: 'flex',
