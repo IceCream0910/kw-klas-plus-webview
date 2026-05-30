@@ -10,6 +10,13 @@ import { CHATKIT_API_URL, STARTER_PROMPTS, } from '../lib/chatkit-config';
 import { menuItems } from "../lib/profile/menuItems";
 import IonIcon from '@reacticons/ionicons';
 
+function getLocalStorageItem(key) {
+    if (typeof window !== 'undefined') {
+        return localStorage.getItem(key);
+    }
+    return null;
+}
+
 const LoadingSpinner = () => (
     <motion.svg
         animate={{ rotate: 360 }}
@@ -26,7 +33,7 @@ const LoadingSpinner = () => (
 
 
 async function getSubjectList() {
-    const sessionId = localStorage.getItem('klasSessionToken');
+    const sessionId = getLocalStorageItem('klasSessionToken');
 
     try {
         const data = await KLAS('https://klas.kw.ac.kr/std/cmn/frame/YearhakgiAtnlcSbjectList.do', sessionId, {});
@@ -43,8 +50,8 @@ async function getPortalMenus() {
 
 
 async function searchCourseInfo({ courseName, courseLabel, courseCode }) {
-    const currentYearHakgi = localStorage.getItem('currentYearHakgi');
-    const sessionId = localStorage.getItem('klasSessionToken');
+    const currentYearHakgi = getLocalStorageItem('currentYearHakgi');
+    const sessionId = getLocalStorageItem('klasSessionToken');
 
     const body = {
         selectYearhakgi: currentYearHakgi,
@@ -68,8 +75,8 @@ async function searchCourseInfo({ courseName, courseLabel, courseCode }) {
 }
 
 async function searchTaskList({ courseName, courseLabel, courseCode }) {
-    const currentYearHakgi = localStorage.getItem('currentYearHakgi');
-    const sessionId = localStorage.getItem('klasSessionToken');
+    const currentYearHakgi = getLocalStorageItem('currentYearHakgi');
+    const sessionId = getLocalStorageItem('klasSessionToken');
 
     const body = {
         selectYearhakgi: currentYearHakgi,
@@ -153,17 +160,21 @@ async function getContentFromUrl({ urls }) {
         return { error: 'urls parameter must be an array' };
     }
 
-    const combinedData = [];
-    for (const singleUrl of urls) {
-        try {
-            const response = await fetch('/api/crawler/turndown?url=' + singleUrl);
-            const json = await response.json();
-            combinedData.push(json.markdown);
-        } catch (error) {
-            console.error('에러 발생:', error.message);
-        }
-    }
-    return combinedData;
+    const fetchPromises = urls.map((singleUrl) => {
+        return fetch('/api/crawler/turndown?url=' + singleUrl)
+            .then((res) => {
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                return res.json();
+            })
+            .then((json) => json.markdown)
+            .catch((error) => {
+                console.error('에러 발생:', error.message);
+                return null;
+            });
+    });
+
+    const results = await Promise.all(fetchPromises);
+    return results.filter(x => x !== null && x !== undefined);
 }
 
 export default function ChatKitComponent() {
@@ -357,8 +368,8 @@ export default function ChatKitComponent() {
                             zIndex: 9999,
                             width: '85%',
                             background: prefersDark ? 'rgba(28, 28, 30, 0.85)' : 'rgba(255, 255, 255, 0.85)',
-                            backdropFilter: 'blur(16px)',
-                            WebkitBackdropFilter: 'blur(16px)',
+                            backdropFilter: 'blur(8px)',
+                            WebkitBackdropFilter: 'blur(8px)',
                             color: prefersDark ? '#ffffff' : '#000000',
                             borderRadius: '32px',
                             boxShadow: prefersDark ? '0 8px 32px rgba(0,0,0,0.5)' : '0 8px 32px rgba(0,0,0,0.1)',

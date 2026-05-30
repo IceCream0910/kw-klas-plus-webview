@@ -231,10 +231,12 @@ export default function LectureHome() {
                             marginBottom: '12px'
                         }}>
                             <div style={{
-                                width: `${stats.attendanceRate}%`,
+                                width: '100%',
                                 height: '100%',
                                 background: `linear-gradient(90deg, #7099ff 0%, ${stats.attendanceRate >= 90 ? '#60a5fa' : '#ff596a'} 100%)`,
-                                transition: 'width 0.5s ease-out'
+                                transform: `scaleX(${stats.attendanceRate / 100})`,
+                                transformOrigin: 'left',
+                                transition: 'transform 0.5s ease-out'
                             }} />
                         </div>
 
@@ -542,6 +544,7 @@ export default function LectureHome() {
             </main>
 
             <CampusMapSheet
+                key={selectedBuilding?.name || 'empty'}
                 open={mapSheetOpen}
                 buildingName={selectedBuilding?.name}
                 onClose={() => {

@@ -1,18 +1,19 @@
 import Spacer from '../common/spacer';
 
-const SearchLecturePlanHeader = () => {
-    const handleKLASOpen = () => {
-        if (typeof window !== 'undefined' && window.Android) {
-            window.Android.openPage("https://klas.kw.ac.kr/std/cps/atnlc/LectrePlanStdPage.do");
-        }
-    };
+const handleKLASOpen = () => {
+    if (typeof window !== 'undefined' && window.Android) {
+        window.Android.openPage("https://klas.kw.ac.kr/std/cps/atnlc/LectrePlanStdPage.do");
+    }
+};
 
+const SearchLecturePlanHeader = () => {
     return (
         <>
             <Spacer y={5} />
             <h2>
                 강의계획서 조회
                 <button
+                    type="button"
                     onClick={handleKLASOpen}
                     style={{
                         float: 'right',

@@ -1,7 +1,6 @@
-
 const TimetableStyles = () => {
   return (
-    <style jsx global>{`
+    <style dangerouslySetInnerHTML={{ __html: `
       :root {
         --bg-color: #f5e8e8;
         --text-color: #000000;
@@ -93,7 +92,7 @@ const TimetableStyles = () => {
       .weekend-class:active {
         transform: scale(0.98);
       }
-    `}</style>
+    `}} />
   );
 };
 

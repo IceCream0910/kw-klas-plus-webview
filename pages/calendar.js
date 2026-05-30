@@ -147,15 +147,15 @@ export default function CalendarPage() {
             <div style={styles.header}>
 
                 <h2 style={{ marginBottom: '20px', marginTop: '20px' }}>{currentMonth.format('MM월')}
-                    <button onClick={handleNextMonth}
+                    <button type="button" onClick={handleNextMonth}
                         style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-5px', borderRadius: '20px', padding: '10px 15px' }}>
                         →
                     </button>
-                    <button onClick={handlePrevMonth}
+                    <button type="button" onClick={handlePrevMonth}
                         style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-5px', borderRadius: '20px', padding: '10px 15px', marginRight: '10px' }}>
                         ←
                     </button>
-                    <button onClick={moveToToday}
+                    <button type="button" onClick={moveToToday}
                         style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-5px', borderRadius: '20px', padding: '10px 15px', marginRight: '10px' }}>
                         오늘
                     </button>
@@ -202,11 +202,11 @@ export default function CalendarPage() {
                         <>
                             <div style={styles.dateHeader}>
                                 <h3 style={{ margin: 0 }}>{moment(selectedDate).format('YYYY년 MM월 DD일')}
-                                    <button onClick={handleNextDay} disabled={moment(selectedDate).isSame(currentMonth.clone().endOf('month'), 'day')}
+                                    <button type="button" onClick={handleNextDay} disabled={moment(selectedDate).isSame(currentMonth.clone().endOf('month'), 'day')}
                                         style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-5px', borderRadius: '20px', padding: '10px 15px' }}>
                                         →
                                     </button>
-                                    <button onClick={handlePrevDay} disabled={moment(selectedDate).isSame(currentMonth.clone().startOf('month'), 'day')}
+                                    <button type="button" onClick={handlePrevDay} disabled={moment(selectedDate).isSame(currentMonth.clone().startOf('month'), 'day')}
                                         style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-5px', borderRadius: '20px', padding: '10px 15px', marginRight: '10px' }}>
                                         ←
                                     </button>
@@ -231,7 +231,7 @@ export default function CalendarPage() {
                         </>
                     )}
                     <Spacer y={15} />
-                    <button style={{ background: 'var(--card-background)', width: '100%', padding: '15px', borderRadius: '15px', border: 'none', fontWeight: 'bold' }} onClick={() => {
+                    <button type="button" style={{ background: 'var(--card-background)', width: '100%', padding: '15px', borderRadius: '15px', border: 'none', fontWeight: 'bold' }} onClick={() => {
                         openAddEventModal();
                     }}>
                         + 일정 추가
@@ -274,6 +274,19 @@ function EventForm({ event, date, isOpen, onSave, onDelete, onClose }) {
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+
+    if (isOpen !== prevIsOpen) {
+        setPrevIsOpen(isOpen);
+        if (isOpen) {
+            setErrorMessage('');
+            setIsSubmitting(false);
+            setIsAllDay(false);
+            setIsEditingStart(false);
+            setIsEditingEnd(false);
+            setIsEditingTitle(false);
+        }
+    }
 
     useEffect(() => {
         window.setDateTime = (dateTimeStr, isStart) => {
@@ -294,17 +307,6 @@ function EventForm({ event, date, isOpen, onSave, onDelete, onClose }) {
             setEnd(date);
         }
     }, [event, date]);
-
-    // Modal open 시마다 상태 초기화
-    useEffect(() => {
-        if (!isOpen) return;
-        setErrorMessage('');
-        setIsSubmitting(false);
-        setIsAllDay(false);
-        setIsEditingStart(false);
-        setIsEditingEnd(false);
-        setIsEditingTitle(false);
-    }, [isOpen]);
 
 
     const handleSubmit = async (e) => {
@@ -501,7 +503,7 @@ function EventForm({ event, date, isOpen, onSave, onDelete, onClose }) {
                 <Spacer y={10} />
 
                 {place.startsWith("U20") ? (<>
-                    <button onClick={() => {
+                    <button type="button" onClick={() => {
                         if (yearHakgi != null && yearHakgi != `${event.year},${event.hakgi}`) {
                             alert('시간표 탭에서 선택되어 있는 학기와 일치하는 강의만 조회할 수 있습니다.' + yearHakgi + " " + `${event.year},${event.hakgi}`);
                             return;

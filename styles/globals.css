@@ -1,3 +1,6 @@
+@import url("https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css");
+@import url("https://cdn.jsdelivr.net/gh/toss/tossface/dist/tossface.css");
+
 :root {
   --background: #fff8f7;
   --background-transparent: rgba(255, 248, 247, 0.3);
@@ -880,4 +883,18 @@ released-badge {
   position: relative;
   top: -8px;
   right: -30px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-delay: -1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    background-attachment: initial !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
 }

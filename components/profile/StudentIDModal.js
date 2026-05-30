@@ -277,8 +277,7 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                     position: 'relative',
                     overflow: 'hidden',
                     display: 'flex',
-                    flexDirection: 'column',
-                    willChange: 'transform, opacity'
+                    flexDirection: 'column'
                 }}
             >
                 <motion.div
@@ -299,6 +298,7 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                         <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '800', letterSpacing: '-0.5px' }}>모바일 학생증</h2>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <button
+                                type="button"
                                 onClick={onClose}
                                 style={{
                                     background: 'var(--notice-hover)',
@@ -357,7 +357,7 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                                 background: '#f0f0f0'
                                             }}
                                         >
-                                            <img src={stdInfo.fileUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            <img src={stdInfo.fileUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="학생 증명사진" />
                                         </div>
 
                                         <div style={{
@@ -424,6 +424,7 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                     marginBottom: '10px'
                                 }}>
                                     <button
+                                        type="button"
                                         onClick={() => {
                                             try {
                                                 if (typeof window.Android !== 'undefined') {
@@ -476,12 +477,14 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                             }}
                                         />
                                         <button
+                                            type="button"
                                             className={`tab-item-btn ${activeTab === 'idCard' ? 'active' : ''}`}
                                             onClick={() => setActiveTab('idCard')}
                                         >
                                             학생증
                                         </button>
                                         <button
+                                            type="button"
                                             className={`tab-item-btn ${activeTab === 'library' ? 'active' : ''}`}
                                             onClick={() => setActiveTab('library')}
                                         >
@@ -602,6 +605,7 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                                 {isQrRequestFailed ? (
                                                     <>
                                                         <button
+                                                            type="button"
                                                             onClick={() => {
                                                                 try {
                                                                     if (typeof window.Android !== 'undefined') {
@@ -634,6 +638,7 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                                 ) : (
                                                     <>
                                                         <button
+                                                            type="button"
                                                             onClick={() => {
                                                                 try {
                                                                     if (typeof window.Android !== 'undefined') {
@@ -689,6 +694,7 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                             opacity: 0.85
                                         }}>
                                             <button
+                                                type="button"
                                                 onClick={handleRefresh}
                                                 style={{
                                                     background: 'none',
@@ -700,7 +706,6 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                                     justifyContent: 'center',
                                                     color: 'var(--text-secondary)',
                                                     borderRadius: '50%',
-                                                    outline: 'none',
                                                     width: 'fit-content',
                                                     height: '28px',
                                                     fontSize: '13px'
@@ -715,6 +720,7 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                             <span style={{ opacity: 0.3, fontSize: '10px', marginLeft: '3px' }}>|</span>
 
                                             <button
+                                                type="button"
                                                 onClick={() => {
                                                     try {
                                                         if (typeof window !== 'undefined' && typeof window.Android !== 'undefined') {
@@ -733,7 +739,6 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
                                                     color: 'var(--text-secondary)',
-                                                    outline: 'none',
                                                     width: 'fit-content',
                                                     height: '28px',
                                                     fontSize: '13px'

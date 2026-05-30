@@ -14,6 +14,7 @@ const SearchBar = ({ searchTerm, onSearchChange }) => (
             <input
                 style={{ paddingLeft: '35px' }}
                 placeholder={"메뉴 검색"}
+                aria-label="메뉴 검색"
                 value={searchTerm}
                 onChange={(e) => onSearchChange(e.target.value)}
                 onKeyUp={(e) => {

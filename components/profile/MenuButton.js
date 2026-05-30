@@ -18,10 +18,19 @@ const MenuButton = ({ item, isFavorite, onMenuClick, onFavoriteToggle }) => (
                 {item.badge}
             </span>
         )}
-        <button
+        <span
+            role="button"
+            tabIndex={0}
             onClick={(e) => {
                 e.stopPropagation();
                 onFavoriteToggle(item);
+            }}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    onFavoriteToggle(item);
+                }
             }}
             style={{
                 float: 'right',
@@ -29,11 +38,12 @@ const MenuButton = ({ item, isFavorite, onMenuClick, onFavoriteToggle }) => (
                 height: 'fit-content',
                 padding: '0',
                 opacity: isFavorite ? '.8' : '.5',
-                color: isFavorite ? 'var(--red)' : 'inherit'
+                color: isFavorite ? 'var(--red)' : 'inherit',
+                cursor: 'pointer'
             }}
         >
             <IonIcon name={isFavorite ? 'star' : 'star-outline'} />
-        </button>
+        </span>
     </button>
 );
 

@@ -1,14 +1,16 @@
+const CONTAINER_STYLE = {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: '10px',
+    opacity: '.3'
+};
+
 const EmptyState = ({ message = "아직 항목이 없어요" }) => (
-    <div style={{
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '10px',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: '10px',
-        opacity: '.3'
-    }}>
+    <div style={CONTAINER_STYLE}>
         <svg width="64" height="41" viewBox="0 0 64 41" xmlns="http://www.w3.org/2000/svg">
             <g transform="translate(0 1)" fill="none" fillRule="evenodd">
                 <g fillRule="nonzero" stroke="var(--text-color)">

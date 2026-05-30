@@ -1,6 +1,26 @@
 import IonIcon from '@reacticons/ionicons';
 import ToggleSwitch from '../common/ToggleSwitch';
 
+const handleYearHakgiSelect = () => {
+    if (typeof window !== 'undefined' && window.Android) {
+        window.Android.openYearHakgiSelectModal();
+    }
+};
+
+const handleLibraryQRSettings = () => {
+    if (typeof window !== 'undefined' && window.Android) {
+        window.Android.openLibraryQRSettingsModal();
+    }
+};
+
+const formatYearHakgi = (yearHakgi) => {
+    if (!yearHakgi) return '';
+    return yearHakgi
+        .replace(",3", ",하계계절")
+        .replace(",4", ",동계계절")
+        .replace(",", "년도 ") + "학기";
+};
+
 /**
  * 설정 메뉴 섹션 컴포넌트
  * @param {Object} props
@@ -8,29 +28,10 @@ import ToggleSwitch from '../common/ToggleSwitch';
  * @returns {JSX.Element}
  */
 const SettingsMenuSection = ({ yearHakgi }) => {
-    const handleYearHakgiSelect = () => {
-        if (typeof window !== 'undefined' && window.Android) {
-            window.Android.openYearHakgiSelectModal();
-        }
-    };
-
-    const handleLibraryQRSettings = () => {
-        if (typeof window !== 'undefined' && window.Android) {
-            window.Android.openLibraryQRSettingsModal();
-        }
-    };
-
-    const formatYearHakgi = (yearHakgi) => {
-        if (!yearHakgi) return '';
-        return yearHakgi
-            .replace(",3", ",하계계절")
-            .replace(",4", ",동계계절")
-            .replace(",", "년도 ") + "학기";
-    };
-
     return (
         <>
             <button
+                type="button"
                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                 onClick={handleYearHakgiSelect}
             >
@@ -41,6 +42,7 @@ const SettingsMenuSection = ({ yearHakgi }) => {
             </button>
 
             <button
+                type="button"
                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                 onClick={handleLibraryQRSettings}
             >

@@ -70,6 +70,7 @@ const SearchLecturePlanForm = ({
                 value={name}
                 onChange={(e) => onNameChange(e.target.value)}
                 placeholder="과목명"
+                aria-label="과목명"
                 style={{
                     width: '100%',
                     padding: '10px',
@@ -85,6 +86,7 @@ const SearchLecturePlanForm = ({
                 value={professor}
                 onChange={(e) => onProfessorChange(e.target.value)}
                 placeholder="교수명"
+                aria-label="교수명"
                 style={{
                     width: '100%',
                     padding: '10px',
@@ -159,7 +161,7 @@ const SearchLecturePlanForm = ({
                 <label htmlFor="my" style={{ opacity: .7, fontSize: '14px' }}>
                     내가 수강한 과목 중에서 검색
                 </label>
-                <label className="switch" style={{ transform: 'scale(0.8)' }}>
+                <label className="switch" aria-label="내가 수강한 과목 중에서 검색" style={{ transform: 'scale(0.8)' }}>
                     <input
                         id="my"
                         type="checkbox"
@@ -172,6 +174,7 @@ const SearchLecturePlanForm = ({
 
             <div className='bottom-sheet-footer'>
                 <button
+                    type="button"
                     onClick={onSearch}
                     style={{ background: 'var(--button-background)', borderRadius: '15px' }}
                 >

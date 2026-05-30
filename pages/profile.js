@@ -31,14 +31,15 @@ export default function Home() {
     handleToggleFavorite
   } = useMenuSettings();
 
-  const filteredMenuItems = menuItems
-    .map(category => ({
-      ...category,
-      items: category.items.filter(item =>
-        item.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    }))
-    .filter(category => category.items.length > 0);
+  const filteredMenuItems = menuItems.reduce((acc, category) => {
+    const items = category.items.filter(item =>
+      item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    if (items.length > 0) {
+      acc.push({ ...category, items });
+    }
+    return acc;
+  }, []);
 
 
 

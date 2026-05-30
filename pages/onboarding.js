@@ -27,6 +27,12 @@ const slides = [
   }
 ];
 
+const imageStyle = {
+  width: '100%',
+  objectFit: 'cover',
+  objectPosition: 'top'
+};
+
 export default function Onboarding() {
   const flickingRef = useRef(null);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -43,12 +49,6 @@ export default function Onboarding() {
     };
   }, []);
 
-  const imageStyle = {
-    width: '100%',
-    objectFit: 'cover',
-    objectPosition: 'top'
-  };
-
   return (
     <main style={{ margin: '-15px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <Flicking
@@ -57,10 +57,10 @@ export default function Onboarding() {
         style={{ maxWidth: '400px', height: 'calc(70dvh - 35px)', paddingTop: '30px' }}
         onChanged={(e) => setCurrentSlide(e.index)}
       >
-        <img src="https://i.imgur.com/bVwCc7y.png" style={imageStyle} />
-        <img src="https://i.imgur.com/l03QIba.png" style={imageStyle} />
-        <img src="https://i.imgur.com/ZkQ6Dmp.png" style={imageStyle} />
-        <img src="https://i.imgur.com/Y6DGppn.png" style={imageStyle} />
+        <img src="https://i.imgur.com/bVwCc7y.png" style={imageStyle} alt="KLAS+ 온보딩 메인 화면" />
+        <img src="https://i.imgur.com/l03QIba.png" style={imageStyle} alt="KLAS+ 메인 및 퀵 메뉴 설정 화면" />
+        <img src="https://i.imgur.com/ZkQ6Dmp.png" style={imageStyle} alt="KLAS+ 대학 생활 캘린더 화면" />
+        <img src="https://i.imgur.com/Y6DGppn.png" style={imageStyle} alt="KLAS+ AI 비서 대화 화면" />
 
       </Flicking>
 

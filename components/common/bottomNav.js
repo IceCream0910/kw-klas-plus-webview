@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import IonIcon from "@reacticons/ionicons";
 import Spacer from "../common/spacer";
 import { useRouter } from "next/router";
@@ -17,21 +17,58 @@ const checkAppCompatibility = (version) => {
 };
 
 const getAppVersionFromUserAgent = () => {
+    if (typeof window === 'undefined') return null;
     const userAgent = navigator.userAgent;
     const match = userAgent.match(/AndroidApp_v(\d+)/);
     return match ? parseInt(match[1], 10) : null;
 };
 
-function BottomNav({ currentTab }) {
-    const [isCompatible, setIsCompatible] = useState(false);
-    const router = useRouter();
+const emptySubscribe = () => () => { };
 
-    useEffect(() => {
-        const appVersion = getAppVersionFromUserAgent();
-        if (appVersion) {
-            setIsCompatible(checkAppCompatibility(appVersion));
-        }
-    }, []);
+const getClientCompat = () => {
+    const appVersion = getAppVersionFromUserAgent();
+    return appVersion ? checkAppCompatibility(appVersion) : false;
+};
+
+const getServerCompat = () => false;
+
+const NAV_CONTAINER_STYLE = {
+    position: 'fixed',
+    left: 0,
+    bottom: 0,
+    width: '100%',
+    padding: '10px 16px',
+    boxSizing: 'border-box',
+    zIndex: 500
+};
+
+const NAV_INNER_STYLE = {
+    display: 'flex',
+    gap: '8px',
+    justifyContent: 'center',
+    position: 'fixed',
+    left: 0,
+    bottom: 0,
+    width: '100%',
+    padding: '10px 16px',
+    background: 'linear-gradient(to top, var(--background) 0%, transparent 100%)',
+    boxSizing: 'border-box'
+};
+
+const BUTTON_BASE_STYLE = {
+    width: '100px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '6px',
+    padding: '10px 0 8px',
+    borderRadius: '14px',
+    transition: 'transform 0.1s ease-out',
+};
+
+function BottomNav({ currentTab }) {
+    const isCompatible = useSyncExternalStore(emptySubscribe, getClientCompat, getServerCompat);
+    const router = useRouter();
 
     const handleTabClick = (tab) => {
         if (tab) {
@@ -45,7 +82,6 @@ function BottomNav({ currentTab }) {
     if (!isCompatible) {
         return null;
     }
-
 
     return (
         <>
@@ -86,16 +122,9 @@ function BottomNav({ currentTab }) {
                                 aria-label={tab.label}
                                 aria-current={isActive ? 'page' : undefined}
                                 style={{
-                                    width: '100px',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    gap: '6px',
-                                    padding: '10px 0 8px',
-                                    borderRadius: '14px',
+                                    ...BUTTON_BASE_STYLE,
                                     backgroundColor: isActive ? 'var(--card-background)' : 'transparent',
                                     color: isActive ? 'var(--text-color)' : 'var(--text-color-transparent)',
-                                    transition: 'transform 0.1s ease-out',
                                 }}
                             >
                                 <IonIcon

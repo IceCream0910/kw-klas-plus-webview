@@ -39,7 +39,13 @@ const TodaysCafeteriaMenu = ({ data }) => {
     return { ...restaurant, pickedMenu: null };
   };
 
-  const menus = data.restaurants.map(resolveMenuForRestaurant).filter(r => r.pickedMenu);
+  const menus = data.restaurants.reduce((acc, r) => {
+    const resolved = resolveMenuForRestaurant(r);
+    if (resolved.pickedMenu) {
+      acc.push(resolved);
+    }
+    return acc;
+  }, []);
 
   const hasTomorrowData = data.restaurants.some(r => Array.isArray(r.weeklyMenu) && r.weeklyMenu.some(i => i && (i.date === tomorrowStr || i.day === tomorrowWeekday)));
   const headerNote = isClosed ? (hasTomorrowData ? '오늘 학식은 종료되었어요. 내일 식단을 보여드릴게요.' : '오늘 학식은 종료되었어요.') : null;
@@ -70,7 +76,7 @@ const TodaysCafeteriaMenu = ({ data }) => {
           <Spacer y={10} />
 
           {formatMenu(restaurant.pickedMenu.menu).map((item, idx, arr) => (
-            <span style={{ opacity: .6 }}>{item}{idx < arr.length - 1 && ", "}</span>
+            <span key={idx} style={{ opacity: .6 }}>{item}{idx < arr.length - 1 && ", "}</span>
           ))}
 
           <Spacer y={10} />

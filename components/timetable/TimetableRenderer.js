@@ -6,12 +6,14 @@ import {
 } from '../../lib/timetable/timetableHelpers';
 import { SkeletonLayouts } from '../common/Skeleton';
 
+const days = ['월', '화', '수', '목', '금'];
+
 const TimetableRenderer = ({ timetableData, onClassClick }) => {
     if (!timetableData) return <SkeletonLayouts.Timetable />;
-
-    const days = ['월', '화', '수', '목', '금'];
     const colorMap = {};
-    const uniqueClasses = [...new Set(Object.values(timetableData).flat().map(item => item.title))];
+    const flatClasses = Object.values(timetableData).flat();
+    const uniqueClasses = [...new Set(flatClasses.map(item => item.title))];
+    const uniqueClassesIndices = Object.fromEntries(uniqueClasses.map((title, i) => [title, i]));
     const { minStartHour, maxEndHour } = calculateTimeRange(timetableData);
 
     const headerCells = [
@@ -28,23 +30,22 @@ const TimetableRenderer = ({ timetableData, onClassClick }) => {
         for (let day = 0; day < 5; day++) {
             timeCells.push(
                 <div key={`cell-${day}-${hour}`} id={`cell-${day}-${hour}`} style={{ height: '60px', position: 'relative' }}>
-                    {Object.values(timetableData).flat()
-                        .filter(classItem =>
+                    {flatClasses.reduce((acc, classItem) => {
+                        if (
                             classItem.day === day &&
                             parseInt(classItem.startTime.split(':')[0]) === hour
-                        )
-                        .map((classItem, idx) => {
+                        ) {
                             if (!colorMap[classItem.title]) {
-                                colorMap[classItem.title] = getRandomColor(uniqueClasses.indexOf(classItem.title), uniqueClasses.length);
+                                colorMap[classItem.title] = getRandomColor(uniqueClassesIndices[classItem.title], uniqueClasses.length);
                             }
 
                             const backgroundColor = colorMap[classItem.title];
                             const textColor = getContrastColor(backgroundColor);
                             const { topOffset, height } = calculateClassDimensions(classItem);
 
-                            return (
+                            acc.push(
                                 <div
-                                    key={`class-${classItem.title}-${idx}`}
+                                    key={`class-${classItem.title}-${acc.length}`}
                                     className="class"
                                     style={{
                                         top: `${topOffset}px`,
@@ -58,24 +59,28 @@ const TimetableRenderer = ({ timetableData, onClassClick }) => {
                                     <div>{classItem.info}</div>
                                 </div>
                             );
-                        })
-                    }
+                        }
+                        return acc;
+                    }, [])}
                 </div>
             );
         }
     }
 
-    const weekendClasses = Object.values(timetableData).flat()
-        .filter(classItem => classItem.day >= 5)
-        .map((classItem, idx) => (
-            <div
-                key={`weekend-${idx}`}
-                className="weekend-class"
-                onClick={() => onClassClick(classItem.subj, classItem.title)}
-            >
-                <div><b>{classItem.title}</b></div>
-            </div>
-        ));
+    const weekendClasses = flatClasses.reduce((acc, classItem) => {
+        if (classItem.day >= 5) {
+            acc.push(
+                <div
+                    key={`weekend-${acc.length}`}
+                    className="weekend-class"
+                    onClick={() => onClassClick(classItem.subj, classItem.title)}
+                >
+                    <div><b>{classItem.title}</b></div>
+                </div>
+            );
+        }
+        return acc;
+    }, []);
 
     return (
         <>

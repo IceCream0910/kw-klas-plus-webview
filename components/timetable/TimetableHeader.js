@@ -1,17 +1,18 @@
 import Header from "../common/header";
 import IonIcon from '@reacticons/ionicons';
 
-const TimetableHeader = ({ yearHakgiLabel }) => {
-    const handleYearHakgiClick = () => {
-        if (typeof window !== 'undefined' && window.Android) {
-            window.Android.openYearHakgiBottomSheet();
-        }
-    };
+const handleYearHakgiClick = () => {
+    if (typeof window !== 'undefined' && window.Android) {
+        window.Android.openYearHakgiBottomSheet();
+    }
+};
 
+const TimetableHeader = ({ yearHakgiLabel }) => {
     return (
         <Header
             title={
                 <button
+                    type="button"
                     onClick={handleYearHakgiClick}
                     style={{
                         background: 'var(--card-background)',

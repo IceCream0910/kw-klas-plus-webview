@@ -37,7 +37,7 @@ const ScholarshipCard = ({ scholarship, onClick, index = 0 }) => {
                     {scholarship.period && (
                         <div className="flex items-center mb-2 text-gray-600">
                             <svg
-                                className="w-4 h-4 mr-2"
+                                className="size-4 mr-2"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -57,7 +57,7 @@ const ScholarshipCard = ({ scholarship, onClick, index = 0 }) => {
                     {scholarship.amount && (
                         <div className="flex items-center mb-2 text-gray-600">
                             <svg
-                                className="w-4 h-4 mr-2"
+                                className="size-4 mr-2"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -78,7 +78,7 @@ const ScholarshipCard = ({ scholarship, onClick, index = 0 }) => {
                         {scholarship.department && (
                             <span className="flex items-center">
                                 <svg
-                                    className="w-4 h-4 mr-1"
+                                    className="size-4 mr-1"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
@@ -96,7 +96,7 @@ const ScholarshipCard = ({ scholarship, onClick, index = 0 }) => {
                         {scholarship.grade && (
                             <span className="flex items-center">
                                 <svg
-                                    className="w-4 h-4 mr-1"
+                                    className="size-4 mr-1"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
