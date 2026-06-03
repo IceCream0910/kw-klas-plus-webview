@@ -546,7 +546,13 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                                 padding: '12px',
                                                 zIndex: 3
                                             }}>
-                                                <div className="spinner" style={{ borderLeftColor: isDarkMode ? '#ff8888' : '#c70000', borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)', marginBottom: '10px' }} />
+                                                <div className="spinner" style={{
+                                                    borderTopColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                                                    borderRightColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                                                    borderBottomColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                                                    borderLeftColor: isDarkMode ? '#ff8888' : '#c70000',
+                                                    marginBottom: '10px'
+                                                }} />
                                                 <span style={{
                                                     color: isDarkMode ? '#cccccc' : '#666666',
                                                     fontSize: '12px',
