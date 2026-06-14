@@ -40,11 +40,10 @@ export default function ColorPicker({ open, onDismiss, color, onChange }) {
         >
             <div style={styles.container}>
                 <h3 style={styles.title}>색상 선택</h3>
-                
-                {/* Presets */}
+
                 <div style={styles.presets}>
                     {PRESET_COLORS.map(c => (
-                        <div 
+                        <div
                             key={c}
                             onClick={() => handlePresetClick(c)}
                             style={{
@@ -54,7 +53,7 @@ export default function ColorPicker({ open, onDismiss, color, onChange }) {
                             }}
                         />
                     ))}
-                    <div 
+                    <div
                         style={{
                             ...styles.presetDot,
                             backgroundColor: selectedColor,
@@ -86,14 +85,12 @@ export default function ColorPicker({ open, onDismiss, color, onChange }) {
                     }
                 `}</style>
 
-                {/* React Colorful */}
                 <div className="custom-layout" style={styles.canvasContainer}>
                     <HexColorPicker color={selectedColor} onChange={setSelectedColor} />
                 </div>
 
-                {/* Result */}
                 <div style={styles.resultContainer}>
-                    <div style={{...styles.colorPreview, backgroundColor: selectedColor}} />
+                    <div style={{ ...styles.colorPreview, backgroundColor: selectedColor }} />
                     <span style={styles.hexText}>{selectedColor.toUpperCase()}</span>
                 </div>
             </div>

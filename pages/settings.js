@@ -1,8 +1,10 @@
+import { useState, useEffect } from 'react';
 import { useSettings } from '../lib/useSettings';
 import ThemeSelector from '../components/settings/ThemeSelector';
 import SettingsMenuSection from '../components/settings/SettingsMenuSection';
 import SettingsLinkSection from '../components/settings/SettingsLinkSection';
 import SettingsInfoSection from '../components/settings/SettingsInfoSection';
+import SettingsAppLockSection from '../components/settings/SettingsAppLockSection';
 import Spacer from "../components/common/spacer";
 import BottomSheet from '../components/common/BottomSheet';
 import IonIcon from '@reacticons/ionicons';
@@ -16,6 +18,16 @@ export default function Settings() {
     isOpenSettingsModal,
     setIsOpenSettingsModal,
   } = useSettings();
+
+  const [userAgentVersion, setUserAgentVersion] = useState("0");
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const userAgent = navigator.userAgent;
+      const versionMatch = userAgent.split('AndroidApp_v')[1];
+      if (versionMatch) setUserAgentVersion(versionMatch.trim());
+    }
+  }, []);
 
   return (
     <main>
@@ -32,6 +44,17 @@ export default function Settings() {
       <Spacer y={20} />
       <hr style={{ margin: '0 10px', opacity: .1 }} />
       <Spacer y={20} />
+
+      {parseInt(userAgentVersion, 10) >= 32 && (
+        <>
+          <h3 style={{ margin: '10px' }}>앱 잠금</h3>
+          <SettingsAppLockSection />
+          <Spacer y={20} />
+          <hr style={{ margin: '0 10px', opacity: .1 }} />
+          <Spacer y={20} />
+        </>
+      )}
+
       <h3 style={{ margin: '10px' }}>링크</h3>
 
       <SettingsLinkSection />
