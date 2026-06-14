@@ -8,6 +8,7 @@ import IonIcon from '@reacticons/ionicons';
 import { useCalendar } from '../lib/calendar/useCalendar';
 import ToggleSwitch from '../components/common/ToggleSwitch';
 import BottomNav from '../components/common/bottomNav';
+import ColorPicker from '../components/common/ColorPicker';
 
 const localizer = momentLocalizer(moment);
 var yearHakgi;
@@ -274,6 +275,7 @@ function EventForm({ event, date, isOpen, onSave, onDelete, onClose }) {
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
     const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
 
     if (isOpen !== prevIsOpen) {
@@ -392,22 +394,37 @@ function EventForm({ event, date, isOpen, onSave, onDelete, onClose }) {
         <div style={styles.form}>
             <div style={{ maxHeight: '70dvh', overflow: 'scroll' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    {isEditingTitle ? (
-                        <input
-                            type="text"
-                            value={title}
-                            placeholder="제목 입력"
-                            onChange={(e) => setTitle(e.target.value)}
-                            onBlur={handleTitleBlur}
-                            autoFocus
-                            style={styles.titleInput}
-                        />
-                    ) : (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        {event && event.typeNm == "개인일정" && (
+                            <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '10px' }}>                        <div
+                                onClick={() => setIsColorPickerOpen(true)}
+                                style={{
+                                    ...styles.colorInput,
+                                    backgroundColor: color,
+                                    cursor: 'pointer',
+                                    border: '1px solid var(--card-border)',
+                                    boxSizing: 'border-box'
+                                }}
+                            />
+                            </div>
+                        )}
 
-                        <h2 onClick={(event && event.typeNm == "개인일정") ? handleTitleClick : null} style={{ fontSize: '22px', margin: 0 }}>
-                            {title || '제목 입력'}
-                        </h2>
-                    )}
+                        {isEditingTitle ? (
+                            <input
+                                type="text"
+                                value={title}
+                                placeholder="제목 입력"
+                                onChange={(e) => setTitle(e.target.value)}
+                                onBlur={handleTitleBlur}
+                                autoFocus
+                                style={styles.titleInput}
+                            />
+                        ) : (
+                            <h2 onClick={(event && event.typeNm == "개인일정") ? handleTitleClick : null} style={{ fontSize: '22px', margin: 0 }}>
+                                {title || '제목 입력'}
+                            </h2>
+                        )}
+                    </div>
 
                     {event && event.typeNm == "개인일정" && event.schdulId && (
                         <button type="button" onClick={() => onDelete(event)} style={styles.deleteButton}>
@@ -488,17 +505,6 @@ function EventForm({ event, date, isOpen, onSave, onDelete, onClose }) {
                         </div>
                     </div>
                 </div>
-                {event && event.typeNm == "개인일정" && (
-                    <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '10px' }}>
-                        <span style={{ opacity: .7 }}>색상</span>
-                        <input
-                            type="color"
-                            value={color}
-                            onChange={(e) => setColor(e.target.value)}
-                            style={styles.colorInput}
-                        />
-                    </div>
-                )}
 
                 <Spacer y={10} />
 
@@ -536,6 +542,12 @@ function EventForm({ event, date, isOpen, onSave, onDelete, onClose }) {
                 }
 
             </div>
+            <ColorPicker
+                open={isColorPickerOpen}
+                onDismiss={() => setIsColorPickerOpen(false)}
+                color={color}
+                onChange={setColor}
+            />
         </div>
     );
 }
@@ -585,8 +597,8 @@ const styles = {
         borderRadius: '15px',
     },
     colorInput: {
-        width: '40px',
-        height: '40px',
+        width: '30px',
+        height: '30px',
         padding: '5px',
         background: 'none',
         borderRadius: '50%'
