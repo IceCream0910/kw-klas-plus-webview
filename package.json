@@ -27,7 +27,7 @@
     "jsdom": "^24.1.1",
     "mathjs": "^15.2.0",
     "moment": "^2.30.1",
-    "next": "16.2.6",
+    "next": "16.2.11",
     "node-html-parser": "^6.1.13",
     "postcss": "^8.5.18",
     "pulltorefreshjs": "^0.1.22",
