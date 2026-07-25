@@ -29,7 +29,7 @@
     "moment": "^2.30.1",
     "next": "16.2.6",
     "node-html-parser": "^6.1.13",
-    "postcss": "^8.5.10",
+    "postcss": "^8.5.18",
     "pulltorefreshjs": "^0.1.22",
     "qrcode": "^1.5.4",
     "react": "^19.2.3",
