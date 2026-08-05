@@ -1,3 +1,4 @@
+import KlasNativeBridge from '../lib/core/klasNativeBridge';
 import { useState, useEffect, useRef } from "react";
 import { Line } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
@@ -7,7 +8,6 @@ import BottomSheet from '../components/common/BottomSheet';
 import { KLAS } from "../lib/core/klas";
 import Skeleton, { SkeletonLayouts } from "../components/common/Skeleton";
 import GradeCard from "../components/grade/GradeCard";
-import { openWebViewBottomSheet, closeWebViewBottomSheet } from "../lib/core/androidBridge";
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 export default function Grade() {
@@ -72,9 +72,9 @@ export default function Grade() {
 
   useEffect(() => {
     if (isModalOpen) {
-      openWebViewBottomSheet();
+      KlasNativeBridge.openWebViewBottomSheet();
     } else {
-      closeWebViewBottomSheet();
+      KlasNativeBridge.closeWebViewBottomSheet();
     }
   }, [isModalOpen]);
 
@@ -135,7 +135,7 @@ export default function Grade() {
     <main>
       <h2 style={{ marginBottom: '20px', marginTop: '20px' }}>성적
 
-        <button onClick={() => Android.openPage('https://klas.kw.ac.kr/std/cps/inqire/AtnlcScreStdPage.do')}
+        <button onClick={() => KlasNativeBridge.openPage('https://klas.kw.ac.kr/std/cps/inqire/AtnlcScreStdPage.do')}
           style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-5px', borderRadius: '20px', padding: '10px 15px' }}>
           KLAS에서 열기
         </button>

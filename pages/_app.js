@@ -1,3 +1,4 @@
+import KlasNativeBridge from '../lib/core/klasNativeBridge';
 import "../styles/globals.css";
 import { useEffect } from "react";
 import Script from 'next/script';
@@ -19,7 +20,7 @@ function MyApp({ Component, pageProps }) {
     }
 
     try {
-      Android.completePageLoad();
+      KlasNativeBridge.completePageLoad();
     } catch (error) {
       if (window.location.href.includes("privacy") || window.location.href.includes("changelog")) return;
       if (process.env.NEXT_PUBLIC_DEVELOPMENT) return;

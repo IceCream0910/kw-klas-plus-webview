@@ -1,9 +1,10 @@
+import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 import Header from "../common/header";
 import IonIcon from '@reacticons/ionicons';
 
 const handleYearHakgiClick = () => {
-    if (typeof window !== 'undefined' && window.Android) {
-        window.Android.openYearHakgiBottomSheet();
+    if (typeof window !== 'undefined' && KlasNativeBridge) {
+        KlasNativeBridge.openYearHakgiBottomSheet();
     }
 };
 

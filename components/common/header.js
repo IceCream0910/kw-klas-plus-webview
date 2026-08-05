@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import IonIcon from "@reacticons/ionicons";
 import Spacer from "../common/spacer";
-import { openOptionsMenu, openKlasPage, openExternalLink } from "../../lib/core/androidBridge";
+import KlasNativeBridge from "../../lib/core/klasNativeBridge";
 import toast, { Toaster } from 'react-hot-toast';
 import GradualBlur from "../common/GradualBlur";
 
@@ -24,7 +24,7 @@ const getAppVersionFromUserAgent = () => {
 
 const handleChangelogClick = () => {
     try {
-        openKlasPage("https://klasplus.yuntae.in/changelog")
+        KlasNativeBridge.openPage("https://klasplus.yuntae.in/changelog")
     } catch (error) {
         toast("앱을 최신버전으로 업데이트해주세요.")
     }
@@ -32,7 +32,7 @@ const handleChangelogClick = () => {
 
 const handleAiClick = () => {
     try {
-        openKlasPage("https://klasplus.yuntae.in/agent")
+        KlasNativeBridge.openPage("https://klasplus.yuntae.in/agent")
     } catch (error) {
         toast("앱을 최신버전으로 업데이트해주세요.")
     }
@@ -126,7 +126,7 @@ function Header({ title }) {
                         <button
                             type="button"
                             style={{ width: 'fit-content' }}
-                            onClick={openOptionsMenu}
+                            onClick={() => KlasNativeBridge.openOptionsMenu()}
                             aria-label="메뉴 열기"
                         >
                             <IonIcon

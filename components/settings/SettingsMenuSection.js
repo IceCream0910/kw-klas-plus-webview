@@ -1,15 +1,16 @@
+import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 import IonIcon from '@reacticons/ionicons';
 import ToggleSwitch from '../common/ToggleSwitch';
 
 const handleYearHakgiSelect = () => {
-    if (typeof window !== 'undefined' && window.Android) {
-        window.Android.openYearHakgiSelectModal();
+    if (typeof window !== 'undefined' && KlasNativeBridge) {
+        KlasNativeBridge.openYearHakgiSelectModal();
     }
 };
 
 const handleLibraryQRSettings = () => {
-    if (typeof window !== 'undefined' && window.Android) {
-        window.Android.openLibraryQRSettingsModal();
+    if (typeof window !== 'undefined' && KlasNativeBridge) {
+        KlasNativeBridge.openLibraryQRSettingsModal();
     }
 };
 

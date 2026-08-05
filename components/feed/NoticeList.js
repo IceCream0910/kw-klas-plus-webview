@@ -1,4 +1,4 @@
-import { openKlasPage } from '../../lib/core/androidBridge';
+import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 import { SkeletonLayouts } from '../common/Skeleton';
 
 function NoticeList({ notices, isLoading }) {
@@ -28,7 +28,7 @@ function NoticeList({ notices, isLoading }) {
                 <div
                     key={index}
                     className="notice-item"
-                    onClick={() => openKlasPage(notice.link)}
+                    onClick={() => KlasNativeBridge.openPage(notice.link)}
                 >
                     <span>
                         <b>{notice.title.replace("신규게시글", "").replace("Attachment", "")}</b>

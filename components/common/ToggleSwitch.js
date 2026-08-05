@@ -1,3 +1,4 @@
+import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 
 function ToggleSwitch({
     checked,
@@ -8,9 +9,9 @@ function ToggleSwitch({
     style = {}
 }) {
     const handleChange = (e) => {
-        if (window.Android && window.Android.performHapticFeedback) {
+        if (KlasNativeBridge.isAvailable('performHapticFeedback')) {
             const feedbackType = e.target.checked ? "TOGGLE_ON" : "TOGGLE_OFF";
-            window.Android.performHapticFeedback(feedbackType);
+            KlasNativeBridge.performHapticFeedback(feedbackType);
         }
         if (onChange) {
             onChange(e);

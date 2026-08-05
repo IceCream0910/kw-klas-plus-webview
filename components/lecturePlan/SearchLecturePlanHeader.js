@@ -1,8 +1,9 @@
+import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 import Spacer from '../common/spacer';
 
 const handleKLASOpen = () => {
-    if (typeof window !== 'undefined' && window.Android) {
-        window.Android.openPage("https://klas.kw.ac.kr/std/cps/atnlc/LectrePlanStdPage.do");
+    if (typeof window !== 'undefined' && KlasNativeBridge) {
+        KlasNativeBridge.openPage("https://klas.kw.ac.kr/std/cps/atnlc/LectrePlanStdPage.do");
     }
 };
 

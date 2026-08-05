@@ -1,3 +1,4 @@
+import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 import Spacer from '../common/spacer';
 import ToggleSwitch from '../common/ToggleSwitch';
 
@@ -10,8 +11,8 @@ import ToggleSwitch from '../common/ToggleSwitch';
  */
 const OnlineLectureHeader = ({ excludeFinished, onToggleChange }) => {
     const handleKLASOpen = () => {
-        if (typeof window !== 'undefined' && window.Android) {
-            window.Android.openInKLAS();
+        if (typeof window !== 'undefined' && KlasNativeBridge) {
+            KlasNativeBridge.openInKLAS();
         }
     };
 

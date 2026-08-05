@@ -1,3 +1,4 @@
+import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 import Spacer from '../common/spacer';
 import IonIcon from '@reacticons/ionicons';
 import { isBeforeStartDate, handlePreviewLecture, createLectureData } from '../../lib/lecture/onlineLectureUtils';
@@ -8,7 +9,7 @@ const OnlineLectureCard = ({ item }) => {
     const handlePreview = () => {
         if (item.starting) {
             alert("학습 시작일 이전에 강의 영상을 미리 시청할 수 있습니다. 이 경우 학습 시간은 인정되지 않습니다. 학습 시작일 이후 강의를 다시 시청해야 출석으로 인정되니 주의바랍니다.");
-            window.Android.openExternalLink(item.starting);
+            KlasNativeBridge.openExternalLink(item.starting);
         } else {
             alert("아직 강의 영상이 업로드되지 않았습니다.");
         }
@@ -16,7 +17,7 @@ const OnlineLectureCard = ({ item }) => {
 
     const handleLectureOpen = () => {
         const lectureData = createLectureData(item);
-        window.Android.requestOnlineLecture(JSON.stringify(lectureData));
+        KlasNativeBridge.requestOnlineLecture(JSON.stringify(lectureData));
     };
 
     return (

@@ -1,3 +1,4 @@
+import KlasNativeBridge from '../lib/core/klasNativeBridge';
 import React, { useState, useEffect, cloneElement, Children } from 'react';
 import Spacer from "../components/common/spacer";
 import { Calendar, momentLocalizer } from 'react-big-calendar';
@@ -351,7 +352,7 @@ function EventForm({ event, date, isOpen, onSave, onDelete, onClose }) {
             moment(start).format('YYYY-MM-DDTHH:mm') :
             moment(end).format('YYYY-MM-DDTHH:mm');
 
-        Android.openDateTimePicker(currentDateTime, isStart);
+        KlasNativeBridge.openDateTimePicker(currentDateTime, isStart);
     };
 
     const formatDate = (date) => {
@@ -514,7 +515,7 @@ function EventForm({ event, date, isOpen, onSave, onDelete, onClose }) {
                             alert('시간표 탭에서 선택되어 있는 학기와 일치하는 강의만 조회할 수 있습니다.' + yearHakgi + " " + `${event.year},${event.hakgi}`);
                             return;
                         }
-                        Android.openLectureActivity(place, event.title.split("::")[0].replace("[과제] ", "").trim())
+                        KlasNativeBridge.openLectureActivity(place, event.title.split("::")[0].replace("[과제] ", "").trim())
                     }}>해당 강의 홈으로 이동 →</button>
                 </>) : event && event.typeNm == "개인일정" && (
                     <input

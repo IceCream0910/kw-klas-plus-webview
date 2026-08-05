@@ -1,3 +1,4 @@
+import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import IonIcon from '@reacticons/ionicons';
@@ -101,8 +102,8 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
         setQrValues({ library: 'pending', idCard: 'pending' });
         setQrDataUrl('');
         try {
-            if (typeof window !== 'undefined' && typeof window.Android !== 'undefined' && typeof window.Android.requestIdCardQRValue === 'function') {
-                window.Android.requestIdCardQRValue();
+            if (KlasNativeBridge.isAvailable('requestIdCardQRValue')) {
+                KlasNativeBridge.requestIdCardQRValue();
                 setIsQrRequestFailed(false);
                 setLastRequestTime(Date.now());
                 setIdCardTimeLeft(180);
@@ -325,8 +326,8 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                     <motion.div
                                         onClick={() => {
                                             try {
-                                                if (typeof window.Android !== 'undefined') {
-                                                    window.Android.openPage('https://klas.kw.ac.kr/std/sys/optrn/MyNumberQrStdPage.do');
+                                                if (KlasNativeBridge.isAvailable()) {
+                                                    KlasNativeBridge.openPage('https://klas.kw.ac.kr/std/sys/optrn/MyNumberQrStdPage.do');
                                                 } else {
                                                     window.open('https://klas.kw.ac.kr/std/sys/optrn/MyNumberQrStdPage.do', '_blank');
                                                 }
@@ -427,8 +428,8 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                         type="button"
                                         onClick={() => {
                                             try {
-                                                if (typeof window.Android !== 'undefined') {
-                                                    window.Android.openLibraryQR();
+                                                if (KlasNativeBridge.isAvailable()) {
+                                                    KlasNativeBridge.openLibraryQR();
                                                 }
                                             } catch (e) {
                                                 console.error("Failed to open library QR:", e);
@@ -614,8 +615,8 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                                             type="button"
                                                             onClick={() => {
                                                                 try {
-                                                                    if (typeof window.Android !== 'undefined') {
-                                                                        window.Android.openLibraryQR();
+                                                                    if (KlasNativeBridge.isAvailable()) {
+                                                                        KlasNativeBridge.openLibraryQR();
                                                                     }
                                                                 } catch (e) {
                                                                     console.error("Failed to open library QR:", e);
@@ -647,8 +648,8 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                                             type="button"
                                                             onClick={() => {
                                                                 try {
-                                                                    if (typeof window.Android !== 'undefined') {
-                                                                        window.Android.openLibraryQRSettingsModal();
+                                                                    if (KlasNativeBridge.isAvailable()) {
+                                                                        KlasNativeBridge.openLibraryQRSettingsModal();
                                                                     }
                                                                 } catch (e) {
                                                                     console.error("Failed to open library QR settings modal:", e);
@@ -729,8 +730,8 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                                                 type="button"
                                                 onClick={() => {
                                                     try {
-                                                        if (typeof window !== 'undefined' && typeof window.Android !== 'undefined') {
-                                                            window.Android.openLibraryQRSettingsModal();
+                                                        if (KlasNativeBridge.isAvailable()) {
+                                                            KlasNativeBridge.openLibraryQRSettingsModal();
                                                         }
                                                     } catch (e) {
                                                         console.error("Failed to open library QR settings modal:", e);

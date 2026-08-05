@@ -1,3 +1,4 @@
+import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 const links = [
     {
         emoji: '🔔',
@@ -27,8 +28,8 @@ const links = [
 ];
 
 const handleLinkClick = (url) => {
-    if (typeof window !== 'undefined' && window.Android) {
-        window.Android.openExternalLink(url);
+    if (typeof window !== 'undefined' && KlasNativeBridge) {
+        KlasNativeBridge.openExternalLink(url);
     }
 };
 

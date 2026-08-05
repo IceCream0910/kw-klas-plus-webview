@@ -1,19 +1,19 @@
-import { openLectureActivity, openQRCheckIn } from '../../lib/core/androidBridge';
+import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 import { SkeletonLayouts } from '../common/Skeleton';
 
 const handleYearHakgiSelect = () => {
-    if (typeof window !== 'undefined' && window.Android) {
-        window.Android.openYearHakgiBottomSheet();
+    if (typeof window !== 'undefined' && KlasNativeBridge) {
+        KlasNativeBridge.openYearHakgiBottomSheet();
     }
 };
 
 function CurrentStatus({ statusText, showClassActions, selectedSubj, selectedSubjName, isNoCourse }) {
     const handleLectureClick = () => {
-        openLectureActivity(selectedSubj, selectedSubjName);
+        KlasNativeBridge.openLectureActivity(selectedSubj, selectedSubjName);
     };
 
     const handleQRClick = () => {
-        openQRCheckIn(selectedSubj, selectedSubjName);
+        KlasNativeBridge.qrCheckIn(selectedSubj, selectedSubjName);
     };
 
     if (!statusText) {

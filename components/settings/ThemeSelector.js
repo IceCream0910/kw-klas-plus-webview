@@ -1,3 +1,4 @@
+import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 import { useState, useEffect } from 'react';
 
 const themes = [
@@ -78,8 +79,8 @@ const ThemeSelector = ({ active = "system" }) => {
 
     const handleThemeChange = (themeId) => {
         setSelectedTheme(themeId);
-        if (typeof window !== 'undefined' && window.Android) {
-            window.Android.changeAppTheme(themeId);
+        if (typeof window !== 'undefined' && KlasNativeBridge) {
+            KlasNativeBridge.changeAppTheme(themeId);
         }
     };
 

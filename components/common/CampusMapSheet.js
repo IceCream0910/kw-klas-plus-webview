@@ -1,3 +1,4 @@
+import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 import React, { useState, useEffect, useMemo, Suspense, useRef } from 'react';
 import BottomSheet from './BottomSheet';
 import { Canvas, useLoader } from '@react-three/fiber';
@@ -127,8 +128,8 @@ const openExternalMap = (buildingName) => {
     const mapUrl = getBuildingMapUrl(buildingName);
     if (!mapUrl) return;
     try {
-        if (window.Android && window.Android.openExternalLink) {
-            window.Android.openExternalLink(mapUrl);
+        if (KlasNativeBridge.isAvailable('openExternalLink')) {
+            KlasNativeBridge.openExternalLink(mapUrl);
         } else {
             window.open(mapUrl, '_blank');
         }

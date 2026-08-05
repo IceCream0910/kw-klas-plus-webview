@@ -1,3 +1,4 @@
+import KlasNativeBridge from '../lib/core/klasNativeBridge';
 import { useSearchLecturePlan } from '../lib/lecturePlan/useSearchLecturePlan';
 import SearchLecturePlanHeader from '../components/lecturePlan/SearchLecturePlanHeader';
 import SearchLecturePlanForm from '../components/lecturePlan/SearchLecturePlanForm';
@@ -54,9 +55,9 @@ export default function LectureHome() {
 
     const openLecturePlan = (id) => {
         try {
-            window.Android.openLecturePlanPage(id);
+            KlasNativeBridge.openLecturePlanPage(id);
         } catch {
-            window.Android.openPage(`https://klas.kw.ac.kr/std/cps/atnlc/popup/LectrePlanStdView.do?selectSubj=${id}`);
+            KlasNativeBridge.openPage(`https://klas.kw.ac.kr/std/cps/atnlc/popup/LectrePlanStdView.do?selectSubj=${id}`);
         }
     };
 

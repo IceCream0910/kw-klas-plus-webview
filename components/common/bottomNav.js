@@ -1,3 +1,4 @@
+import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 import { useSyncExternalStore } from "react";
 import IonIcon from "@reacticons/ionicons";
 import Spacer from "../common/spacer";
@@ -74,7 +75,7 @@ function BottomNav({ currentTab }) {
         if (tab) {
             router.push(tab.href);
             try {
-                Android.performHapticFeedback("CLOCK_TICK");
+                KlasNativeBridge.performHapticFeedback("CLOCK_TICK");
             } catch (error) { }
         }
     };

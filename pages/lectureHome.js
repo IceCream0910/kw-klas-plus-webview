@@ -1,3 +1,4 @@
+import KlasNativeBridge from '../lib/core/klasNativeBridge';
 import { useState, useEffect } from 'react';
 import Spacer from '../components/common/spacer';
 import IonIcon from '@reacticons/ionicons';
@@ -93,7 +94,7 @@ export default function LectureHome() {
                 </span>
 
                 <Spacer y={30} />
-                <h3 onClick={() => Android.openBoardList("notice", "강의 공지사항")}>강의 공지사항
+                <h3 onClick={() => KlasNativeBridge.openBoardList("notice", "강의 공지사항")}>강의 공지사항
                     <button style={{ float: "right", width: 'fit-content', marginTop: '-5px' }}>
                         <IonIcon name='add-outline' />
                     </button>
@@ -102,7 +103,7 @@ export default function LectureHome() {
                 {data.noticeList.length > 0 ? (
                     <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
                         {data.noticeList.map((notice, index) => (
-                            <div key={index} className="notice-item" onClick={() => Android.openBoardView("notice", notice.boardNo.toString(), notice.masterNo.toString())}>
+                            <div key={index} className="notice-item" onClick={() => KlasNativeBridge.openBoardView("notice", notice.boardNo.toString(), notice.masterNo.toString())}>
                                 <span><b>{notice.title}</b></span><br />
                                 <span style={{ opacity: 0.6, fontSize: '12px' }}>
                                     {new Date(notice.registDt).getFullYear()}-{(new Date(notice.registDt).getMonth() + 1).toString().padStart(2, '0')}-{new Date(notice.registDt).getDate().toString().padStart(2, '0')}</span><br />
@@ -129,75 +130,75 @@ export default function LectureHome() {
                 <Spacer y={30} />
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridGap: '10px' }}>
                     {(data.cntntCmpltCnt !== 0 || data.cntntList.length !== 0) && (
-                        <div onClick={() => Android.openOnlineLecture()}
+                        <div onClick={() => KlasNativeBridge.openOnlineLecture()}
                             className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
                             <span><b>강의 </b></span>
                             <span style={{ opacity: .7, color: data.cntntCmpltCnt !== data.cntntList.length && 'var(--red)' }}>{data.cntntCmpltCnt}/{data.cntntList.length}</span>
                         </div>
                     )}
                     {(data.taskPrsntCnt !== 0 || data.taskCnt !== 0) && (
-                        <div onClick={() => Android.evaluteKLASScript(`appModule.goTask()`)}
+                        <div onClick={() => KlasNativeBridge.evaluteKLASScript(`appModule.goTask()`)}
                             className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
                             <span><b>과제 </b></span>
                             <span style={{ opacity: .7, color: data.taskPrsntCnt !== data.taskCnt && 'var(--red)' }}>{data.taskPrsntCnt}/{data.taskCnt}</span>
                         </div>
                     )}
                     {(data.quizPrsntCnt !== 0 || data.quizCnt) !== 0 && (
-                        <div onClick={() => Android.evaluteKLASScript(`appModule.goQuiz()`)}
+                        <div onClick={() => KlasNativeBridge.evaluteKLASScript(`appModule.goQuiz()`)}
                             className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
                             <span><b>퀴즈 </b></span>
                             <span style={{ opacity: .7, color: data.quizPrsntCnt !== data.quizCnt && 'var(--red)' }}>{data.quizPrsntCnt}/{data.quizCnt}</span>
                         </div>
                     )}
                     {data.pdsCnt !== 0 && (
-                        <div onClick={() => Android.openBoardList("pds", "강의 자료실")}
+                        <div onClick={() => KlasNativeBridge.openBoardList("pds", "강의 자료실")}
                             className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
                             <span><b>자료 </b></span>
                             <span style={{ opacity: .7, color: data.pdsNewCnt == 1 && 'var(--red)' }}>{data.pdsCnt}</span>
                         </div>
                     )}
                     {(data.examPrsntCnt !== 0 || data.examCnt !== 0) && (
-                        <div onClick={() => Android.evaluteKLASScript(`appModule.goExam()`)}
+                        <div onClick={() => KlasNativeBridge.evaluteKLASScript(`appModule.goExam()`)}
                             className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
                             <span><b>시험 </b></span>
                             <span style={{ opacity: .7, color: data.examPrsntCnt !== data.examCnt && 'var(--red)' }}>{data.examPrsntCnt}/{data.examCnt}</span>
                         </div>
                     )}
                     {(data.prjctPrsntCnt !== 0 || data.prjctCnt !== 0) && (
-                        <div onClick={() => Android.evaluteKLASScript(`appModule.goPrjct()`)}
+                        <div onClick={() => KlasNativeBridge.evaluteKLASScript(`appModule.goPrjct()`)}
                             className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
                             <span><b>팀프로젝트 </b></span>
                             <span style={{ opacity: .7, color: data.prjctPrsntCnt !== data.prjctCnt && 'var(--red)' }}>{data.prjctPrsntCnt}/{data.prjctCnt}</span>
                         </div>
                     )}
                     {(data.dscsnJoinCnt !== 0 || data.dscsnCnt) !== 0 && (
-                        <div onClick={() => Android.evaluteKLASScript(`appModule.goDscsn()`)}
+                        <div onClick={() => KlasNativeBridge.evaluteKLASScript(`appModule.goDscsn()`)}
                             className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
                             <span><b>토론 </b></span>
                             <span style={{ opacity: .7, color: data.dscsnJoinCnt !== data.dscsnCnt && 'var(--red)' }}>{data.dscsnJoinCnt}/{data.dscsnCnt}</span>
                         </div>
                     )}
                     {(data.surveyPrsntCnt !== 0 || data.surveyCnt) !== 0 && (
-                        <div onClick={() => Android.evaluteKLASScript(`appModule.goSurvey()`)}
+                        <div onClick={() => KlasNativeBridge.evaluteKLASScript(`appModule.goSurvey()`)}
                             className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
                             <span><b>설문 </b></span>
                             <span style={{ opacity: .7, color: data.surveyPrsntCnt !== data.surveyCnt && 'var(--red)' }}>{data.surveyPrsntCnt}/{data.surveyCnt}</span>
                         </div>
                     )}
 
-                    <div onClick={() => Android.evaluteKLASScript(`
+                    <div onClick={() => KlasNativeBridge.evaluteKLASScript(`
                 var link = 'https://klas.kw.ac.kr' + $("a[onclick*='BoardQnaListStdPage.do']").attr("onclick").replace("linkUrl('" , "").replace("');", "");
                 location.href="https://klas.kw.ac.kr/std/lis/evltn/LctrumHomeStdPage.do";
-                Android.openPage(link);
+                ${KlasNativeBridge.createInvocationScript('openPage', ['link'])}
                 `)}
                         className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
                         <span><b>묻고답하기 </b></span>
                     </div>
 
-                    <div onClick={() => Android.evaluteKLASScript(`
+                    <div onClick={() => KlasNativeBridge.evaluteKLASScript(`
                 var link = 'https://klas.kw.ac.kr' + $("a:contains('수강생 자료실')").attr("onclick").replace("linkUrl('" , "").replace("');", "");
                 location.href="https://klas.kw.ac.kr/std/lis/evltn/LctrumHomeStdPage.do";
-                Android.openPage(link);
+                ${KlasNativeBridge.createInvocationScript('openPage', ['link'])}
                 `)}
                         className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
                         <span><b>수강생 자료실 </b></span>
@@ -340,7 +341,7 @@ export default function LectureHome() {
                 {data.taskTop.length > 0 ? (
                     <div className="card non-anim" id="notices" style={{ paddingBottom: '20px' }}>
                         {data.taskTop.map((task, index) => (
-                            <div key={index} className="notice-item" onClick={() => Android.evaluteKLASScript(`appModule.goTask()`)}>
+                            <div key={index} className="notice-item" onClick={() => KlasNativeBridge.evaluteKLASScript(`appModule.goTask()`)}>
                                 <span><b>{task.title}</b></span><br />
                                 <span style={{ opacity: 0.6, fontSize: '12px' }}>
                                     <IonIcon style={{ position: 'relative', top: '2px', marginRight: '3px' }} name='time-outline' />
@@ -531,8 +532,8 @@ export default function LectureHome() {
                         boxSizing: 'border-box',
                         zIndex: 9999
                     }}>
-                        <button onClick={() => Android.openLecturePlan()} style={{ background: 'var(--button-background)', padding: '15px 20px', borderRadius: '15px', fontSize: '15px' }}>강의계획서</button>
-                        <button data-rybbit-event="qrAttendence_clicked" onClick={() => Android.openQRScan()} style={{ background: 'var(--card-background)', color: 'var(--text-color)', padding: '15px 20px', borderRadius: '15px', fontSize: '15px' }}>QR 출석</button>
+                        <button onClick={() => KlasNativeBridge.openLecturePlan()} style={{ background: 'var(--button-background)', padding: '15px 20px', borderRadius: '15px', fontSize: '15px' }}>강의계획서</button>
+                        <button data-rybbit-event="qrAttendence_clicked" onClick={() => KlasNativeBridge.openQRScan()} style={{ background: 'var(--card-background)', color: 'var(--text-color)', padding: '15px 20px', borderRadius: '15px', fontSize: '15px' }}>QR 출석</button>
 
                     </div>
                     <GradualBlur

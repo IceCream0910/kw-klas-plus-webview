@@ -1,3 +1,4 @@
+import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 import { useState, useEffect } from 'react';
 import IonIcon from '@reacticons/ionicons';
 import Spacer from '../common/spacer';
@@ -120,7 +121,7 @@ const LectureNotices = ({ token }) => {
                 <div className='card-content'>
                     {notices && expanded ? (
                         notices.map((notice, index) => (
-                            <div key={index} className="notice-item" onClick={() => typeof Android !== 'undefined' && Android.openPage(`https://klas.kw.ac.kr/?redirectUrl=/mst/cmn/login/PushLinkForm.do?pushSeq=${notice.pushSeq}`)}>
+                            <div key={index} className="notice-item" onClick={() => KlasNativeBridge.isAvailable() && KlasNativeBridge.openPage(`https://klas.kw.ac.kr/?redirectUrl=/mst/cmn/login/PushLinkForm.do?pushSeq=${notice.pushSeq}`)}>
                                 <span>{notice.title} · <span><b>{notice.body}</b></span></span><br />
                                 <span style={{ opacity: 0.6, fontSize: '12px' }}>{notice.registDt}</span>
                                 {index !== (expanded ? notices.length : 5) - 1 && index !== notices.length - 1 && <hr />}
@@ -130,7 +131,7 @@ const LectureNotices = ({ token }) => {
                     )
                         : (
                             notices.slice(0, Math.min(5, notices.length)).map((notice, index) => (
-                                <div key={index} className="notice-item" onClick={() => typeof Android !== 'undefined' && Android.openPage(`https://klas.kw.ac.kr/?redirectUrl=/mst/cmn/login/PushLinkForm.do?pushSeq=${notice.pushSeq}`)}>
+                                <div key={index} className="notice-item" onClick={() => KlasNativeBridge.isAvailable() && KlasNativeBridge.openPage(`https://klas.kw.ac.kr/?redirectUrl=/mst/cmn/login/PushLinkForm.do?pushSeq=${notice.pushSeq}`)}>
                                     <span>{notice.title} · <span><b>{notice.body}</b></span></span><br />
                                     <span style={{ opacity: 0.6, fontSize: '12px' }}>{notice.registDt}</span>
                                     {index !== (expanded ? notices.length : 5) - 1 && index !== notices.length - 1 && <hr />}

@@ -1,3 +1,4 @@
+import KlasNativeBridge from '../lib/core/klasNativeBridge';
 import React from 'react';
 import Spacer from '../components/common/spacer';
 import Skeleton from '../components/common/Skeleton';
@@ -14,7 +15,6 @@ import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { useLecturePlan } from "../lib/lecturePlan/useLecturePlan";
 import { formatTextWithBreaks } from "../lib/lecturePlan/lecturePlanUtils";
-import { safeAndroidCall } from "../lib/core/androidBridge";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, BarElement, Title, Tooltip, Legend);
 
@@ -22,9 +22,7 @@ export default function LecturePlan() {
     const { data, subjId, isLoading, error } = useLecturePlan();
 
     const handleOpenInKlas = () => {
-        safeAndroidCall(() => {
-            Android.openPage('https://klas.kw.ac.kr/std/cps/atnlc/popup/LectrePlanStdView.do?selectSubj=' + subjId);
-        });
+        KlasNativeBridge.openPage('https://klas.kw.ac.kr/std/cps/atnlc/popup/LectrePlanStdView.do?selectSubj=' + subjId);
     };
 
 

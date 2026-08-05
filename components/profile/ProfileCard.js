@@ -1,3 +1,4 @@
+import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 import { motion } from 'framer-motion';
 import IonIcon from '@reacticons/ionicons';
 import Spacer from "../common/spacer";
@@ -61,7 +62,7 @@ const ProfileCard = ({ data, stdInfo, totGrade, onCardClick, onGradeClick }) => 
                         width: '100%',
                         backgroundColor: 'none !important'
                     }}
-                    onClick={() => Android.openPage('https://klasplus.yuntae.in/grade')}
+                    onClick={() => KlasNativeBridge.openPage('https://klasplus.yuntae.in/grade')}
                 >
                     <div style={{ textAlign: 'center', width: '100%' }}>
                         <span style={{ opacity: 0.8, fontSize: '12px' }}>취득학점</span>

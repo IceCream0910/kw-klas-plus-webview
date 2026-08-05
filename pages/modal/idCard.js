@@ -1,3 +1,4 @@
+import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 import { useState, useEffect } from "react";
 import { KLAS } from "../../lib/core/klas";
 import IonIcon from "@reacticons/ionicons";
@@ -53,7 +54,7 @@ export default function IdCard() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 5px 10px 5px' }}>
                 <h2 style={{ margin: 0 }}>모바일 학생증</h2>
                 <button
-                    onClick={() => Android.closeModal()}
+                    onClick={() => KlasNativeBridge.closeModal()}
                     style={{
                         background: 'var(--card-background)',
                         border: 'none',
@@ -88,7 +89,7 @@ export default function IdCard() {
                     }}>
                         <div style={{ display: 'flex', gap: '20px', alignItems: 'start' }}>
                             <div style={{ position: 'relative', width: '100px', flexShrink: 0 }}>
-                                <motion.div onClick={() => Android.openPage('https://klas.kw.ac.kr/std/sys/optrn/MyNumberQrStdPage.do')}
+                                <motion.div onClick={() => KlasNativeBridge.openPage('https://klas.kw.ac.kr/std/sys/optrn/MyNumberQrStdPage.do')}
 
                                     animate={{ rotateY: showPhoto ? 0 : 180 }}
                                     transition={{ duration: 0.6, type: 'spring', stiffness: 260, damping: 20 }}
@@ -168,7 +169,7 @@ export default function IdCard() {
                         <Spacer y={25} />
 
                         <button
-                            onClick={() => Android.openLibraryQR()}
+                            onClick={() => KlasNativeBridge.openLibraryQR()}
                             style={{
                                 background: 'var(--background)',
                                 borderRadius: '16px',

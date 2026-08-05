@@ -1,7 +1,8 @@
+import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 
 const handleKLASOpen = () => {
-    if (typeof window !== 'undefined' && window.Android) {
-        window.Android.openPage('https://klas.kw.ac.kr/std/cps/inqire/StandStdPage.do');
+    if (typeof window !== 'undefined' && KlasNativeBridge) {
+        KlasNativeBridge.openPage('https://klas.kw.ac.kr/std/cps/inqire/StandStdPage.do');
     }
 };
 

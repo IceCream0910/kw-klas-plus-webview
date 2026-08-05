@@ -1,3 +1,4 @@
+import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 import { useState, useEffect } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -54,7 +55,7 @@ const SettingsInfoSection = ({ appVersion = 'n/a' }) => {
                     <span
                         onClick={(e) => {
                             e.stopPropagation();
-                            Android.openExternalLink('https://klasplus.yuntae.in');
+                            KlasNativeBridge.openExternalLink('https://klasplus.yuntae.in');
                         }}
                         style={{
                             opacity: .8,

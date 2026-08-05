@@ -1,3 +1,4 @@
+import KlasNativeBridge from '../lib/core/klasNativeBridge';
 import React, { useState, useEffect } from 'react';
 import TodaysCafeteriaMenu from '../components/feed/TodaysCafeteria';
 import IonIcon from '@reacticons/ionicons';
@@ -8,7 +9,6 @@ import toast, { Toaster } from 'react-hot-toast';
 import { KLAS } from '../lib/core/klas';
 import Header from '../components/common/header';
 import BottomNav from '../components/common/bottomNav';
-import { openKlasPage, evaluateKlasPage, openLectureActivity } from '../lib/core/androidBridge';
 import { useTimetableStatus } from '../lib/timetable/useTimetableStatus';
 import { useDeadlines } from '../lib/calendar/useDeadlines';
 import { initializePullToRefresh } from '../lib/pullToRefreshUtils';
@@ -99,7 +99,7 @@ export default function Feed() {
 
     setYearHakgi(yearHakgi);
 
-    try { Android.completePageLoad() } catch (error) { console.log('not app') }
+    try { KlasNativeBridge.completePageLoad() } catch (error) { console.log('not app') }
 
     setupWindowFunctions();
     fetchData();
@@ -278,20 +278,20 @@ export default function Feed() {
                       <div style={{ position: 'relative', top: '-8px', right: '-5px' }}>
                         <button
                           style={{ width: 'fit-content', background: 'var(--background)', fontSize: '12px', padding: '8px 10px' }}
-                          onClick={() => openLectureActivity(item.subj, item.name)}
+                          onClick={() => KlasNativeBridge.openLectureActivity(item.subj, item.name)}
                         >
                           강의 홈
                         </button>
                       </div>
                     </div>
 
-                    <div onClick={() => evaluateKlasPage('/std/lis/evltn/OnlineCntntsStdPage.do', yearHakgi, item.subj)}>
+                    <div onClick={() => KlasNativeBridge.evaluate('/std/lis/evltn/OnlineCntntsStdPage.do', yearHakgi, item.subj)}>
                       <DeadlineContent name="온라인 강의" data={item.onlineLecture} />
                     </div>
-                    <div onClick={() => evaluateKlasPage('/std/lis/evltn/TaskStdPage.do', yearHakgi, item.subj)}>
+                    <div onClick={() => KlasNativeBridge.evaluate('/std/lis/evltn/TaskStdPage.do', yearHakgi, item.subj)}>
                       <DeadlineContent name="과제" data={item.task} />
                     </div>
-                    <div onClick={() => evaluateKlasPage('/std/lis/evltn/PrjctStdPage.do', yearHakgi, item.subj)}>
+                    <div onClick={() => KlasNativeBridge.evaluate('/std/lis/evltn/PrjctStdPage.do', yearHakgi, item.subj)}>
                       <DeadlineContent name="팀 프로젝트" data={item.teamTask} />
                     </div>
                   </Card>
@@ -313,7 +313,7 @@ export default function Feed() {
                 title={
                   <span
                     style={{ display: 'flex', alignItems: 'center' }}
-                    onClick={() => openKlasPage('https://www.kw.ac.kr/ko/life/facility11.jsp')}
+                    onClick={() => KlasNativeBridge.openPage('https://www.kw.ac.kr/ko/life/facility11.jsp')}
                   >
                     학식 <IonIcon name="chevron-forward" />
                   </span>}
@@ -336,7 +336,7 @@ export default function Feed() {
                 title={
                   <span
                     style={{ display: 'flex', alignItems: 'center' }}
-                    onClick={() => openKlasPage('https://www.kw.ac.kr/ko/life/notice.jsp?srCategoryId=&mode=list&searchKey=1&searchVal=')}
+                    onClick={() => KlasNativeBridge.openPage('https://www.kw.ac.kr/ko/life/notice.jsp?srCategoryId=&mode=list&searchKey=1&searchVal=')}
                   >
                     학교 공지사항 <IonIcon name="chevron-forward" />
                   </span>

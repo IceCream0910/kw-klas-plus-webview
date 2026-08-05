@@ -1,5 +1,5 @@
 import IonIcon from '@reacticons/ionicons';
-import { openKlasPage } from '../../lib/core/androidBridge';
+import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 import { SkeletonLayouts } from '../common/Skeleton';
 import Card from '../common/Card';
 
@@ -38,7 +38,7 @@ function AdvisorInfo({ advisor, isLoading }) {
             icon: 'globe-outline',
             content: advisor.homepage,
             isClickable: true,
-            onClick: () => openKlasPage(advisor.homepage)
+            onClick: () => KlasNativeBridge.openPage(advisor.homepage)
         }
     ].filter(item => item.content);
 

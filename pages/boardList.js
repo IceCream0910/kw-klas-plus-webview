@@ -1,3 +1,4 @@
+import KlasNativeBridge from '../lib/core/klasNativeBridge';
 import { useState, useEffect } from "react";
 import Spacer from "../components/common/spacer";
 import BoardListItem from "../components/board/BoardListItem";
@@ -30,7 +31,7 @@ export default function BoardList() {
       <Spacer y={20} />
       <h2>{boardTitle || "게시판"}
 
-        <button onClick={() => Android.openPage(`https://klas.kw.ac.kr/std/lis/sport/${requestData && requestData.path}/BoardListStdPage.do`)}
+        <button onClick={() => KlasNativeBridge.openPage(`https://klas.kw.ac.kr/std/lis/sport/${requestData && requestData.path}/BoardListStdPage.do`)}
           style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-7px', borderRadius: '20px', padding: '10px 15px' }}>
           KLAS에서 열기
         </button>

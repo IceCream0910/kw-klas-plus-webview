@@ -1,3 +1,4 @@
+import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 import React, { useSyncExternalStore } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import Spacer from '../common/spacer';
@@ -15,7 +16,7 @@ const getServerSnapshot = () => "";
 
 const handleUpdateClick = () => {
     try {
-        Android.openExternalPage("https://play.google.com/store/apps/details?id=com.icecream.kwklasplus")
+        KlasNativeBridge.openExternalPage("https://play.google.com/store/apps/details?id=com.icecream.kwklasplus")
     } catch (e) {
         toast('Play 스토어에서 업데이트 해주세요.');
     }

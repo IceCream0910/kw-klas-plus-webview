@@ -1,4 +1,5 @@
 "use client";
+import KlasNativeBridge from '../lib/core/klasNativeBridge';
 import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import Header from "../components/common/header";
@@ -44,7 +45,7 @@ export default function Home() {
 
 
   const handleMenuClick = (url) => {
-    Android.openPage(url);
+    KlasNativeBridge.openPage(url);
   };
 
   return (

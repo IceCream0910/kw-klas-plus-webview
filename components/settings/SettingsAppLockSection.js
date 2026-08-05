@@ -1,3 +1,4 @@
+import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 import { useState, useEffect } from 'react';
 import IonIcon from '@reacticons/ionicons';
 import ToggleSwitch from '../common/ToggleSwitch';
@@ -8,10 +9,10 @@ const SettingsAppLockSection = () => {
     const [isBiometricEnabled, setIsBiometricEnabled] = useState(false);
     const [hasPassword, setHasPassword] = useState(false);
 
-    const loadSettings = () => {
-        if (typeof window !== 'undefined' && window.Android && window.Android.getAppLockSettings) {
+    const loadSettings = async () => {
+        if (KlasNativeBridge.isAvailable('getAppLockSettings')) {
             try {
-                const settingsStr = window.Android.getAppLockSettings();
+                const settingsStr = await KlasNativeBridge.getAppLockSettings();
                 const settings = JSON.parse(settingsStr);
                 setIsAppLockEnabled(settings.enabled);
                 setIsBiometricEnabled(settings.biometric);
@@ -48,22 +49,22 @@ const SettingsAppLockSection = () => {
     const handleAppLockToggle = (e) => {
         const checked = e.target.checked;
         setIsAppLockEnabled(checked);
-        if (typeof window !== 'undefined' && window.Android && window.Android.setAppLockEnabled) {
-            window.Android.setAppLockEnabled(checked);
+        if (KlasNativeBridge.isAvailable('setAppLockEnabled')) {
+            KlasNativeBridge.setAppLockEnabled(checked);
         }
     };
 
     const handleBiometricToggle = (e) => {
         const checked = e.target.checked;
         setIsBiometricEnabled(checked); // Optimistic update
-        if (typeof window !== 'undefined' && window.Android && window.Android.setBiometricEnabled) {
-            window.Android.setBiometricEnabled(checked);
+        if (KlasNativeBridge.isAvailable('setBiometricEnabled')) {
+            KlasNativeBridge.setBiometricEnabled(checked);
         }
     };
 
     const handleChangePassword = () => {
-        if (typeof window !== 'undefined' && window.Android && window.Android.setAppLockPassword) {
-            window.Android.setAppLockPassword();
+        if (KlasNativeBridge.isAvailable('setAppLockPassword')) {
+            KlasNativeBridge.setAppLockPassword();
         }
     };
 

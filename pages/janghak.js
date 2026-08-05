@@ -1,8 +1,8 @@
+import KlasNativeBridge from '../lib/core/klasNativeBridge';
 import React, { useState, useEffect } from "react";
 import Spacer from "../components/common/spacer";
 import LoadingComponent from "../components/common/loader";
 import { KLAS } from "../lib/core/klas";
-import { safeAndroidCall } from "../lib/core/androidBridge";
 
 const ScholarshipListItem = ({ scholarship }) => {
   return (
@@ -51,15 +51,11 @@ export default function Janghak() {
   }, [token]);
 
   const handleOpenKlas = () => {
-    safeAndroidCall(() => {
-      Android.openPage('https://klas.kw.ac.kr/std/cps/inqire/JanghakStdPage.do');
-    });
+    KlasNativeBridge.openPage('https://klas.kw.ac.kr/std/cps/inqire/JanghakStdPage.do');
   };
 
   const handleOpenScholarshipInfo = () => {
-    safeAndroidCall(() => {
-      Android.openPage('https://www.kw.ac.kr/ko/life/summary.jsp');
-    });
+    KlasNativeBridge.openPage('https://www.kw.ac.kr/ko/life/summary.jsp');
   };
 
   if (isLoading) {
