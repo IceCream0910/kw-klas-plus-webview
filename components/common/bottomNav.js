@@ -1,4 +1,5 @@
 import KlasNativeBridge from '../../lib/core/klasNativeBridge';
+import { isNativeFeatureCompatible } from '../../lib/core/nativeApp';
 import { useSyncExternalStore } from "react";
 import IonIcon from "@reacticons/ionicons";
 import Spacer from "../common/spacer";
@@ -12,24 +13,9 @@ const TAB_ITEMS = [
     { key: "menu", label: "전체", icon: "grid-outline", href: "/profile" }
 ];
 
-const checkAppCompatibility = (version) => {
-    if (!version) return false;
-    return version >= 24;
-};
-
-const getAppVersionFromUserAgent = () => {
-    if (typeof window === 'undefined') return null;
-    const userAgent = navigator.userAgent;
-    const match = userAgent.match(/AndroidApp_v(\d+)/);
-    return match ? parseInt(match[1], 10) : null;
-};
-
 const emptySubscribe = () => () => { };
 
-const getClientCompat = () => {
-    const appVersion = getAppVersionFromUserAgent();
-    return appVersion ? checkAppCompatibility(appVersion) : false;
-};
+const getClientCompat = () => isNativeFeatureCompatible("bottomNav");
 
 const getServerCompat = () => false;
 
