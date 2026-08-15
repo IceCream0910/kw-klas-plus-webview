@@ -2,25 +2,9 @@ import { useEffect, useState } from "react";
 import IonIcon from "@reacticons/ionicons";
 import Spacer from "../common/spacer";
 import KlasNativeBridge from "../../lib/core/klasNativeBridge";
+import { getNativeAppFromUserAgent, isNativeFeatureCompatible } from "../../lib/core/nativeApp";
 import toast, { Toaster } from 'react-hot-toast';
 import GradualBlur from "../common/GradualBlur";
-
-
-const checkAppCompatibility = (version) => {
-    if (!version) return false;
-    return version >= 21;
-};
-
-const checkAgentCompatibility = (version) => {
-    if (!version) return false;
-    return version >= 23;
-};
-
-const getAppVersionFromUserAgent = () => {
-    const userAgent = navigator.userAgent;
-    const match = userAgent.match(/AndroidApp_v(\d+)/);
-    return match ? parseInt(match[1], 10) : null;
-};
 
 const handleChangelogClick = () => {
     try {
@@ -44,11 +28,11 @@ function Header({ title }) {
     const [isAgentCompatible, setIsAgentCompatible] = useState(false);
 
     useEffect(() => {
-        const appVersion = getAppVersionFromUserAgent();
-        if (appVersion) {
-            setVersion(appVersion);
-            setIsCompatible(checkAppCompatibility(appVersion));
-            setIsAgentCompatible(checkAgentCompatibility(appVersion));
+        const app = getNativeAppFromUserAgent();
+        if (app) {
+            setVersion(app.version);
+            setIsCompatible(isNativeFeatureCompatible("header", app));
+            setIsAgentCompatible(isNativeFeatureCompatible("agent", app));
         }
     }, []);
 
