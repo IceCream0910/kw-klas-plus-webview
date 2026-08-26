@@ -519,7 +519,7 @@ export default function LectureHome() {
                 )
                 }
 
-                <Spacer y={90} />
+                <div style={{ height: 'calc(90px + env(safe-area-inset-bottom))' }} />
 
                 <div className='bottom-sheet-footer' style={{ position: 'fixed', bottom: '0', zIndex: 9999 }}>
                     <div style={{
@@ -527,7 +527,7 @@ export default function LectureHome() {
                         left: 0,
                         bottom: 0,
                         width: '100%',
-                        padding: '10px 16px 20px 16px',
+                        padding: '10px max(16px, env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left))',
                         background: 'linear-gradient(to top, var(--background) 0%, transparent 100%)',
                         boxSizing: 'border-box',
                         zIndex: 9999
