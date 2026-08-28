@@ -1,4 +1,5 @@
 import KlasNativeBridge from '../../lib/core/klasNativeBridge';
+import { isNativeFeatureCompatible } from '../../lib/core/nativeApp';
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import IonIcon from '@reacticons/ionicons';
@@ -128,10 +129,7 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
             const handler = (e) => setIsDarkMode(e.matches);
             mediaQuery.addEventListener('change', handler);
 
-            const userAgent = navigator.userAgent;
-            const versionPart = userAgent.split('AndroidApp_v')[1];
-            const appVersion = versionPart ? parseInt(versionPart, 10) : null;
-            const isLegacy = !appVersion || appVersion <= 30;
+            const isLegacy = !isNativeFeatureCompatible("idCardQR");
             setIsLegacyVersion(isLegacy);
 
             window.receiveIdCardQRValue = (libraryQRValue, idCardQRValue) => {

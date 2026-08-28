@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSettings } from '../lib/useSettings';
+import { isNativeFeatureCompatible } from '../lib/core/nativeApp';
 import ThemeSelector from '../components/settings/ThemeSelector';
 import SettingsMenuSection from '../components/settings/SettingsMenuSection';
 import SettingsLinkSection from '../components/settings/SettingsLinkSection';
@@ -19,14 +20,10 @@ export default function Settings() {
     setIsOpenSettingsModal,
   } = useSettings();
 
-  const [userAgentVersion, setUserAgentVersion] = useState("0");
+  const [isAppLockCompatible, setIsAppLockCompatible] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const userAgent = navigator.userAgent;
-      const versionMatch = userAgent.split('AndroidApp_v')[1];
-      if (versionMatch) setUserAgentVersion(versionMatch.trim());
-    }
+    setIsAppLockCompatible(isNativeFeatureCompatible("appLock"));
   }, []);
 
   return (
@@ -45,7 +42,7 @@ export default function Settings() {
       <hr style={{ margin: '0 10px', opacity: .1 }} />
       <Spacer y={20} />
 
-      {parseInt(userAgentVersion, 10) >= 32 && (
+      {isAppLockCompatible && (
         <>
           <h3 style={{ margin: '10px' }}>앱 잠금</h3>
           <SettingsAppLockSection />
