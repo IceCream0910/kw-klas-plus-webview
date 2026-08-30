@@ -8,9 +8,10 @@ export default function Grade() {
   const { rank } = useRanking();
 
   return (
-    <main>
+    <main className="ranking-page">
       <RankingHeader />
 
+      <div className="ranking-card-grid">
       {rank ? (
         rank.length === 0 ? (
           <RankingEmptyState />
@@ -22,6 +23,7 @@ export default function Grade() {
       ) : (
         <RankingLoadingSkeleton />
       )}
+      </div>
       <br /><br /><br />
     </main>
   );

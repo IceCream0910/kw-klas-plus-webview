@@ -27,7 +27,7 @@ export default function Settings() {
   }, []);
 
   return (
-    <main>
+    <main className="settings-page">
       <h3 style={{ margin: '10px' }}>테마</h3>
       <Spacer y={5} />
       <ThemeSelector active={activeTheme} />

@@ -19,7 +19,7 @@ const OnlineLectureHeader = ({ excludeFinished, onToggleChange }) => {
     return (
         <>
             <Spacer y={5} />
-            <h2>
+            <h2 className="page-heading">
                 온라인 강의
                 <button
                     onClick={handleKLASOpen}

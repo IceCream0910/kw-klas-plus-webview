@@ -232,7 +232,7 @@ export default function Feed() {
 
   return (
     <>
-      <div style={{ padding: '5px' }}>
+      <div className="feed-page" style={{ padding: '5px' }}>
         <Toaster position="top-center" />
         <Header title={<Logo size={45} />} />
         <BottomNav currentTab="feed" />
@@ -261,7 +261,7 @@ export default function Feed() {
           )}
 
           <Spacer y={15} />
-          <div id="remaining-deadline">
+          <div id="remaining-deadline" className="deadline-grid">
             {filteredDeadlines ? (
               filteredDeadlines.length === 0 ? (
                 <Card title="남은 할 일" isAnimated={false} id="notices" style={{ paddingBottom: '30px' }}>

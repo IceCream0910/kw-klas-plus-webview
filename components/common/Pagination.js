@@ -10,8 +10,9 @@ const Pagination = ({ currentPage, totalPages, onPrevious, onNext }) => (
         <button
             style={{
                 background: 'var(--card-background)',
-                width: '35px',
-                height: '35px',
+                width: '55px',
+                height: '55px',
+                boxSizing: 'border-box',
                 borderRadius: '50%'
             }}
             onClick={onPrevious}
@@ -23,8 +24,9 @@ const Pagination = ({ currentPage, totalPages, onPrevious, onNext }) => (
         <button
             style={{
                 background: 'var(--card-background)',
-                width: '35px',
-                height: '35px',
+                width: '55px',
+                height: '55px',
+                boxSizing: 'border-box',
                 borderRadius: '50%'
             }}
             onClick={onNext}

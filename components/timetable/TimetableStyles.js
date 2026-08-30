@@ -20,7 +20,6 @@ const TimetableStyles = () => {
       body {
         margin: 0;
         padding: 0;
-        padding-top: 20px;
         color: var(--text-color);
       }
 
@@ -67,7 +66,7 @@ const TimetableStyles = () => {
         border-radius: 10px;
         padding: 5px;
         position: absolute;
-        width: calc(100% - 10px);
+        width: 100%;
         transition: all 0.3s;
         overflow: hidden;
       }

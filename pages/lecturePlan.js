@@ -63,11 +63,11 @@ export default function LecturePlan() {
     return (
         <main>
             <button onClick={handleOpenInKlas}
-                style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-16px', borderRadius: '20px', padding: '10px 15px' }}>
+                style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '16px', borderRadius: '20px', padding: '10px 15px' }}>
                 KLAS에서 열기
             </button>
 
-            <Spacer y={10} />
+            <Spacer y={30} />
 
             {data.lecturePlan[0].codeName1 && (
                 <>

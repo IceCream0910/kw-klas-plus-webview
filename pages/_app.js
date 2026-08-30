@@ -4,6 +4,40 @@ import { useEffect } from "react";
 import Script from 'next/script';
 import { useRouter } from 'next/router';
 import { identifyUser } from '../lib/core/analytics';
+import Head from 'next/head';
+
+const READING_ROUTES = new Set([
+  '/boardView',
+  '/lecturePlan',
+  '/privacy'
+]);
+
+const BALANCED_ROUTES = new Set([
+  '/boardList',
+  '/grade',
+  '/janghak',
+  '/lectureHome',
+  '/onlineLecture',
+  '/ranking',
+  '/searchLecturePlan',
+  '/settings'
+]);
+
+const BOTTOM_NAV_ROUTES = new Set([
+  '/calendar',
+  '/feed',
+  '/profile',
+  '/timetableTab'
+]);
+
+const getShellClassName = (pathname) => {
+  if (pathname.startsWith('/modal/')) return 'app-shell app-shell--modal';
+  if (pathname === '/changelog' || pathname === '/') return 'app-shell app-shell--flush';
+  if (pathname === '/agent' || pathname === '/onboarding') return 'app-shell app-shell--legacy-edge';
+  if (READING_ROUTES.has(pathname)) return 'app-shell app-shell--reading';
+  if (BALANCED_ROUTES.has(pathname)) return 'app-shell app-shell--balanced';
+  return 'app-shell';
+};
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -44,7 +78,12 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <>
-      <Component {...pageProps} />
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+      </Head>
+      <div className={`${getShellClassName(router.pathname)}${BOTTOM_NAV_ROUTES.has(router.pathname) ? ' app-shell--with-bottom-nav' : ''}`}>
+        <Component {...pageProps} />
+      </div>
       <Script
         src="https://rybbit.yuntae.in/api/script.js"
         data-site-id="e4129eea280e"

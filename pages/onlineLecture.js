@@ -12,17 +12,17 @@ export default function Page() {
   } = useOnlineLecture();
 
   return (
-    <main>
+    <main className="online-lecture-page">
       <OnlineLectureHeader
         excludeFinished={excludeFinished}
         onToggleChange={handleToggleChange}
       />
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-        {!filteredList && <OnlineLectureLoadingSkeleton />}
+      <div className="online-lecture-grid" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+        {!filteredList && <div className="grid-state"><OnlineLectureLoadingSkeleton /></div>}
 
         {filteredList && filteredList.length === 0 && (
-          <EmptyState/>
+          <div className="grid-state"><EmptyState/></div>
         )}
 
         {filteredList && filteredList.map((item, index) => (

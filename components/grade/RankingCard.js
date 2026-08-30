@@ -1,7 +1,7 @@
 
 const RankingCard = ({ data }) => {
     return (
-        <div className="profile-card" style={{
+        <div className="profile-card ranking-card" style={{
             border: '2px solid rgba(165, 165, 165, 0.3)',
             marginTop: '20px'
         }}>
@@ -12,7 +12,7 @@ const RankingCard = ({ data }) => {
                     <span style={{ opacity: .3 }}>/{data.manNum}명</span>
                 </span>
             </h3>
-            <div style={{
+            <div className="ranking-card-stats" style={{
                 display: 'flex',
                 justifyContent: 'center',
                 width: '100%',

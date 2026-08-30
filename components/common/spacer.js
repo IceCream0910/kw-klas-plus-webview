@@ -1,6 +1,6 @@
-function Spacer({ y }) {
+function Spacer({ y, className, style }) {
     return (
-        <div style={{ height: `${y}px` }} />
+        <div className={className} style={{ height: `${y}px`, ...style }} />
     );
 }
 

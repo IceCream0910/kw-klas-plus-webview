@@ -87,14 +87,14 @@ export default function LectureHome() {
 
     return (
         <>
-            <main>
+            <main className="lecture-home-page">
                 <Spacer y={20} />
                 <h2>{subjectInfo.name}</h2>
                 <span style={{ opacity: .5, fontSize: '14px' }}>{subjectInfo.label.split(') - ')[1]} | {subjectPlaceTime.split('/')[0]} / <span onClick={() => handleOpenMapSheet(normalizeBuildingName(subjectPlaceTime.split('/')[1]).match(/^([가-힣]+)(\d+.*)?$/)[1])} style={{ textDecoration: 'underline' }}>{normalizeBuildingName(subjectPlaceTime.split('/')[1])}</span>
                 </span>
 
                 <Spacer y={30} />
-                <h3 onClick={() => KlasNativeBridge.openBoardList("notice", "강의 공지사항")}>강의 공지사항
+                <h3 className="page-heading page-heading--section" onClick={() => KlasNativeBridge.openBoardList("notice", "강의 공지사항")}>강의 공지사항
                     <button style={{ float: "right", width: 'fit-content', marginTop: '-5px' }}>
                         <IonIcon name='add-outline' />
                     </button>
@@ -128,7 +128,7 @@ export default function LectureHome() {
                 )}
 
                 <Spacer y={30} />
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridGap: '10px' }}>
+                <div className="lecture-home-quick-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridGap: '10px' }}>
                     {(data.cntntCmpltCnt !== 0 || data.cntntList.length !== 0) && (
                         <div onClick={() => KlasNativeBridge.openOnlineLecture()}
                             className="card" style={{ fontSize: '16px', padding: '15px', height: '50px', display: 'flex', alignContent: 'center', justifyContent: 'space-between' }}>
@@ -519,19 +519,10 @@ export default function LectureHome() {
                 )
                 }
 
-                <div style={{ height: 'calc(90px + env(safe-area-inset-bottom))' }} />
+                <div className="page-action-reserve lecture-home-action-reserve" />
 
-                <div className='bottom-sheet-footer' style={{ position: 'fixed', bottom: '0', zIndex: 9999 }}>
-                    <div style={{
-                        display: 'flex', gap: '8px', justifyContent: 'center', position: 'fixed',
-                        left: 0,
-                        bottom: 0,
-                        width: '100%',
-                        padding: '10px max(16px, env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left))',
-                        background: 'linear-gradient(to top, var(--background) 0%, transparent 100%)',
-                        boxSizing: 'border-box',
-                        zIndex: 9999
-                    }}>
+                <div className="page-action-bar">
+                    <div className="page-action-bar-inner">
                         <button onClick={() => KlasNativeBridge.openLecturePlan()} style={{ background: 'var(--button-background)', padding: '15px 20px', borderRadius: '15px', fontSize: '15px' }}>강의계획서</button>
                         <button data-rybbit-event="qrAttendence_clicked" onClick={() => KlasNativeBridge.openQRScan()} style={{ background: 'var(--card-background)', color: 'var(--text-color)', padding: '15px 20px', borderRadius: '15px', fontSize: '15px' }}>QR 출석</button>
 

@@ -55,7 +55,7 @@ function GradeCard({
             <Spacer y={10} />
 
             {children || (
-                <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+                <div className="grade-card-stats" style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
                     {data.applyHakjum !== undefined && (
                         <>
                             {renderStatItem('신청학점', data.applyHakjum, `전공 ${data.majorApplyHakjum || 0}`)}

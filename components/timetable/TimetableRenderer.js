@@ -83,7 +83,7 @@ const TimetableRenderer = ({ timetableData, onClassClick }) => {
     }, []);
 
     return (
-        <>
+        <div style={{margin: '0 -15px'}}>
             <div className="timetable">
                 {headerCells}
                 {timeCells}
@@ -91,7 +91,7 @@ const TimetableRenderer = ({ timetableData, onClassClick }) => {
             <div className="weekend-classes">
                 {weekendClasses}
             </div>
-        </>
+        </div>
     );
 };
 

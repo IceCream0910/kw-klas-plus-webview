@@ -108,7 +108,7 @@ export default function ColorPicker({ open, onDismiss, color, onChange }) {
 const styles = {
     container: {
         padding: '20px',
-        paddingBottom: '80px',
+        paddingBottom: 'calc(80px + env(safe-area-inset-bottom))',
         display: 'flex',
         flexDirection: 'column',
         gap: '20px'

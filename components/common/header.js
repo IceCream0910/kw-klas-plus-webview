@@ -43,30 +43,12 @@ function Header({ title }) {
     return (
         <>
             <Toaster position="bottom-center" />
-            <div style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                width: 'calc(100% - 40px)',
-                padding: '10px 20px 20px 20px',
-                zIndex: 1000
-            }}>
-                <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    width: 'calc(100% - 40px)',
-                    padding: '10px 20px 20px 20px',
-                    background: 'linear-gradient(to bottom, var(--background) 0%, transparent 100%)',
-                    zIndex: 9999
-                }}>
+            <div className="app-header">
+                <div className="app-header-inner">
                     <div onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
                         {title}
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div className="app-header-actions">
                         <button
                             type="button"
                             style={{ width: 'fit-content' }}
@@ -134,7 +116,7 @@ function Header({ title }) {
                 />
             </div>
 
-            <Spacer y={50} />
+            <Spacer y={75} className="app-header-spacer" />
         </>
     );
 }

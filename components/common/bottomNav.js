@@ -77,27 +77,8 @@ function BottomNav({ currentTab }) {
                     transform: scale(1.05, 0.85) !important;
                 }
             `}</style>
-            <nav
-                style={{
-                    position: 'fixed',
-                    left: 0,
-                    bottom: 0,
-                    width: '100%',
-                    padding: '10px 16px',
-                    boxSizing: 'border-box',
-                    zIndex: 500
-                }}
-            >
-                <div style={{
-                    display: 'flex', gap: '8px', justifyContent: 'center', position: 'fixed',
-                    left: 0,
-                    bottom: 0,
-                    width: '100%',
-                    padding: '10px 16px',
-                    background: 'linear-gradient(to top, var(--background) 0%, transparent 100%)',
-                    boxSizing: 'border-box',
-                    zIndex: 9999
-                }}>
+            <nav className="app-bottom-nav">
+                <div className="app-bottom-nav-inner">
                     {TAB_ITEMS.map((tab) => {
                         const isActive = tab.key === currentTab;
                         return (

@@ -1,7 +1,7 @@
 import IonIcon from '@reacticons/ionicons';
 
 const MenuButton = ({ item, isFavorite, onMenuClick, onFavoriteToggle }) => (
-    <button onClick={() => onMenuClick(item.url)}>
+    <button className="profile-menu-button" onClick={() => onMenuClick(item.url)}>
         <span className="tossface">{item.icon}</span>
         <span>{item.name}</span>
         {item.badge && (

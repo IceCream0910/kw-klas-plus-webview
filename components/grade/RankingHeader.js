@@ -8,7 +8,7 @@ const handleKLASOpen = () => {
 
 const RankingHeader = () => {
     return (
-        <h2 style={{ marginBottom: '20px', marginTop: '20px' }}>
+        <h2 className="page-heading" style={{ marginBottom: '20px', marginTop: '20px' }}>
             석차
             <button
                 type="button"

@@ -30,7 +30,9 @@ export default function IdCard() {
                 padding: 0.3em 1.3em 1.3em 1.3em;
                 margin:0;
                 overflow: hidden;
-                width: 90dvw;
+                width: 100dvw;
+                max-width: 100%;
+                box-sizing: border-box;
             }
             `}
             </style>

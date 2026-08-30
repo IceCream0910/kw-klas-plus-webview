@@ -47,7 +47,7 @@ function BoardView() {
       .replace(/\s+/gm, ' ').length > 0;
 
   return (
-    <main>
+    <main className="board-view-page">
       <Spacer y={20} />
       <h2 style={{
         wordBreak: 'break-word',

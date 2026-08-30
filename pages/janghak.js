@@ -73,9 +73,9 @@ export default function Janghak() {
   }
 
   return (
-    <main style={{ paddingBottom: '20px' }}>
+    <main className="janghak-page" style={{ paddingBottom: '20px' }}>
       <Spacer y={5} />
-      <h2>장학 조회
+      <h2 className="page-heading">장학 조회
         <button
           onClick={handleOpenKlas}
           style={{
@@ -120,7 +120,7 @@ export default function Janghak() {
           </div>
         </>
       ) : (
-        <div style={{
+        <div className="janghak-list" style={{
           display: 'flex',
           flexDirection: 'column',
           width: '100%',

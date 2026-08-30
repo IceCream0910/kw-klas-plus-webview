@@ -6,7 +6,7 @@ const containerStyle = {
   paddingRight: '1rem',
   paddingTop: '2rem',
   paddingBottom: '2rem',
-  maxWidth: '80%',
+  maxWidth: 'none',
 };
 
 const heading1Style = {

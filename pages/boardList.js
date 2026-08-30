@@ -27,9 +27,9 @@ export default function BoardList() {
   };
 
   return (
-    <main>
+    <main className="board-list-page">
       <Spacer y={20} />
-      <h2>{boardTitle || "게시판"}
+      <h2 className="page-heading">{boardTitle || "게시판"}
 
         <button onClick={() => KlasNativeBridge.openPage(`https://klas.kw.ac.kr/std/lis/sport/${requestData && requestData.path}/BoardListStdPage.do`)}
           style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-7px', borderRadius: '20px', padding: '10px 15px' }}>

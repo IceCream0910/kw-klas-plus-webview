@@ -132,8 +132,8 @@ export default function Grade() {
   }
 
   return (
-    <main>
-      <h2 style={{ marginBottom: '20px', marginTop: '20px' }}>성적
+    <main className="grade-page">
+      <h2 className="page-heading" style={{ marginBottom: '20px', marginTop: '20px' }}>성적
 
         <button onClick={() => KlasNativeBridge.openPage('https://klas.kw.ac.kr/std/cps/inqire/AtnlcScreStdPage.do')}
           style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-5px', borderRadius: '20px', padding: '10px 15px' }}>
@@ -146,7 +146,7 @@ export default function Grade() {
 
       {totGradeIncludeEmptyGrade ?
         (
-          <div className="profile-card grade-card" style={{ padding: '10px 0', flexDirection: 'row', alignItems: 'space-between' }}>
+          <div className="profile-card grade-card grade-summary" style={{ padding: '10px 0', flexDirection: 'row', alignItems: 'space-between' }}>
             <div style={{ textAlign: 'center', width: '100%' }}>
               <span style={{ opacity: .8, fontSize: '12px' }}>신청학점</span>
               <h3 style={{ margin: 0 }} className="rr-mask">{totGradeIncludeEmptyGrade.applyHakjum}</h3>
@@ -180,6 +180,7 @@ export default function Grade() {
       <br /><br /><br />
 
       <h4>학기 별 성적</h4>
+      <div className="grade-card-grid">
       {synthesisGPAs ? (
         synthesisGPAs.map((value, id) => (
           value.name === '전체 학기' ? (
@@ -216,6 +217,7 @@ export default function Grade() {
           <Skeleton height="120px" />
         </div>
       )}
+      </div>
 
       <h4 style={{ marginTop: '30px', marginBottom: '10px' }}>성적 추이</h4>
       {synthesisGPAs ? (

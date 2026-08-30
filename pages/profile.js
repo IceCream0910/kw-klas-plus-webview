@@ -49,7 +49,7 @@ export default function Home() {
   };
 
   return (
-    <main>
+    <main className="profile-page">
       <Header title={<h2>전체</h2>} />
       <BottomNav currentTab="menu" />
 

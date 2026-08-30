@@ -11,7 +11,7 @@ const SearchLecturePlanHeader = () => {
     return (
         <>
             <Spacer y={5} />
-            <h2>
+            <h2 className="page-heading">
                 강의계획서 조회
                 <button
                     type="button"

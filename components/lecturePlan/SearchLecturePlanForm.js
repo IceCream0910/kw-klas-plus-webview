@@ -27,7 +27,7 @@ const SearchLecturePlanForm = ({
 
     return (
         <>
-            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px' }}>
+            <div className="search-plan-term-row" style={{ display: 'flex', justifyContent: 'space-between', gap: '10px' }}>
                 <select
                     value={year}
                     onChange={(e) => onYearChange(e.target.value)}
@@ -97,7 +97,7 @@ const SearchLecturePlanForm = ({
             />
             <Spacer y={10} />
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px' }}>
+            <div className="search-plan-filter-row" style={{ display: 'flex', justifyContent: 'space-between', gap: '10px' }}>
                 <select
                     value={selectedGwamok}
                     onChange={(e) => onGwamokChange(e.target.value)}
@@ -172,7 +172,9 @@ const SearchLecturePlanForm = ({
                 </label>
             </div>
 
-            <div className='bottom-sheet-footer'>
+            <div className="page-action-reserve" />
+            <div className='page-action-bar'>
+                <div className="page-action-bar-inner">
                 <button
                     type="button"
                     onClick={onSearch}
@@ -180,6 +182,7 @@ const SearchLecturePlanForm = ({
                 >
                     조회
                 </button>
+                </div>
             </div>
         </>
     );

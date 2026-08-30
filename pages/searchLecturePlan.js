@@ -62,7 +62,7 @@ export default function LectureHome() {
     };
 
     return (
-        <main>
+        <main className="search-lecture-plan-page">
             <SearchLecturePlanHeader />
 
             {searchMode ? (
@@ -90,9 +90,10 @@ export default function LectureHome() {
                 />
             ) : (
                 <>
-                    {!data && <SearchLecturePlanLoadingSkeleton />}
+                    <div className="search-result-grid">
+                    {!data && <div className="grid-state"><SearchLecturePlanLoadingSkeleton /></div>}
 
-                    {data && data.length === 0 && <SearchLecturePlanEmptyState />}
+                    {data && data.length === 0 && <div className="grid-state"><SearchLecturePlanEmptyState /></div>}
 
                     {data && data.map((item, index) => (
                         <SearchResultCard
@@ -101,16 +102,19 @@ export default function LectureHome() {
                             onLecturePlanClick={openLecturePlan}
                         />
                     ))}
+                    </div>
 
-                    <Spacer y={80} />
+                    <div className="page-action-reserve" />
 
-                    <div className='bottom-sheet-footer' style={{ position: 'fixed', bottom: '0' }}>
+                    <div className='page-action-bar'>
+                        <div className="page-action-bar-inner">
                         <button
                             onClick={backToSearch}
                             style={{ background: 'var(--button-background)', borderRadius: '15px' }}
                         >
                             다시 검색
                         </button>
+                        </div>
                     </div>
                 </>
             )}

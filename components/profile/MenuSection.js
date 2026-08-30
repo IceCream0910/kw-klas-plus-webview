@@ -2,7 +2,7 @@ import Spacer from '../common/spacer';
 import MenuButton from './MenuButton';
 
 const MenuSection = ({ category, favorites, onMenuClick, onFavoriteToggle }) => (
-    <div>
+    <div className="profile-menu-section">
         {category.title ? (
             <h5 style={{ marginLeft: '10px', marginTop: '30px', marginBottom: '10px' }}>
                 {category.title}

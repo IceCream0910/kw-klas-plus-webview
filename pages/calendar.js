@@ -128,7 +128,7 @@ export default function CalendarPage() {
     };
 
     return (
-        <main style={{ padding: '0px 5px 20px 5px' }}>
+        <main className="calendar-page" style={{ padding: '0px 5px 20px 5px' }}>
             <style>{`
                 .upper-sheet [data-rsbs-backdrop],
                 .upper-sheet [data-rsbs-overlay],
@@ -146,21 +146,24 @@ export default function CalendarPage() {
             `}</style>
             <BottomNav currentTab="calendar" />
 
-            <div style={styles.header}>
+            <div className="calendar-toolbar" style={styles.header}>
 
-                <h2 style={{ marginBottom: '20px', marginTop: '20px' }}>{currentMonth.format('MM월')}
-                    <button type="button" onClick={handleNextMonth}
+                <h2 className="page-heading" style={{ marginBottom: '20px', marginTop: '20px' }}>
+                    <span>{currentMonth.format('MM월')}</span>
+                    <span className="calendar-actions">
+                    <button type="button" onClick={moveToToday}
                         style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-5px', borderRadius: '20px', padding: '10px 15px' }}>
-                        →
+                        오늘
                     </button>
                     <button type="button" onClick={handlePrevMonth}
                         style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-5px', borderRadius: '20px', padding: '10px 15px', marginRight: '10px' }}>
                         ←
                     </button>
-                    <button type="button" onClick={moveToToday}
-                        style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-5px', borderRadius: '20px', padding: '10px 15px', marginRight: '10px' }}>
-                        오늘
+                    <button type="button" onClick={handleNextMonth}
+                        style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-5px', borderRadius: '20px', padding: '10px 15px' }}>
+                        →
                     </button>
+                    </span>
                 </h2>
             </div>
             <Spacer y={10} />
@@ -203,15 +206,18 @@ export default function CalendarPage() {
                     {selectedDate && (
                         <>
                             <div style={styles.dateHeader}>
-                                <h3 style={{ margin: 0 }}>{moment(selectedDate).format('YYYY년 MM월 DD일')}
-                                    <button type="button" onClick={handleNextDay} disabled={moment(selectedDate).isSame(currentMonth.clone().endOf('month'), 'day')}
-                                        style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-5px', borderRadius: '20px', padding: '10px 15px' }}>
-                                        →
-                                    </button>
+                                <h3 className="page-heading" style={{ margin: 0 }}>
+                                    <span>{moment(selectedDate).format('YYYY년 MM월 DD일')}</span>
+                                    <span className="calendar-actions">
                                     <button type="button" onClick={handlePrevDay} disabled={moment(selectedDate).isSame(currentMonth.clone().startOf('month'), 'day')}
-                                        style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-5px', borderRadius: '20px', padding: '10px 15px', marginRight: '10px' }}>
+                                        style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-5px', borderRadius: '20px', padding: '10px 15px' }}>
                                         ←
                                     </button>
+                                    <button type="button" onClick={handleNextDay} disabled={moment(selectedDate).isSame(currentMonth.clone().endOf('month'), 'day')}
+                                        style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '-5px', borderRadius: '20px', padding: '10px 15px', marginRight: '10px' }}>
+                                        →
+                                    </button>
+                                    </span>
                                 </h3>
                             </div>
                             <Spacer y={25} />
@@ -559,7 +565,7 @@ const styles = {
         marginBottom: '20px',
     },
     calendarContainer: {
-        height: '75dvh'
+        height: '75dvh',
     },
     calendar: {
         height: '100%',
@@ -580,7 +586,7 @@ const styles = {
     },
     form: {
         padding: '20px',
-        paddingBottom: '80px'
+        paddingBottom: 'calc(80px + env(safe-area-inset-bottom))'
     },
     titleInput: {
         width: '100%',
