@@ -18,7 +18,7 @@ const OnlineLectureHeader = ({ excludeFinished, onToggleChange }) => {
 
     return (
         <>
-            <Spacer y={5} />
+            <Spacer y={15} />
             <h2 className="page-heading">
                 온라인 강의
                 <button

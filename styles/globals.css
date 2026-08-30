@@ -732,7 +732,6 @@ h6 {
   background-color: var(--card-background);
   border-radius: 20px;
   padding: 20px 15px;
-  font-size: 1.2rem;
   grid-row-end: span 1;
   grid-column-end: span 1;
   transition: transform .5s ease;
