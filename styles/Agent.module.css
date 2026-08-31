@@ -49,6 +49,18 @@
     position: relative;
 }
 
+.conversationMenuOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 19;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: default;
+}
+
 .titleButton {
     display: flex;
     align-items: center;
@@ -556,8 +568,15 @@
 }
 
 .bubble li {
+    display: list-item;
+    min-height: 0;
     margin: 5px 0;
     padding-left: 0;
+    border-radius: 0;
+    align-items: initial;
+    justify-content: initial;
+    user-select: text;
+    -webkit-user-select: text;
 }
 
 .bubble li>ul,

@@ -43,9 +43,9 @@ export const AGENT_TOOLS = [
     required: ["year", "month"],
     additionalProperties: false
   }),
-  tool("createCalendarEvent", "KLAS 개인 일정을 추가합니다. 사용자에게 실행 직전 승인을 받아야 합니다.", calendarSchema(false)),
-  tool("updateCalendarEvent", "기존 KLAS 개인 일정을 수정합니다. 사용자에게 실행 직전 승인을 받아야 합니다.", calendarSchema(true)),
-  tool("deleteCalendarEvent", "기존 KLAS 개인 일정을 삭제합니다. 사용자에게 실행 직전 승인을 받아야 합니다.", calendarSchema(true)),
+  tool("createCalendarEvent", "KLAS 개인 일정을 추가합니다. 호출 후 클라이언트가 실행 직전 승인 위젯을 표시합니다.", calendarSchema(false)),
+  tool("updateCalendarEvent", "기존 KLAS 개인 일정을 수정합니다. 호출 후 클라이언트가 실행 직전 승인 위젯을 표시합니다.", calendarSchema(true)),
+  tool("deleteCalendarEvent", "기존 KLAS 개인 일정을 삭제합니다. 호출 후 클라이언트가 실행 직전 승인 위젯을 표시합니다.", calendarSchema(true)),
   tool("getKWNoticeList", "광운대학교의 최신 공지사항 목록을 조회합니다."),
   tool("searchKWNoticeList", "광운대학교 공지사항을 검색합니다.", {
     type: "object",

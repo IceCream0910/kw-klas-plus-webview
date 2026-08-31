@@ -20,6 +20,7 @@ const newId = () => globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.r
 const MARKDOWN_COMPONENTS = {
     a: ({ href, ...props }) => <a {...props} href={normalizeKlasHref(href)} />
 };
+const MARKDOWN_PLUGINS = [[remarkGfm, { singleTilde: false }], remarkFlattenNestedLists];
 
 export default function AgentPage() {
     const [messages, setMessages] = useState([]);
@@ -146,14 +147,14 @@ export default function AgentPage() {
 
     useEffect(() => {
         const container = conversationRef.current;
-        if (container && (status === 'restoring' || isRunning || isAtBottomRef.current)) {
+        if (container && (status === 'restoring' || isAtBottomRef.current)) {
             isAtBottomRef.current = true;
             setShowScrollToBottom(false);
             container.scrollTo({ top: container.scrollHeight, behavior: 'auto' });
         }
         const frame = requestAnimationFrame(updateScrollState);
         return () => cancelAnimationFrame(frame);
-    }, [messages, approval, status, isRunning, updateScrollState]);
+    }, [messages, approval, status, updateScrollState]);
 
     const scrollToBottom = useCallback(() => {
         const container = conversationRef.current;
@@ -379,7 +380,10 @@ export default function AgentPage() {
                         <span><strong>{currentConversation?.title || '새 대화'}</strong></span>
                         <IonIcon name={historyOpen ? 'chevron-up' : 'chevron-down'} />
                     </button>
-                    <AnimatePresence>{historyOpen && <ConversationMenu conversations={conversations} currentId={conversationId.current} disabled={isRunning || Boolean(conversationMutationId)} onSelect={selectConversation} onRename={openConversationRename} onDelete={removeConversation} />}</AnimatePresence>
+                    <AnimatePresence>{historyOpen && <>
+                        <motion.button key="conversation-menu-overlay" className={styles.conversationMenuOverlay} type="button" aria-label="대화 목록 닫기" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setHistoryOpen(false)} />
+                        <ConversationMenu key="conversation-menu" conversations={conversations} currentId={conversationId.current} disabled={isRunning || Boolean(conversationMutationId)} onSelect={selectConversation} onRename={openConversationRename} onDelete={removeConversation} />
+                    </>}</AnimatePresence>
                 </div>
                 <div className={styles.headerActions}><button type="button" onClick={startNewConversation} aria-label="새 대화"><IonIcon name="create-outline" /></button></div>
             </header>
@@ -390,7 +394,7 @@ export default function AgentPage() {
                         const active = message.id === activeAssistantId && isRunning;
                         return <motion.article key={message.id} className={`${styles.message} ${styles[message.role]}`} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                             {message.role === 'assistant' && <ProcessPanel steps={message.steps || []} status={status} active={active} />}
-                            <div className={styles.bubble}>{message.role === 'user' ? <>{message.attachments?.length > 0 && <MessageAttachments attachments={message.attachments} />}{message.content && <div className={styles.userMessageBody}>{message.content}</div>}</> : message.content ? <ReactMarkdown remarkPlugins={[remarkGfm, remarkFlattenNestedLists]} components={MARKDOWN_COMPONENTS}>{message.content}</ReactMarkdown> : null}</div>
+                            <div className={styles.bubble}>{message.role === 'user' ? <>{message.attachments?.length > 0 && <MessageAttachments attachments={message.attachments} />}{message.content && <div className={styles.userMessageBody}>{message.content}</div>}</> : message.content ? <ReactMarkdown remarkPlugins={MARKDOWN_PLUGINS} components={MARKDOWN_COMPONENTS}>{message.content}</ReactMarkdown> : null}</div>
                             {message.role === 'assistant' && message.content && <MessageActions content={message.content} createdAt={active ? null : message.createdAt} onRegenerate={message.id === activeAssistantId && !isRunning && lastUserMessage ? () => submit(lastUserMessage.content, []) : undefined} />}
                         </motion.article>;
                     })}
