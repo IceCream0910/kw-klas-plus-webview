@@ -234,7 +234,7 @@ export default function Feed() {
     <>
       <div className="feed-page" style={{ padding: '5px' }}>
         <Toaster position="top-center" />
-        <Header title={<Logo size={45} />} />
+        <Header title={<Logo size={40} />} />
         <BottomNav currentTab="feed" />
         <div className='pull-to-swipe-area'>
           <CurrentStatus

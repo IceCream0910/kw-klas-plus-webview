@@ -164,13 +164,13 @@ body {
   pointer-events: auto;
 }
 
-.app-header-inner > div:first-child {
+.app-header-inner>div:first-child {
   min-width: 0;
   flex: 1 1 auto;
   overflow: hidden;
 }
 
-.app-header-inner > div:first-child > * {
+.app-header-inner>div:first-child>* {
   max-width: 100%;
 }
 
@@ -804,7 +804,7 @@ hr {
   border: 1px solid #ffae00;
 }
 
-.card > div {
+.card>div {
   line-height: 1.15;
 }
 
@@ -1089,6 +1089,7 @@ released-badge {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   *,
   ::before,
   ::after {
@@ -1148,8 +1149,8 @@ released-badge {
   gap: 0;
 }
 
-.ranking-card-grid > :only-child,
-.grade-card-grid > :only-child {
+.ranking-card-grid> :only-child,
+.grade-card-grid> :only-child {
   grid-column: 1 / -1;
 }
 
@@ -1167,7 +1168,7 @@ released-badge {
   min-width: 0;
 }
 
-.page-heading > button {
+.page-heading>button {
   float: none !important;
   flex: 0 1 auto;
   width: fit-content !important;
@@ -1187,12 +1188,12 @@ released-badge {
   min-width: 0;
 }
 
-.profile-menu-button > span:nth-child(2) {
+.profile-menu-button>span:nth-child(2) {
   min-width: 0;
   overflow-wrap: anywhere;
 }
 
-.profile-menu-button > span[role="button"] {
+.profile-menu-button>span[role="button"] {
   float: none !important;
   flex: 0 0 20px;
   margin-left: auto;
@@ -1262,13 +1263,14 @@ released-badge {
   gap: 12px;
 }
 
-.grade-summary > *,
-.ranking-card-stats > *,
-.grade-card-stats > * {
+.grade-summary>*,
+.ranking-card-stats>*,
+.grade-card-stats>* {
   min-width: 0;
 }
 
 @media (min-width: 600px) {
+
   #remaining-deadline,
   .deadline-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1285,27 +1287,27 @@ released-badge {
     align-items: start;
   }
 
-  .online-lecture-grid > *,
-  .janghak-list > *,
-  .ranking-card-grid > *,
-  .grade-card-grid > *,
-  .search-result-grid > * {
+  .online-lecture-grid>*,
+  .janghak-list>*,
+  .ranking-card-grid>*,
+  .grade-card-grid>*,
+  .search-result-grid>* {
     min-width: 0;
     margin-top: 0 !important;
   }
 
-  .search-result-grid > * {
+  .search-result-grid>* {
     margin-bottom: 0 !important;
   }
 
-  .profile-menu-section > .profile-menu-button {
+  .profile-menu-section>.profile-menu-button {
     width: calc(50% - 5px);
     display: inline-flex;
     vertical-align: top;
     margin-right: 10px;
   }
 
-  .profile-menu-section > .profile-menu-button:nth-of-type(even) {
+  .profile-menu-section>.profile-menu-button:nth-of-type(even) {
     margin-right: 0;
   }
 
@@ -1314,8 +1316,8 @@ released-badge {
     flex-wrap: wrap;
   }
 
-  .search-plan-term-row > *,
-  .search-plan-filter-row > * {
+  .search-plan-term-row>*,
+  .search-plan-filter-row>* {
     flex: 1 1 180px;
     min-width: 0;
   }
@@ -1332,6 +1334,7 @@ released-badge {
 }
 
 @media (min-width: 960px) {
+
   #remaining-deadline,
   .deadline-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1353,7 +1356,7 @@ released-badge {
 }
 
 @media (max-width: 599px) {
-  .page-heading > button {
+  .page-heading>button {
     font-size: 13px !important;
     padding: 8px 11px !important;
   }
@@ -1363,13 +1366,13 @@ released-badge {
     flex-wrap: wrap;
   }
 
-  .search-plan-term-row > *,
-  .search-plan-filter-row > * {
+  .search-plan-term-row>*,
+  .search-plan-filter-row>* {
     flex: 1 1 calc(50% - 5px);
     min-width: 0;
   }
 
-  .search-plan-filter-row > * {
+  .search-plan-filter-row>* {
     flex-basis: 100%;
   }
 
@@ -1377,7 +1380,7 @@ released-badge {
     row-gap: 8px;
   }
 
-  .calendar-toolbar h2 > button {
+  .calendar-toolbar h2>button {
     margin-left: 0 !important;
   }
 
