@@ -43,3 +43,7 @@ next-env.d.ts
 
 .agents/
 .claude/
+
+workers/agent-api/.dev.vars
+workers/agent-api/.wrangler/
+workers/agent-api/wrangler-dry-run.log

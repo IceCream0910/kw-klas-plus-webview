@@ -52,6 +52,25 @@ npm run start
 yarn start
 ```
 
+## KLAS AI 모노레포
+
+ChatKit 없이 자체 UI와 별도 Agent runtime을 사용합니다.
+
+- `pages/agent.js`: SSE 응답, 사용자별 대화 목록, 승인값 편집, 최대 3개 파일 첨부를 제공하는 WebView UI. 입력창은 Border Beam, 생성 상태는 Thinking Orbs로 표시
+- `lib/agentClientTools.js`: 모델의 제한된 인자를 고정 KLAS API payload로 변환하는 도구 레지스트리. 쓰기 도구는 UI 승인 후에만 실행
+- `workers/agent-api`: OpenAI Responses API를 호출하는 독립 Cloudflare Worker workspace
+
+Agent 대화는 Rybbit의 `rybbit-user-id` UUID를 해시한 소유자 키별로 Worker의 SQLite Durable Object에 저장합니다. 대화별 메시지는 최대 60개, 대화 목록은 최대 30개이며 마지막 사용 30일 후 자동 만료됩니다. 제목은 별도의 `gpt-5-nano` 호출로 첫 턴에 만들고 10턴마다 갱신하며, 사용자가 직접 바꾼 제목은 유지합니다. 첨부 원본, KLAS SESSION, 원본 도구 응답은 저장하지 않습니다. 첨부 원본은 OpenAI 요청에만 전달되고 기록에는 파일명과 MIME 타입만 남습니다. Agent prompt에는 매 요청 시점의 `Asia/Seoul` 날짜와 시간이 추가됩니다. KLAS SESSION은 `localStorage.klasSessionToken`을 우선 사용하고 `window.receiveToken`을 보조 경로로 사용합니다. 개인 일정 추가·수정·삭제는 승인 전 값을 직접 확인하고 수정한 뒤에만 실행됩니다.
+
+로컬에서는 웹 앱과 Worker를 각각 실행합니다.
+
+```bash
+npm run dev
+npm run agent:dev
+```
+
+웹 앱 `.env.local`에는 `NEXT_PUBLIC_AGENT_API_URL=http://localhost:8788`을 지정합니다. Worker의 OpenAI secret 설정과 배포 방법은 [`workers/agent-api/README.md`](workers/agent-api/README.md)를 참고하세요.
+
 ## 📁 프로젝트 구조
 
 ```
@@ -98,7 +117,9 @@ kw-klas-plus-webview/
 │   ├── agent.js               # KLAS AI 페이지
 │   └── settings.js            # 설정 페이지
 ├── 📁 public/                 
-└── 📁 styles/                 
+├── 📁 styles/
+└── 📁 workers/
+    └── 📁 agent-api/          # Cloudflare Workers Agent runtime
 ```
 
 

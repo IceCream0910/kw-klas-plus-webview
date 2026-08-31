@@ -1064,6 +1064,28 @@ released-badge {
   right: -30px;
 }
 
+.released-badge-probe {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.ai-chatbot-icon {
+  display: block;
+  width: 24px;
+  height: 24px;
+  filter: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .ai-chatbot-icon {
+    filter: invert(1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   ::before,

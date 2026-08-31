@@ -1,0 +1,42 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "klas-plus-agent-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-11-17",
+  "vars": {
+    "OPENAI_MODEL": "gpt-5.6-terra",
+    "OPENAI_TITLE_MODEL": "gpt-5-nano",
+    "ALLOWED_ORIGINS": "http://localhost:3000,https://klasplus.yuntae.in"
+  },
+  "ratelimits": [
+    {
+      "name": "AGENT_RATE_LIMITER",
+      "namespace_id": "1001",
+      "simple": {
+        "limit": 30,
+        "period": 60
+      }
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "AGENT_CONVERSATIONS",
+        "class_name": "AgentConversation"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["AgentConversation"]
+    }
+  ],
+  "limits": {
+    "cpu_ms": 30000
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  }
+}
