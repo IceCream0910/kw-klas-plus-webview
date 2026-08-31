@@ -2,7 +2,7 @@ import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 const links = [
     {
         emoji: '🔔',
-        text: '공지사항',
+        text: '업데이트 내역',
         url: 'https://klasplus.yuntae.in/changelog'
     },
     {
