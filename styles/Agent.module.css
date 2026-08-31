@@ -6,7 +6,7 @@
     display: grid;
     grid-template-rows: auto minmax(0, 1fr) auto;
     width: min(100%, 920px);
-    height: calc(100dvh - 2rem - env(safe-area-inset-top));
+    height: calc(100dvh - 2rem);
     margin: 0 auto;
     overflow: hidden;
 }
@@ -1174,7 +1174,7 @@
 
 @media (max-width: 620px) {
     .page {
-        height: calc(100dvh - 2rem - env(safe-area-inset-top));
+        height: calc(100dvh - 2rem);
     }
 
     .modeBadge {

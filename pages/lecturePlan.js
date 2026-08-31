@@ -29,7 +29,6 @@ export default function LecturePlan() {
     if (isLoading || !data) {
         return (
             <main>
-                <Spacer y={10} />
                 <Skeleton height="h-5" width="w-16" className="mb-4" />
                 <Skeleton height="h-8" width="w-3/4" className="mb-2" />
                 <Skeleton height="h-4" width="w-1/2" className="mb-6" />
@@ -63,11 +62,11 @@ export default function LecturePlan() {
     return (
         <main>
             <button onClick={handleOpenInKlas}
-                style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: '16px', borderRadius: '20px', padding: '10px 15px' }}>
+                style={{ float: 'right', border: '1px solid var(--card-background)', width: 'fit-content', fontSize: '14px', marginTop: 0, borderRadius: '20px', padding: '10px 15px' }}>
                 KLAS에서 열기
             </button>
 
-            <Spacer y={30} />
+            <Spacer y={16} />
 
             {data.lecturePlan[0].codeName1 && (
                 <>

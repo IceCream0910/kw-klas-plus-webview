@@ -33,7 +33,8 @@ const BOTTOM_NAV_ROUTES = new Set([
 const getShellClassName = (pathname) => {
   if (pathname.startsWith('/modal/')) return 'app-shell app-shell--modal';
   if (pathname === '/changelog' || pathname === '/') return 'app-shell app-shell--flush';
-  if (pathname === '/agent' || pathname === '/onboarding') return 'app-shell app-shell--legacy-edge';
+  if (pathname === '/agent') return 'app-shell app-shell--legacy-edge app-shell--agent';
+  if (pathname === '/onboarding') return 'app-shell app-shell--legacy-edge';
   if (READING_ROUTES.has(pathname)) return 'app-shell app-shell--reading';
   if (BALANCED_ROUTES.has(pathname)) return 'app-shell app-shell--balanced';
   return 'app-shell';

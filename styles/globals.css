@@ -114,6 +114,10 @@ body {
   padding-top: calc(1rem + env(safe-area-inset-top));
 }
 
+.app-shell--agent {
+  padding-top: 1rem;
+}
+
 .app-shell--flush {
   max-width: none;
   padding: 0;
