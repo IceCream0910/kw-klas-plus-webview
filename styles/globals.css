@@ -92,7 +92,6 @@ body {
   margin: 0 auto;
   padding-left: max(var(--page-gutter), env(safe-area-inset-left));
   padding-right: max(var(--page-gutter), env(safe-area-inset-right));
-  padding-top: env(safe-area-inset-top);
   box-sizing: border-box;
 }
 
@@ -142,7 +141,6 @@ body {
   position: fixed;
   inset: 0 0 auto;
   width: 100%;
-  padding-top: env(safe-area-inset-top);
   z-index: 1000;
   pointer-events: none;
 }
