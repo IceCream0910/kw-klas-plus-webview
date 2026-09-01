@@ -28,7 +28,8 @@ const SEMESTER_SCHEDULE = [
   { yearHakgi: '2025,2', start: new Date(2025, 8, 1), end: new Date(2025, 11, 19) },
   { yearHakgi: '2025,4', start: new Date(2025, 11, 22), end: new Date(2026, 0, 14) },
   { yearHakgi: '2026,1', start: new Date(2026, 2, 3), end: new Date(2026, 5, 22) },
-  { yearHakgi: '2026,3', start: new Date(2026, 5, 23), end: new Date(2026, 6, 13) }
+  { yearHakgi: '2026,3', start: new Date(2026, 5, 23), end: new Date(2026, 6, 13) },
+  { yearHakgi: '2026,2', start: new Date(2026, 8, 1), end: new Date(2026, 11, 21) }
 ];
 
 const NO_COURSE_STATUS_TEXT = '지금은 선택된<br/>학기 중이 아니에요.';
