@@ -57,7 +57,7 @@
     "@types/react": "19.2.3",
     "typescript": "5.5.2",
     "wrangler": "^4.122.0",
-    "yarn-audit-fix": "^10.1.1"
+    "yarn-audit-fix": "^11.0.4"
   },
   "overrides": {
     "react": "^19.2.3",
