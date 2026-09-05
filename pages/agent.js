@@ -225,7 +225,7 @@ export default function AgentPage() {
                 previousResponseId.current = runResult.responseId;
                 if (!pendingTool) break;
                 toolCallCount += 1;
-                if (toolCallCount > 6) throw new Error('한 번의 요청에서 사용할 수 있는 도구 호출 수를 초과했습니다.');
+                if (toolCallCount > 15) throw new Error('한 번의 요청에서 사용할 수 있는 도구 호출 수를 초과했습니다.');
 
                 const stepId = newId();
                 updateAssistant(assistantMessageId, (message) => ({
