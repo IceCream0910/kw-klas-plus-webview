@@ -41,6 +41,11 @@ const TimetableStyles = () => {
         z-index: 2;
       }
 
+      .timetable .class.native-color {
+        background-color: var(--class-light-background);
+        color: var(--class-light-text);
+      }
+
       .header {
         font-weight: bold;
         text-align: center !important;
@@ -90,6 +95,13 @@ const TimetableStyles = () => {
 
       .weekend-class:active {
         transform: scale(0.98);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .timetable .class.native-color {
+          background-color: var(--class-dark-background);
+          color: var(--class-dark-text);
+        }
       }
     `}} />
   );

@@ -1,6 +1,7 @@
 import {
     getRandomColor,
     getContrastColor,
+    getNativeTimetableColor,
     calculateTimeRange,
     calculateClassDimensions
 } from '../../lib/timetable/timetableHelpers';
@@ -35,23 +36,30 @@ const TimetableRenderer = ({ timetableData, onClassClick }) => {
                             classItem.day === day &&
                             parseInt(classItem.startTime.split(':')[0]) === hour
                         ) {
-                            if (!colorMap[classItem.title]) {
+                            const nativeColor = getNativeTimetableColor(classItem.color);
+                            if (!nativeColor && !colorMap[classItem.title]) {
                                 colorMap[classItem.title] = getRandomColor(uniqueClassesIndices[classItem.title], uniqueClasses.length);
                             }
 
-                            const backgroundColor = colorMap[classItem.title];
-                            const textColor = getContrastColor(backgroundColor);
                             const { topOffset, height } = calculateClassDimensions(classItem);
+                            const colorStyle = nativeColor ? {
+                                '--class-light-background': nativeColor.light.background,
+                                '--class-light-text': nativeColor.light.text,
+                                '--class-dark-background': nativeColor.dark.background,
+                                '--class-dark-text': nativeColor.dark.text
+                            } : {
+                                backgroundColor: colorMap[classItem.title],
+                                color: getContrastColor(colorMap[classItem.title])
+                            };
 
                             acc.push(
                                 <div
                                     key={`class-${classItem.title}-${acc.length}`}
-                                    className="class"
+                                    className={`class${nativeColor ? ' native-color' : ''}`}
                                     style={{
                                         top: `${topOffset}px`,
                                         height: `${height}px`,
-                                        backgroundColor,
-                                        color: textColor
+                                        ...colorStyle
                                     }}
                                     onClick={() => onClassClick(classItem.subj, classItem.title)}
                                 >
@@ -83,7 +91,7 @@ const TimetableRenderer = ({ timetableData, onClassClick }) => {
     }, []);
 
     return (
-        <div style={{margin: '0 -15px'}}>
+        <div style={{ margin: '0 -15px' }}>
             <div className="timetable">
                 {headerCells}
                 {timeCells}
