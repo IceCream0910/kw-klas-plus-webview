@@ -5,6 +5,7 @@ import Script from 'next/script';
 import { useRouter } from 'next/router';
 import { identifyUser } from '../lib/core/analytics';
 import Head from 'next/head';
+import { isNativeFeatureCompatible } from '../lib/core/nativeApp';
 
 const READING_ROUTES = new Set([
   '/boardView',
@@ -30,6 +31,17 @@ const BOTTOM_NAV_ROUTES = new Set([
   '/timetableTab'
 ]);
 
+const HOME_TAB_PATHS = {
+  feed: '/feed',
+  timetable: '/timetableTab',
+  calendar: '/calendar',
+  menu: '/profile'
+};
+
+const HOME_TABS_BY_PATH = Object.fromEntries(
+  Object.entries(HOME_TAB_PATHS).map(([tab, path]) => [path, tab])
+);
+
 const getShellClassName = (pathname) => {
   if (pathname.startsWith('/modal/')) return 'app-shell app-shell--modal';
   if (pathname === '/changelog' || pathname === '/') return 'app-shell app-shell--flush';
@@ -44,6 +56,16 @@ function MyApp({ Component, pageProps }) {
   const router = useRouter();
 
   useEffect(() => {
+    const navigateFromNative = (tab) => {
+      if (!Object.prototype.hasOwnProperty.call(HOME_TAB_PATHS, tab)) return false;
+      router.push(HOME_TAB_PATHS[tab]).catch((error) => {
+        console.error('Failed to navigate to the native tab:', error);
+      });
+      return true;
+    };
+
+    window.klasNativeNavigate = navigateFromNative;
+
     if (!process.env.NEXT_PUBLIC_DEVELOPMENT && 'serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
         .then(registration => {
@@ -62,10 +84,22 @@ function MyApp({ Component, pageProps }) {
       window.location.replace("https://play.google.com/store/apps/details?id=com.icecream.kwklasplus");
     }
 
-    const handleRouteChange = () => {
+    const handleRouteChange = (url = router.asPath) => {
       const hakbun = localStorage.getItem('klasplus_lastSessionID');
       if (hakbun) {
         identifyUser(hakbun);
+      }
+
+      const path = url.split(/[?#]/, 1)[0];
+      const tab = HOME_TABS_BY_PATH[path];
+      if (tab && isNativeFeatureCompatible('nativeBottomNav') && KlasNativeBridge.isAvailable('changeTab')) {
+        try {
+          Promise.resolve(KlasNativeBridge.changeTab(tab)).catch((error) => {
+            console.error('Failed to sync the native tab:', error);
+          });
+        } catch (error) {
+          console.error('Failed to sync the native tab:', error);
+        }
       }
     };
 
@@ -74,6 +108,9 @@ function MyApp({ Component, pageProps }) {
 
     return () => {
       router.events.off('routeChangeComplete', handleRouteChange);
+      if (window.klasNativeNavigate === navigateFromNative) {
+        delete window.klasNativeNavigate;
+      }
     };
   }, [router.events]);
 

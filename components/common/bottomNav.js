@@ -16,6 +16,7 @@ const TAB_ITEMS = [
 const emptySubscribe = () => () => { };
 
 const getClientCompat = () => isNativeFeatureCompatible("bottomNav");
+const getNativeBottomNavCompat = () => isNativeFeatureCompatible("nativeBottomNav");
 
 const getServerCompat = () => false;
 
@@ -55,6 +56,7 @@ const BUTTON_BASE_STYLE = {
 
 function BottomNav({ currentTab }) {
     const isCompatible = useSyncExternalStore(emptySubscribe, getClientCompat, getServerCompat);
+    const hasNativeBottomNav = useSyncExternalStore(emptySubscribe, getNativeBottomNavCompat, getServerCompat);
     const router = useRouter();
 
     const handleTabClick = (tab) => {
@@ -78,7 +80,7 @@ function BottomNav({ currentTab }) {
                 }
             `}</style>
             <nav className="app-bottom-nav">
-                <div className="app-bottom-nav-inner">
+                {!hasNativeBottomNav && <div className="app-bottom-nav-inner">
                     {TAB_ITEMS.map((tab) => {
                         const isActive = tab.key === currentTab;
                         return (
@@ -108,7 +110,7 @@ function BottomNav({ currentTab }) {
                             </button>
                         );
                     })}
-                </div>
+                </div>}
 
                 <GradualBlur
                     position="bottom"
