@@ -17,7 +17,9 @@ npm run agent:deploy
 
 배포 후 웹 앱의 `NEXT_PUBLIC_AGENT_API_URL`을 Worker 주소로 설정합니다. `ALLOWED_ORIGINS`에는 실제 웹 앱 origin만 남겨야 합니다. Worker는 긴 연결을 유지하되 OpenAI 응답을 버퍼링하지 않고 즉시 전달하므로 전체 요청 timeout에 덜 민감합니다.
 
-Worker의 Rate Limiting binding은 브라우저별 익명 ID를 기준으로 분당 30회의 모델 호출을 허용합니다. 도구 호출 뒤 모델을 재개하는 요청도 이 횟수에 포함됩니다. 공개 서비스에서는 이 제한에 더해 Cloudflare WAF 또는 서비스 로그인 기반의 서명된 사용자 ID를 적용해야 합니다.
+Worker의 Rate Limiting binding은 브라우저별 익명 ID와 Cloudflare가 제공한 접속 IP 각각에 분당 30회의 요청을 허용합니다. IP가 없는 로컬 요청은 공통 버킷을 사용합니다. 도구 호출 뒤 모델을 재개하는 요청도 이 횟수에 포함됩니다. 별도의 예약된 Durable Object가 전체 배포의 모델 호출을 원자적으로 제한하며, 사용자 ID나 접속 위치를 변경해도 이 한도는 초기화되지 않습니다. `AGENT_MODEL_CALLS_PER_MINUTE`(기본 120)와 `AGENT_MODEL_CALLS_PER_DAY`(기본 1000)는 채팅과 제목 생성 호출 모두에 적용합니다. UTC 분/일 경계에서 초기화되며 실패한 upstream 요청도 한도에 포함합니다. 한도에 도달하면 채팅은 429를 반환하고 제목은 로컬 대체값을 사용합니다. 이 설정은 호출 횟수 한도이며 금액 한도는 아닙니다. 공개 서비스에서는 추가 WAF 또는 서비스 로그인 기반의 서명된 사용자 ID도 권장합니다.
+
+모델 호출 전에 Durable Object에서 대화 소유자와 저장된 응답 ID를 확인합니다. 클라이언트가 다른 응답 ID를 보내거나 저장 상태가 사라진 대화를 재개하면 409를 반환합니다. 도구 결과는 저장된 pending call ID와 일치해야 합니다. 한 대화에는 실행 하나만 예약할 수 있으며 실패 시 예약을 해제합니다. 중단된 실행 예약은 5분 후 다시 시도할 수 있습니다. 기존 대화 기록의 owner key와 latest response ID는 그대로 사용합니다.
 
 대화 연속성은 OpenAI `previous_response_id`로 유지하고, 질문과 최종 답변은 대화별 SQLite Durable Object에 최대 60개까지 저장하여 화면 재진입 시 복원합니다. `OPENAI_TITLE_MODEL`의 기본값인 `gpt-5-nano`가 첫 턴과 이후 10턴마다 제목을 생성하며, 사용자가 직접 변경한 제목은 자동 갱신하지 않습니다. 대화 이름 변경과 삭제는 소유자 해시를 검증한 뒤 처리합니다. 저장된 대화는 마지막 사용 30일 후 자동 만료됩니다. KLAS SESSION과 원본 도구 응답은 저장하지 않습니다.
 

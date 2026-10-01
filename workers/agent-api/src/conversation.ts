@@ -10,6 +10,8 @@ interface ConversationRecord {
   ownerKey: string;
   messages: ConversationMessage[];
   latestResponseId?: string;
+  pendingToolCallId?: string;
+  inFlight?: { id: string; expiresAt: number };
   updatedAt: number;
 }
 
@@ -35,7 +37,7 @@ export class AgentConversation {
 
   async fetch(request: Request): Promise<Response> {
     const body = await request.json() as {
-      action: "history" | "append" | "set_response" | "delete_conversation" | "list" | "get_index" | "upsert_index" | "rename_index" | "auto_title" | "delete_index";
+      action: "history" | "append" | "set_response" | "delete_conversation" | "list" | "get_index" | "upsert_index" | "rename_index" | "auto_title" | "delete_index" | "begin_run" | "finish_run" | "abort_run" | "reserve_budget";
       ownerKey: string;
       message?: ConversationMessage;
       latestResponseId?: string;
@@ -43,7 +45,16 @@ export class AgentConversation {
       conversationId?: string;
       title?: string;
       titleUpdatedTurn?: number;
+      runId?: string;
+      requestType?: string;
+      previousResponseId?: string;
+      callId?: string;
+      pendingToolCallId?: string;
+      perMinute?: number;
+      perDay?: number;
     };
+    if (body.action === 'reserve_budget') return this.reserveBudget(body.perMinute!, body.perDay!);
+    if (['begin_run', 'finish_run', 'abort_run'].includes(body.action)) return this.handleRun(body);
     if (["list", "get_index", "upsert_index", "rename_index", "auto_title", "delete_index"].includes(body.action)) return this.handleIndex(body);
 
     const current = await this.state.storage.get("conversation") as ConversationRecord | undefined;
@@ -70,6 +81,7 @@ export class AgentConversation {
 
     const messages = upsertMessage(current?.messages ?? [], body.message).slice(-60);
     const next: ConversationRecord = {
+      ...current,
       ownerKey: body.ownerKey,
       messages,
       latestResponseId: body.latestResponseId ?? current?.latestResponseId,
@@ -82,6 +94,72 @@ export class AgentConversation {
       messageCount: messages.length,
       userTurnCount: messages.filter((message) => message.role === "user").length
     });
+  }
+
+  private async reserveBudget(perMinute: number, perDay: number) {
+    if (![perMinute, perDay].every(value => Number.isSafeInteger(value) && value > 0)) {
+      return Response.json({ error: 'Invalid model budget' }, { status: 503 });
+    }
+    // One reserved object owns the aggregate quota across users and edge locations.
+    return this.state.storage.transaction(async (storage: any) => {
+      const now = Date.now();
+      const minute = Math.floor(now / 60_000);
+      const day = Math.floor(now / 86_400_000);
+      const saved = await storage.get('modelBudget');
+      const minuteCount = saved?.minute === minute ? saved.minuteCount : 0;
+      const dayCount = saved?.day === day ? saved.dayCount : 0;
+      if (minuteCount >= perMinute || dayCount >= perDay) {
+        return Response.json({ error: 'Model request budget exhausted' }, { status: 429 });
+      }
+      await storage.put('modelBudget', { minute, day, minuteCount: minuteCount + 1, dayCount: dayCount + 1 });
+      return Response.json({ ok: true });
+    });
+  }
+
+  private async handleRun(body: {
+    action: string; ownerKey: string; runId?: string; requestType?: string;
+    previousResponseId?: string; callId?: string; latestResponseId?: string;
+    pendingToolCallId?: string; message?: ConversationMessage;
+  }) {
+    const response = await this.state.storage.transaction(async (storage: any) => {
+      const current = await storage.get('conversation') as ConversationRecord | undefined;
+      if (current && current.ownerKey !== body.ownerKey) return Response.json({ error: 'Forbidden' }, { status: 403 });
+      if (body.action === 'begin_run') {
+        if ((body.previousResponseId && body.previousResponseId !== current?.latestResponseId)
+          || (body.requestType === 'tool_output' && (!current?.pendingToolCallId
+            || body.callId !== current.pendingToolCallId || body.previousResponseId !== current.latestResponseId))) {
+          return Response.json({ error: 'Invalid conversation continuation' }, { status: 409 });
+        }
+        if (current?.inFlight && current.inFlight.expiresAt > Date.now()) {
+          return Response.json({ error: 'A conversation run is already in progress' }, { status: 409 });
+        }
+        const next: ConversationRecord = {
+          ...(current ?? { ownerKey: body.ownerKey, messages: [] }),
+          updatedAt: Date.now(),
+          inFlight: { id: body.runId!, expiresAt: Date.now() + 5 * 60_000 }
+        };
+        await storage.put('conversation', next);
+        return Response.json({ previousResponseId: current?.latestResponseId ?? null });
+      }
+      if (!current || current.inFlight?.id !== body.runId) {
+        return Response.json({ error: 'Conversation run is no longer active' }, { status: 409 });
+      }
+      if (body.action === 'abort_run') {
+        await storage.put('conversation', { ...current, inFlight: undefined });
+        return Response.json({ ok: true });
+      }
+      await storage.put('conversation', {
+        ...current,
+        messages: body.message ? upsertMessage(current.messages, body.message).slice(-60) : current.messages,
+        latestResponseId: body.latestResponseId,
+        pendingToolCallId: body.pendingToolCallId,
+        inFlight: undefined,
+        updatedAt: Date.now()
+      } satisfies ConversationRecord);
+      return Response.json({ ok: true });
+    });
+    if (response.ok) await this.refreshExpiry();
+    return response;
   }
 
   private async refreshExpiry() {
