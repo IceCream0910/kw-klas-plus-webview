@@ -1,4 +1,6 @@
 import { useRouter } from "next/router";
+import { useEffect, useState } from 'react';
+import { sanitizeBoardHtml } from '../lib/board/sanitizeBoardHtml';
 import Spacer from "../components/common/spacer";
 import LoadingSkeleton from "../components/common/LoadingSkeleton";
 import BoardMetadata from "../components/board/BoardMetadata";
@@ -40,12 +42,6 @@ function BoardView() {
     );
   }
 
-  const hasContent = data.board.content &&
-    data.board.content.replace(/<style([\s\S]*?)<\/style>/gi, ' ')
-      .replace(/<script([\s\S]*?)<\/script>/gi, ' ')
-      .replace(/(<(?:.|\n)*?>)/gm, ' ')
-      .replace(/\s+/gm, ' ').length > 0;
-
   return (
     <main className="board-view-page">
       <Spacer y={20} />
@@ -63,12 +59,7 @@ function BoardView() {
 
       <Spacer y={15} />
 
-      {hasContent && (
-        <>
-          <div className="board-content" dangerouslySetInnerHTML={{ __html: data.board.content }} />
-          <Spacer y={20} />
-        </>
-      )}
+      <BoardContent key={data.board.content} content={data.board.content} />
 
       {attachment && attachment.length > 0 && attachment.map((file, index) => (
         <AttachmentItem key={index} file={file} />
@@ -82,4 +73,11 @@ function BoardView() {
       <Spacer y={30} />
     </main>
   );
+}
+
+function BoardContent({ content }) {
+  const [html, setHtml] = useState('');
+  useEffect(() => { setHtml(sanitizeBoardHtml(content)); }, [content]);
+  if (!html.trim()) return null;
+  return <><div className="board-content" dangerouslySetInnerHTML={{ __html: html }} /><Spacer y={20} /></>;
 }

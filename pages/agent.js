@@ -202,7 +202,7 @@ export default function AgentPage() {
             type: 'message', message: text,
             attachments: outgoingAttachments.map(({ name, mimeType, dataUrl }) => ({ name, mimeType, dataUrl })),
             messageId: userMessageId, assistantMessageId, userId: userId.current,
-            conversationId: conversationId.current, previousResponseId: previousResponseId.current
+            conversationId: conversationId.current
         };
 
         try {

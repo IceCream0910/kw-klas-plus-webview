@@ -125,6 +125,9 @@ kw-klas-plus-webview/
 
 ## 네이티브 앱 브릿지 연동
 
+서버 프록시는 `https://klas.kw.ac.kr`에 대한 POST 요청만 전달하며 Accept, Cookie, Content-Type 외의 요청 헤더와 upstream 리다이렉트를 거부합니다. HTML 읽기 API와 AI 페이지 읽기 도구는 `kw.ac.kr`, `www.kw.ac.kr`, `klas.kw.ac.kr`의 HTTPS 기본 포트만 허용합니다. 다른 대학 하위 도메인이 필요한 경우 서버와 클라이언트의 명시적 허용 목록을 함께 갱신해야 합니다. 게시글 HTML은 브라우저에서 DOMPurify로 정화한 뒤 표시하며 스크립트, 이벤트 핸들러, 활성 임베드와 인라인 스타일은 허용하지 않습니다.
+
+
 WebView 페이지는 [`lib/core/klasNativeBridge.js`](lib/core/klasNativeBridge.js)의 `KlasNativeBridge`만 사용해 Android/iOS 네이티브 기능을 호출합니다. 페이지나 컴포넌트에서 `window.Android.*` 또는 `window.KlasNativeBridgeNative.postMessage()`를 직접 호출하지 않습니다.
 
 ```javascript

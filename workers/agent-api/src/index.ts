@@ -7,6 +7,8 @@ interface Env {
   OPENAI_MODEL?: string;
   OPENAI_TITLE_MODEL?: string;
   ALLOWED_ORIGINS?: string;
+  AGENT_MODEL_CALLS_PER_MINUTE?: string;
+  AGENT_MODEL_CALLS_PER_DAY?: string;
   AGENT_RATE_LIMITER: { limit(input: { key: string }): Promise<{ success: boolean }> };
   AGENT_CONVERSATIONS: {
     idFromName(name: string): unknown;
@@ -93,8 +95,29 @@ export default {
     }
 
     const ownerKey = await hashIdentifier(body.userId);
+    const sourceKey = await hashIdentifier(request.headers.get('CF-Connecting-IP') ?? 'unknown-source');
+    const sourceLimit = await env.AGENT_RATE_LIMITER.limit({ key: `source-${sourceKey}` });
+    if (!sourceLimit.success) return json({ error: 'Too many agent requests' }, 429, cors);
     const rateLimit = await env.AGENT_RATE_LIMITER.limit({ key: ownerKey });
     if (!rateLimit.success) return json({ error: "Too many agent requests" }, 429, cors);
+
+    const runId = crypto.randomUUID();
+    const authorization = await conversationRequest(env, body.conversationId, {
+      action: 'begin_run', ownerKey, runId, requestType: body.type,
+      previousResponseId: body.previousResponseId,
+      callId: body.type === 'tool_output' ? body.callId : undefined
+    });
+    if (!authorization.ok) return json({ error: 'Invalid conversation continuation' }, authorization.status, cors);
+    const authorized = await authorization.json() as { previousResponseId: string | null };
+    const authorizedBody = { ...body, previousResponseId: authorized.previousResponseId ?? undefined } as AgentRequest;
+    const abortRun = async () => {
+      await conversationRequest(env, body.conversationId, { action: 'abort_run', ownerKey, runId });
+    };
+    const budget = await reserveModelCall(env);
+    if (!budget.ok) {
+      await abortRun();
+      return json({ error: 'Model request budget exhausted' }, budget.status, cors);
+    }
 
     if (body.type === "message") {
       const stored = await conversationRequest(env, body.conversationId, {
@@ -108,7 +131,10 @@ export default {
           createdAt: Date.now()
         }
       });
-      if (!stored.ok) return json({ error: "Conversation could not be saved" }, stored.status, cors);
+      if (!stored.ok) {
+        await abortRun();
+        return json({ error: "Conversation could not be saved" }, stored.status, cors);
+      }
       await userIndexRequest(env, ownerKey, {
         action: "upsert_index",
         ownerKey,
@@ -116,34 +142,41 @@ export default {
       });
     }
 
-    const upstream = await fetch("https://api.openai.com/v1/responses", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${env.OPENAI_API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(toOpenAIRequest(body, env.OPENAI_MODEL ?? "gpt-5.6-terra", ownerKey))
-    });
+    let upstream: Response;
+    try {
+      upstream = await fetch("https://api.openai.com/v1/responses", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${env.OPENAI_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(toOpenAIRequest(authorizedBody, env.OPENAI_MODEL ?? "gpt-5.6-terra", ownerKey))
+      });
+    } catch {
+      await abortRun();
+      return json({ error: 'OpenAI request failed' }, 502, cors);
+    }
 
     if (!upstream.ok || !upstream.body) {
+      await abortRun();
       const detail = await upstream.text();
       return json({ error: "OpenAI request failed", detail: detail.slice(0, 1000) }, upstream.status, cors);
     }
 
-    return new Response(normalizeOpenAIStream(upstream.body, async (content, responseId, hasPendingTool) => {
-      const payload = content
-        ? { action: "append", ownerKey, latestResponseId: responseId,
-            message: { id: body.assistantMessageId, role: "assistant", content, createdAt: Date.now() } }
-        : { action: "set_response", ownerKey, latestResponseId: responseId };
-      await conversationRequest(env, body.conversationId, payload);
-      if (content && !hasPendingTool) {
+    return new Response(normalizeOpenAIStream(upstream.body, async (content, responseId, pendingToolCallId) => {
+      const stored = await conversationRequest(env, body.conversationId, {
+        action: 'finish_run', ownerKey, runId, latestResponseId: responseId, pendingToolCallId,
+        message: content ? { id: body.assistantMessageId, role: 'assistant', content, createdAt: Date.now() } : undefined
+      });
+      if (!stored.ok) throw new Error('Conversation could not be saved');
+      if (content && !pendingToolCallId) {
         try {
           await refreshConversationTitle(env, body.conversationId, ownerKey);
         } catch (error) {
           console.warn("Conversation title generation failed", error);
         }
       }
-    }), {
+    }, abortRun), {
       headers: {
         ...cors,
         "Content-Type": "text/event-stream; charset=utf-8",
@@ -175,7 +208,7 @@ function toOpenAIRequest(body: AgentRequest, model: string, safetyIdentifier: st
   };
 }
 
-function normalizeOpenAIStream(upstream: ReadableStream<Uint8Array>, onCompleted: (content: string, responseId: string, hasPendingTool: boolean) => Promise<void>) {
+function normalizeOpenAIStream(upstream: ReadableStream<Uint8Array>, onCompleted: (content: string, responseId: string, pendingToolCallId?: string) => Promise<void>, onFailed: () => Promise<void>) {
   let responseId: string | undefined;
   let pendingTool: { callId: string; name: string; arguments: string } | undefined;
   let outputText = "";
@@ -203,7 +236,7 @@ function normalizeOpenAIStream(upstream: ReadableStream<Uint8Array>, onCompleted
         }
 
         if (!responseId) throw new Error("The model response did not include an id");
-        await onCompleted(outputText, responseId, Boolean(pendingTool));
+        await onCompleted(outputText, responseId, pendingTool?.callId);
         if (pendingTool) {
           controller.enqueue(sse("tool.requested", {
             responseId,
@@ -217,6 +250,7 @@ function normalizeOpenAIStream(upstream: ReadableStream<Uint8Array>, onCompleted
           controller.enqueue(sse("run.completed", { status: "completed", responseId }));
         }
       } catch (error) {
+        await onFailed();
         controller.enqueue(sse("run.failed", {
           message: error instanceof Error ? error.message : "Streaming failed"
         }));
@@ -347,6 +381,8 @@ async function generateConversationTitle(
     const attachments = message.attachments?.length ? ` [첨부: ${message.attachments.map((item) => item.name).join(", ")}]` : "";
     return `${message.role === "user" ? "사용자" : "도우미"}: ${message.content.slice(0, 700)}${attachments}`;
   }).join("\n").slice(0, 18000);
+  const budget = await reserveModelCall(env);
+  if (!budget.ok) throw new Error('Model request budget exhausted');
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
     headers: {
@@ -407,6 +443,19 @@ async function conversationRequest(env: Env, conversationId: string, payload: un
 
 function userIndexRequest(env: Env, ownerKey: string, payload: unknown, cors?: Record<string, string> | null) {
   return conversationRequest(env, `user-${ownerKey}`, payload, cors);
+}
+
+function reserveModelCall(env: Env) {
+  const positiveLimit = (value: string | undefined, fallback: number) => {
+    const parsed = Number(value);
+    return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : fallback;
+  };
+  // '$' cannot be selected as a public conversation ID; this object's quota is global.
+  return conversationRequest(env, '$agent-model-budget-v1', {
+    action: 'reserve_budget',
+    perMinute: positiveLimit(env.AGENT_MODEL_CALLS_PER_MINUTE, 120),
+    perDay: positiveLimit(env.AGENT_MODEL_CALLS_PER_DAY, 1000)
+  });
 }
 
 async function hashIdentifier(value: string) {
