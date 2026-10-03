@@ -5,6 +5,8 @@ function ToggleSwitch({
     onChange,
     label,
     id,
+    disabled = false,
+    role,
     scale = 0.8,
     style = {}
 }) {
@@ -37,7 +39,9 @@ function ToggleSwitch({
                 <input
                     id={id}
                     type="checkbox"
+                    role={role}
                     checked={checked}
+                    disabled={disabled}
                     onChange={handleChange}
                 />
                 <span className="slider"></span>

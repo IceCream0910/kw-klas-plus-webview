@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSettings } from '../lib/useSettings';
 import { isNativeFeatureCompatible } from '../lib/core/nativeApp';
 import ThemeSelector from '../components/settings/ThemeSelector';
+import SettingsDeadlineNotificationSection from '../components/settings/SettingsDeadlineNotificationSection';
 import SettingsMenuSection from '../components/settings/SettingsMenuSection';
 import SettingsLinkSection from '../components/settings/SettingsLinkSection';
 import SettingsInfoSection from '../components/settings/SettingsInfoSection';
@@ -37,6 +38,8 @@ export default function Settings() {
       <SettingsMenuSection
         yearHakgi={yearHakgi}
       />
+
+      <SettingsDeadlineNotificationSection />
 
       <Spacer y={20} />
       <hr style={{ margin: '0 10px', opacity: .1 }} />
