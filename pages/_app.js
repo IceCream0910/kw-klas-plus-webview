@@ -10,7 +10,8 @@ import { isNativeFeatureCompatible } from '../lib/core/nativeApp';
 const READING_ROUTES = new Set([
   '/boardView',
   '/lecturePlan',
-  '/privacy'
+  '/privacy',
+  '/tos'
 ]);
 
 const BALANCED_ROUTES = new Set([
@@ -79,7 +80,7 @@ function MyApp({ Component, pageProps }) {
     try {
       KlasNativeBridge.completePageLoad();
     } catch (error) {
-      if (window.location.href.includes("privacy") || window.location.href.includes("changelog")) return;
+      if (['/privacy', '/tos', '/changelog'].includes(window.location.pathname)) return;
       if (process.env.NEXT_PUBLIC_DEVELOPMENT) return;
       window.location.replace("https://play.google.com/store/apps/details?id=com.icecream.kwklasplus");
     }

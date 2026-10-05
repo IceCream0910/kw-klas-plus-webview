@@ -16,6 +16,11 @@ const links = [
         url: 'https://blog.yuntae.in/23363fe4-f23d-4677-8f71-7f33e502b13a'
     },
     {
+        emoji: '📄',
+        text: '서비스 이용약관',
+        url: 'https://klasplus.yuntae.in/tos'
+    },
+    {
         emoji: '🔒',
         text: '개인정보 처리방침',
         url: 'https://klasplus.yuntae.in/privacy'

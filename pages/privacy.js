@@ -1,170 +1,78 @@
-import React from 'react';
+import LegalDocument, { LegalNote, LegalSection } from '../components/legal/LegalDocument';
+import styles from '../styles/Legal.module.css';
 
-const containerStyle = {
-  margin: '0 auto',
-  paddingLeft: '1rem',
-  paddingRight: '1rem',
-  paddingTop: '2rem',
-  paddingBottom: '2rem',
-  maxWidth: 'none',
-};
+const contents = [
+  { id: 'purpose', title: '수집·이용 목적' },
+  { id: 'data', title: '처리하는 정보' },
+  { id: 'storage', title: '보관과 파기' },
+  { id: 'sharing', title: '외부 서비스와 정보 전송' },
+  { id: 'analytics', title: '서비스 이용 분석' },
+  { id: 'security', title: '안전성 확보 조치' },
+  { id: 'rights', title: '이용자의 권리' },
+  { id: 'contact', title: '문의와 방침 변경' },
+];
 
-const heading1Style = {
-  fontSize: '1.5rem',
-  fontWeight: 'bold',
-  marginBottom: '1.5rem',
-};
-
-const paragraphStyle = {
-  marginBottom: '1rem',
-  lineHeight: '1.6',
-};
-
-const heading2Style = {
-  fontSize: '1.25rem',
-  fontWeight: 'semibold',
-  marginTop: '2.5rem',
-  marginBottom: '1rem',
-};
-
-const listStyle = {
-  marginBottom: '1.5rem',
-  paddingLeft: '20px',
-};
-
-const listItemStyle = {
-  marginBottom: '0.5rem',
-};
-
-const nestedListStyle = {
-  listStyleType: 'disc',
-  paddingLeft: '20px',
-};
-
-const PrivacyPolicy = () => {
-  return (
-    <div style={containerStyle}>
-      <h1 style={heading1Style}>개인정보 처리방침</h1>
-      <p style={paragraphStyle}>
-        KLAS+는 이용자의 개인정보를 보호하고 관련 법령을 준수하기 위해 다음과 같이 개인정보 처리방침을 수립 및 공개합니다.
-        본 개인정보 처리방침은 대한민국의 개인정보 보호법 및 관계 법령을 준수하며, KLAS+ 서비스 이용과 관련된 개인정보의 수집, 이용, 제공,
-        보호조치 등에 대한 사항을 포함합니다.
-      </p>
-
-      <h2 style={heading2Style}>제1조 (개인정보의 수집 및 이용 목적)</h2>
-      <p style={paragraphStyle}>
-        KLAS+는 서비스 제공을 위해 필요한 최소한의 개인정보를 수집하며, 수집된 개인정보는 다음의 목적을 위해 사용됩니다.
-      </p>
-      <ul style={listStyle}>
-        <li style={listItemStyle}>
-          서비스 제공 및 운영
-          <ul style={nestedListStyle}>
-            <li style={listItemStyle}>회원 인증 및 서비스 이용에 필요한 기능 제공</li>
-            <li style={listItemStyle}>KLAS 및 중앙도서관 인증 연동</li>
-            <li style={listItemStyle}>KLAS GPT 서비스 이용 지원</li>
-          </ul>
-        </li>
-        <li style={listItemStyle}>
-          고객지원 및 문의 처리
-          <ul style={nestedListStyle}>
-            <li style={listItemStyle}>서비스 이용 관련 문의 응대 및 불만 처리</li>
-          </ul>
-        </li>
-        <li style={listItemStyle}>
-          서비스 품질 개선 및 분석
-          <ul style={nestedListStyle}>
-            <li style={listItemStyle}>서비스 이용 패턴 분석을 통한 기능 개선</li>
-          </ul>
-        </li>
-      </ul>
-
-      <h2 style={heading2Style}>제2조 (수집하는 개인정보의 항목)</h2>
-      <p style={paragraphStyle}>서비스 이용 과정에서 다음과 같은 개인정보가 수집될 수 있습니다.</p>
-      <ul style={listStyle}>
-        <li style={listItemStyle}>로그인: 학번, KLAS 비밀번호, 쿠키(Cookies)</li>
-        <li style={listItemStyle}>모바일 학생증: 학번, 중앙도서관 비밀번호, 전화번호</li>
-        <li style={listItemStyle}>
-          KLAS GPT: KLAS 수강 정보(수강 중인 과목 내역, 해당 과목 과제 제출, 출석 현황 등 데이터)
-        </li>
-        <li style={listItemStyle}>
-          자동 수집 항목
-          <ul style={nestedListStyle}>
-            <li style={listItemStyle}>단말기 정보 (OS, 기기 모델 등)</li>
-            <li style={listItemStyle}>IP 주소 및 접속 환경</li>
-            <li style={listItemStyle}>서비스 이용 패턴 (접속 빈도, 이용 시간, 클릭 이벤트 등)</li>
-          </ul>
-        </li>
-      </ul>
-
-      <h2 style={heading2Style}>제3조 (개인정보의 보유 및 파기)</h2>
-      <p style={paragraphStyle}>
-        KLAS+는 이용자의 개인정보를 자체 서버에 저장하지 않으며, 사용자의 기기에만 저장합니다.
-      </p>
-      <p style={paragraphStyle}>
-        단, 서비스 제공을 위해 수집된 정보는 다음과 같은 경우 제3자에게 제공될 수 있습니다.
-      </p>
-      <ul style={listStyle}>
-        <li style={listItemStyle}>KLAS 및 중앙도서관 인증을 위해 학번 및 비밀번호가 학교의 공식 인증 서버로 전송됨</li>
-        <li style={listItemStyle}>KLAS GPT 이용 시, 일부 수강 정보 및 대화 내용이 OpenAI 서버로 전송됨</li>
-      </ul>
-
-      <h2 style={heading2Style}>제4조 (행태정보의 수집·이용·제공 등에 관한 사항)</h2>
-      <p style={paragraphStyle}>
-        서비스 개선 및 이용자 분석 등에 활용하기 위해 행태정보를 수집 및 이용하고 있습니다
-      </p>
-      <p style={paragraphStyle}>
-        행태정보는 서비스 이용 과정에서 자동으로 수집 및 저장되며, 개인 식별이 불가능한 상태에서 활용하는 등 개인정보와 결합하여 사용하지
-        않습니다. 아울러 수집되는 행태정보는 분석업체와 제휴 광고사업자에 식별이 불가능한 상태로 제공될 수 있습니다.
-      </p>
-      <ul style={listStyle}>
-        <li style={listItemStyle}>제공받는 자: Amplitude (AB180)</li>
-        <li style={listItemStyle}>
-          행태정보 수집 방법: 이용자가 앱을 실행할 때 등 행해지는 주요행동에 대해 자동 수집
-        </li>
-        <li style={listItemStyle}>
-          수집∙처리 되는 행태정보 항목: 이용자의 웹/앱 서비스 내 방문기록, 스크롤, 클릭 등의 사용기록, 디바이스 관련 정보(모델명, 제조사,
-          기기타입, 플랫폼, OS해상도, 언어, 통신사, 운영체제 정보), 타임존 정보, IP주소, 네트워크 정보, 웹브라우저 정보, 앱 버전, 국가,
-          라이브러리, 디바이스 광고 추적 제한 설정 값
-        </li>
-        <li style={listItemStyle}>보유∙이용기간: 12개월(보유기간 경과 후에는 일 단위로 삭제)</li>
-      </ul>
-
-      <h2 style={heading2Style}>제5조 (개인정보의 안전성 확보 조치)</h2>
-      <p style={paragraphStyle}>
-        KLAS+는 이용자의 개인정보 보호를 위해 다음과 같은 조치를 취하고 있습니다.
-      </p>
-      <ul style={listStyle}>
-        <li style={listItemStyle}>
-          암호화 조치
-          <ul style={nestedListStyle}>
-            <li style={listItemStyle}>비밀번호 등 중요정보는 암호화하여 저장</li>
-            <li style={listItemStyle}>개인정보 전송 시 암호화된 통신구간(SSL/TLS) 사용</li>
-          </ul>
-        </li>
-        <li style={listItemStyle}>
-          접근 통제 및 보안 조치
-          <ul style={nestedListStyle}>
-            <li style={listItemStyle}>해킹, 악성코드로부터 보호하기 위한 보안 시스템 운영</li>
-            <li style={listItemStyle}>개인정보 접근 권한을 최소화하여 관리</li>
-          </ul>
-        </li>
-      </ul>
-
-      <h2 style={heading2Style}>
-        제6조 (개인정보 보호책임자 및 문의처)
-      </h2>
-      <p style={paragraphStyle}>
-        이용자는 개인정보 보호 관련 문의를 아래의 연락처로 할 수 있으며, KLAS+는 신속하고 성실하게 답변해드리겠습니다.
-      </p>
-      <ul style={listStyle}>
-        <li style={listItemStyle}>개인정보 보호책임자: 윤태인</li>
-        <li style={listItemStyle}>이메일 문의: hey@yuntae.in</li>
-      </ul>
-
-      <p style={paragraphStyle}>본 개인정보 처리방침은 2024년 3월 4일부터 적용됩니다.</p>
-      <p style={paragraphStyle}>최종 개정일: 2025년 3월 26일</p>
-    </div>
-  );
-};
-
-export default PrivacyPolicy;
+export default function PrivacyPolicy() {
+  return <LegalDocument type="privacy" title="개인정보 처리방침"
+    description="어떤 정보가 왜 필요한지, 어디에 보관되는지, 어떻게 삭제할 수 있는지 안내합니다."
+    date="최초 시행일 2024년 3월 4일 · 최종 개정일 2026년 10월 5일" contents={contents}
+    summary={[
+      { title: '기능에 필요한 정보만', text: '로그인, 학생증, AI 등 이용하는 기능에 따라 처리하는 정보가 달라집니다.' },
+      { title: 'AI 이용 시 외부 전송', text: '대화, 첨부파일과 답변에 필요한 학사 정보가 OpenAI로 전송됩니다.' },
+      { title: '보관은 1년 이내', text: '서버의 AI 대화와 분석정보는 최대 1년 보관하며, 더 일찍 삭제될 수 있습니다.' },
+      { title: '열람·삭제 요청 가능', text: '개인정보에 관한 요청은 hey@yuntae.in으로 보내주세요.' },
+    ]}>
+    <LegalSection id="purpose" number={1} title="개인정보의 수집 및 이용 목적">
+      <p>KLAS+는 서비스 제공에 필요한 개인정보를 다음 목적으로 처리합니다.</p>
+      <ul><li>KLAS 및 중앙도서관 인증 연동, 학사 정보 조회와 모바일 학생증 제공</li><li>KLAS AI의 질문 응답, 학사 정보 조회 및 이용자가 승인한 일정 처리</li><li>서비스 이용 관련 문의 응대와 불만 처리</li><li>서비스 이용 현황 분석, 오류 확인 및 기능 개선</li></ul>
+    </LegalSection>
+    <LegalSection id="data" number={2} title="처리하는 개인정보의 항목">
+      <p>이용하는 기능에 따라 아래 정보가 처리됩니다. AI에 직접 입력하거나 첨부한 내용에도 개인정보가 포함될 수 있습니다.</p>
+      <dl className={styles.dataList}>
+        <div><dt>로그인·인증</dt><dd>학번, KLAS 비밀번호, 인증 쿠키 및 세션 정보<small>학교 인증과 로그인 상태 유지에 사용합니다.</small></dd></div>
+        <div><dt>모바일 학생증</dt><dd>학번, 중앙도서관 비밀번호, 전화번호<small>중앙도서관 인증 및 학생증 기능에 사용합니다.</small></dd></div>
+        <div><dt>KLAS AI</dt><dd>대화 내용, 첨부파일, 수강 과목, 과제·출석·일정 등 질문 처리에 필요한 학사 정보, 대화 및 사용자 식별값<small>질문 응답과 대화 기록 제공에 사용합니다.</small></dd></div>
+        <div><dt>서비스 이용·접속</dt><dd>방문·클릭 등 사용기록, 기기·운영체제·브라우저 정보, IP 주소 및 접속 환경, 분석용 식별값<small>서비스 운영과 이용 현황 분석에 사용합니다. 학번은 서버에서 해시값으로 변환해 분석 식별에 사용하며, 해시값도 보호 대상 정보로 취급합니다.</small></dd></div>
+        <div><dt>문의</dt><dd>이메일 주소 및 문의 내용에 이용자가 포함한 정보<small>문의에 답변하고 요청을 처리하는 데 사용합니다.</small></dd></div>
+      </dl>
+      <LegalNote title="AI에 보내기 전에 확인해주세요"><p>질문에 필요하지 않은 비밀번호, 주민등록번호, 다른 사람의 개인정보는 입력하거나 첨부하지 마세요.</p></LegalNote>
+    </LegalSection>
+    <LegalSection id="storage" number={3} title="개인정보의 보유 및 파기">
+      <p>로그인 상태와 일부 서비스 설정·캐시는 이용자의 기기에 저장됩니다. AI 대화 기록은 대화 목록과 이어서 대화하기 기능을 위해 Cloudflare 기반 서버에도 저장됩니다. 모든 정보가 기기에만 저장되는 것은 아닙니다.</p>
+      <ul><li>AI 대화 기록 및 서비스 분석정보의 보유·이용기간은 최대 1년입니다. 목적 달성, 이용자의 삭제 요청 또는 자동 만료에 따라 그 전에 삭제될 수 있습니다.</li><li>현재 AI 서버의 대화 저장소에는 활동에 따라 갱신되는 30일 자동 만료가 적용됩니다. 오래 사용하지 않은 대화는 1년보다 먼저 삭제될 수 있습니다.</li><li>기기에 저장된 정보는 앱의 로그아웃·데이터 삭제 기능 또는 운영체제의 앱 데이터 삭제를 통해 정리할 수 있습니다. 기기 정보 삭제와 서버 정보 삭제는 별도로 처리됩니다.</li><li>문의 내용은 요청 처리 목적을 달성한 후 지체 없이 파기합니다. 관계 법령에 따라 보관해야 하는 경우에는 해당 법령의 기간과 목적에 한해 보관합니다.</li></ul>
+      <p>보유기간이 끝나거나 처리 목적이 달성된 개인정보는 복구·재생할 수 없도록 삭제합니다. OpenAI에서 처리하는 정보의 보관·삭제는 해당 업체의 처리 정책과 서비스 설정도 적용됩니다.</p>
+      <LegalNote title="대화 삭제와 앱 삭제는 달라요"><p>AI 대화 목록에서 대화를 삭제하면 KLAS+ 서버의 해당 대화 기록과 목록에서 제거됩니다. 앱을 삭제하는 것만으로 외부 서비스에 전송된 정보까지 삭제되는 것은 아닙니다. 추가 삭제 요청은 문의처로 보내주세요.</p></LegalNote>
+    </LegalSection>
+    <LegalSection id="sharing" number={4} title="외부 서비스 이용 및 정보 전송">
+      <p>KLAS+는 기능 제공을 위해 다음 서비스와 정보를 주고받습니다. 학교 인증, 서버 호스팅, AI 처리는 각각 목적과 전달 정보가 다릅니다.</p>
+      <dl className={styles.dataList}>
+        <div><dt>학교 인증 서버</dt><dd>KLAS 및 중앙도서관 인증을 위해 학번, 비밀번호 등 인증에 필요한 정보를 학교의 공식 서버로 전송합니다.</dd></div>
+        <div><dt>Cloudflare Workers</dt><dd>웹 서비스 및 AI 서버 호스팅에 사용합니다. 서비스 요청·응답, 접속 정보 및 AI 대화 기록이 서버 운영 과정에서 처리됩니다.</dd></div>
+        <div><dt>OpenAI</dt><dd>AI 답변 생성을 위해 대화, 첨부파일 및 필요한 학사 정보·도구 실행 결과를 API로 전송합니다. AI 대화 제목 생성에도 대화 내용이 사용됩니다.</dd></div>
+      </dl>
+      <LegalNote title="AI 질문 한 번의 정보 흐름">
+        <div className={styles.flow} aria-label="이용자 기기에서 KLAS+ AI 서버를 거쳐 OpenAI로 전송"><span>이용자 기기</span><b aria-hidden="true">→</b><span>KLAS+ AI 서버</span><b aria-hidden="true">→</b><span>OpenAI</span></div>
+        <p>필요한 학사 정보가 질문 처리 과정에 포함될 수 있습니다. 외부 처리 서비스의 상세 내용은 <a href="https://openai.com/policies/privacy-policy/">OpenAI 개인정보 정책</a>과 <a href="https://www.cloudflare.com/privacypolicy/">Cloudflare 개인정보 정책</a>에서 확인할 수 있습니다.</p>
+      </LegalNote>
+      <p>OpenAI API 이용 과정에서 개인정보가 국외에서 처리될 수 있습니다. 정보 전송은 AI 요청 시 네트워크를 통해 이루어집니다. AI 기능을 이용하지 않으면 해당 기능을 위한 OpenAI 전송은 발생하지 않습니다. 국외 처리 및 삭제에 관한 문의는 제8조의 연락처로 요청할 수 있습니다.</p>
+    </LegalSection>
+    <LegalSection id="analytics" number={5} title="행태정보의 수집 및 이용">
+      <p>서비스 이용 현황과 개선할 기능을 파악하기 위해 자체 호스팅하는 Rybbit으로 방문·클릭 등 사용기록, 기기·브라우저·접속 정보 및 분석용 식별값을 처리합니다. 보유·이용기간은 최대 1년입니다.</p>
+      <p>KLAS+에서 자체 운영하는 서버 외 제3자에 데이터가 전송되지 않습니다. 사용자를 식별하기 위해 학번을 Hash하여 고유식별번호(UUID)를 생성하며, 고유식별번호를 이용해 학번을 역산하거나 추적할 수 없습니다.</p>
+      <LegalNote title="분석정보는 무엇인가요?"><p>예를 들어 어떤 화면이 자주 열리는지, 어떤 버튼이 사용되는지에 관한 기록입니다. 페이지 DOM 접근을 통한 사용자 화면 상호작용이 기록되며, 개인정보 및 입력 텍스트는 블라인드 처리됩니다.</p></LegalNote>
+    </LegalSection>
+    <LegalSection id="security" number={6} title="개인정보의 안전성 확보 조치">
+      <p>KLAS+는 개인정보를 안전하게 처리하기 위해 암호화된 통신구간(HTTPS/TLS)을 사용하고, 인증정보와 대화 기록에 대한 접근을 제한합니다. 서비스 운영에 필요한 범위에서만 개인정보에 접근하며, 처리 목적이 끝난 정보는 삭제합니다.</p>
+    </LegalSection>
+    <LegalSection id="rights" number={7} title="이용자의 권리 및 행사 방법">
+      <p>이용자는 자신의 개인정보에 대한 열람, 정정·삭제, 처리정지 및 동의 철회를 요청할 수 있습니다. 요청은 아래 이메일로 보내주세요. 본인 확인 후 관계 법령에 따라 처리하고 결과를 안내합니다. 법령상 제한이 있으면 그 사유를 안내합니다.</p>
+      <LegalNote title="이렇게 요청하면 더 빠르게 확인할 수 있어요"><p>이용한 기능, 요청할 사항, 문제가 발생한 시점을 알려주세요. 본인 확인을 위해 필요한 정보는 별도로 안내하며, 문의 이메일에 계정 비밀번호를 보내지 마세요.</p></LegalNote>
+      <p>동의 철회 또는 처리정지로 인해 해당 정보가 필요한 기능의 이용이 제한될 수 있습니다.</p>
+    </LegalSection>
+    <LegalSection id="contact" number={8} title="개인정보 보호책임자 및 방침 변경">
+      <p>개인정보 보호책임자: 윤태인<br />이메일: <a href="mailto:hey@yuntae.in">hey@yuntae.in</a></p>
+      <p>개인정보 처리방침을 변경하는 경우 이 페이지와 서비스 공지를 통해 변경 내용을 안내합니다. 필요한 경우 변경된 처리 내용에 대해 별도의 동의를 받습니다.</p>
+      <p>본 방침은 2024년 3월 4일부터 시행되었습니다. 개정일은 2025년 3월 26일, 2026년 10월 5일이며, 이번 개정 내용은 2026년 10월 5일부터 적용됩니다.</p>
+    </LegalSection>
+  </LegalDocument>;
+}

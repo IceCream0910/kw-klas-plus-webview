@@ -14,7 +14,7 @@ export default function IdCard() {
                 {process.env.NEXT_PUBLIC_LATEST_POLICY_DATE}에 개인정보 처리방침이 개정되었어요. 서비스 이용을 위해 다시 동의가 필요해요.
             </span>
             <Spacer y={10} />
-            <span onClick={() => KlasNativeBridge.openExternalPage("https://blog.yuntae.in/11cfc9b9-3eca-8078-96a0-c41c4ca9cb8f")}>개인정보 처리방침 전문 <IonIcon name="chevron-forward" style={{ position: 'relative', top: '2px' }} /></span>
+            <span onClick={() => KlasNativeBridge.openExternalPage("https://klasplus.yuntae.in/privacy")}>개인정보 처리방침 전문 <IonIcon name="chevron-forward" style={{ position: 'relative', top: '2px' }} /></span>
             <Spacer y={20} />
 
             <div className="bottom-sheet" style={{ padding: 0, marginBottom: 0 }}>
