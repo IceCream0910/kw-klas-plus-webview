@@ -1,0 +1,119 @@
+.contributorsLink {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 44px;
+    padding: 10px;
+    border-radius: 15px;
+    color: var(--text-color);
+    font-size: 16px;
+    text-decoration: none;
+}
+
+.contributorsLink:active {
+    background: var(--card-background);
+}
+
+.contributorsLink:focus-visible {
+    outline: 2px solid var(--text-color);
+    outline-offset: 2px;
+}
+
+.label {
+    flex-shrink: 0;
+}
+
+.people {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    min-width: 0;
+    margin-left: auto;
+}
+
+.identity {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    min-width: 0;
+    animation: usernameEnter 350ms ease-out;
+}
+
+.role {
+    font-size: 10px;
+    line-height: 1.4;
+    color: var(--text-color);
+}
+
+.username {
+    min-width: 0;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+    opacity: .8;
+}
+
+.avatars {
+    position: relative;
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    height: 32px;
+    isolation: isolate;
+}
+
+.avatar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: grid;
+    place-items: center;
+    box-sizing: border-box;
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--background);
+    border-radius: 50%;
+    background: var(--button-background);
+    color: var(--text-color);
+    font-size: 10px;
+    transition: transform 450ms cubic-bezier(.22, 1, .36, 1);
+}
+
+@keyframes usernameEnter {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: .8;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .avatar {
+        transition: none;
+    }
+
+    .identity {
+        animation: none;
+    }
+}
+
+.avatar img {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    object-fit: cover;
+}
+
+.fallback {
+    font-size: 14px;
+    opacity: .8;
+}
