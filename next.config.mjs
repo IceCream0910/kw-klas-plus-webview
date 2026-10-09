@@ -2,6 +2,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
+  bundlePagesRouterDependencies: true,
   async redirects() {
     return [
       {

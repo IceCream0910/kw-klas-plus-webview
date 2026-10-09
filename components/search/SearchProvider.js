@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
 import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 import { SearchCache } from '../../lib/search/cache';
 import { localSearch, parseQuery } from '../../lib/search/queryParser';
@@ -7,7 +8,7 @@ import { SearchCoordinator } from '../../lib/search/coordinator';
 import { getSearchSession, setSearchSession } from '../../lib/search/session';
 import { createAgentContext, agentSearchContext } from '../../lib/search/agentContext';
 import { menuItems } from '../../lib/profile/menuItems';
-import SearchOverlay from './SearchOverlay';
+const SearchOverlay = dynamic(() => import('./SearchOverlay'), { ssr: false });
 
 const SearchContext = createContext(null);
 const menus = menuItems.flatMap(group => group.items.map(item => ({ id: `menu:${item.url}`, kind: 'menu', title: item.name, courseName: group.title, sourceRef: { url: item.url } })));
