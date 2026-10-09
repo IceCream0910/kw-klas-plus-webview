@@ -1,3 +1,4 @@
+import { setSearchSession } from '../lib/search/session';
 import KlasNativeBridge from '../lib/core/klasNativeBridge';
 import React, { useState, useEffect } from 'react';
 import TodaysCafeteriaMenu from '../components/feed/TodaysCafeteria';
@@ -172,6 +173,7 @@ export default function Feed() {
 
     window.receiveToken = (receivedToken) => {
       if (receivedToken) {
+        setSearchSession(receivedToken);
         setToken(receivedToken);
         KLAS("https://klas.kw.ac.kr/std/cps/inqire/AtnlcScreHakjukInfo.do", receivedToken)
           .then((data) => {
