@@ -1,0 +1,27 @@
+.dock { position: relative; width: 100%; max-width: 740px; flex-shrink: 0; }
+.beam { width: 100%; border-radius: 30px; }
+.composer { position: relative; display: flex; flex-direction: column; width: 100%; box-sizing: border-box; padding: 9px 12px; border: 1px solid color-mix(in srgb, var(--text-color) 12%, transparent); border-radius: 30px; background: color-mix(in srgb, var(--background) 92%, transparent); box-shadow: 0 8px 32px rgb(0 0 0 / 12%); }
+.inputRow { display: flex; align-items: center; gap: 10px; min-width: 0; padding-left: 4px; }
+.inputRow textarea { appearance: none; -webkit-appearance: none; min-width: 0; flex: 1; width: 100%; height: 44px; min-height: 0; box-sizing: border-box; margin: 0; border: 0; outline: none; padding: 11px 52px 9px 0; border-radius: 0; background: transparent; color: var(--text-color); font: inherit; font-size: 16px; line-height: 24px; resize: none; box-shadow: none; transition: height .28s cubic-bezier(.22, 1, .36, 1), padding .28s; }
+.searchIcon { display: grid; place-items: center; width: 22px; flex: 0 0 22px; font-size: 22px; opacity: .8; transition: width .28s, flex-basis .28s, opacity .18s; overflow: hidden; }
+.actions { position: absolute; bottom: 9px; left: 12px; right: 12px; display: flex; justify-content: space-between; align-items: center; pointer-events: none; }
+.composer button { display: grid; place-items: center; width: 44px; min-height: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; color: var(--text-color); background: transparent; cursor: pointer; font-size: 23px; pointer-events: auto; }
+.composer .send { background: var(--text-color); color: var(--background); }
+.composer .clear { position: absolute; right: 52px; opacity: .6; font-size: 20px; }
+.dock[data-mode="search"][data-has-value="true"] textarea { padding-right: 104px; }
+.dock[data-mode="search"] textarea { white-space: pre; overflow-x: auto; overflow-y: hidden; }
+.composer button:disabled { opacity: .35; cursor: default; }
+.composer button:focus-visible { outline: 2px solid var(--text-color); outline-offset: 2px; }
+.composer:focus-within { border-color: color-mix(in srgb, var(--text-color) 40%, transparent); }
+.attachmentAction { opacity: 0; visibility: hidden; transform: scale(.85); transition: opacity .2s, transform .28s, visibility .2s; }
+.dock[data-mode="agent"] textarea { height: 116px; padding: 6px 0 48px; }
+.dock[data-mode="agent"] .searchIcon { width: 0; flex-basis: 0; opacity: 0; }
+.dock[data-mode="agent"] .inputRow { gap: 0; }
+.dock[data-mode="agent"] .attachmentAction { visibility: visible; opacity: 1; transform: scale(1); }
+.attachments { display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 4px 10px; }
+.file { display: flex; align-items: center; gap: 6px; max-width: 100%; padding: 2px 6px; border-radius: 10px; background: color-mix(in srgb, var(--text-color) 7%, transparent); font-size: 12px; }
+.file span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.file button { width: 32px; height: 32px; min-height: 32px; flex-shrink: 0; font-size: 17px; }
+.disclaimer { text-align: center; font-size: 10px; opacity: .6; margin: 7px 0 0; }
+.error { font-size: 13px; margin: 8px 4px 0; }
+@media (prefers-reduced-motion: reduce) { .inputRow textarea, .searchIcon, .attachmentAction { transition: none; } }
