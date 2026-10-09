@@ -3,7 +3,7 @@ import "../styles/globals.css";
 import { useEffect } from "react";
 import Script from 'next/script';
 import { useRouter } from 'next/router';
-import { identifyUser } from '../lib/core/analytics';
+import { ANALYTICS_ENABLED, identifyUser } from '../lib/core/analytics';
 import Head from 'next/head';
 import { isNativeFeatureCompatible } from '../lib/core/nativeApp';
 
@@ -123,12 +123,12 @@ function MyApp({ Component, pageProps }) {
       <div className={`${getShellClassName(router.pathname)}${BOTTOM_NAV_ROUTES.has(router.pathname) ? ' app-shell--with-bottom-nav' : ''}`}>
         <Component {...pageProps} />
       </div>
-      <Script
+      {ANALYTICS_ENABLED && <Script
         src="https://rybbit.yuntae.in/api/script.js"
         data-site-id="e4129eea280e"
         data-replay-mask-text-selectors='[".rr-mask"]'
         strategy="afterInteractive"
-      />
+      />}
       <Script src="https://embed.released.so/1/embed.js" />
     </>
   );
