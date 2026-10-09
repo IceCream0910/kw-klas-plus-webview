@@ -5,20 +5,13 @@ import KlasNativeBridge from "../../lib/core/klasNativeBridge";
 import { getNativeAppFromUserAgent, isNativeFeatureCompatible } from "../../lib/core/nativeApp";
 import toast, { Toaster } from 'react-hot-toast';
 import GradualBlur from "../common/GradualBlur";
+import { useSearch } from '../search/SearchProvider';
 
 const RELEASED_CHANNEL_ID = "b8696cec-f681-43a8-9baa-d5737483003e";
 
 const handleChangelogClick = () => {
     try {
         KlasNativeBridge.openPage("https://klasplus.yuntae.in/changelog")
-    } catch (error) {
-        toast("앱을 최신버전으로 업데이트해주세요.")
-    }
-};
-
-const handleAiClick = () => {
-    try {
-        KlasNativeBridge.openPage("https://klasplus.yuntae.in/agent")
     } catch (error) {
         toast("앱을 최신버전으로 업데이트해주세요.")
     }
@@ -66,13 +59,13 @@ function ChangelogAction() {
             {hasUnreadRelease && (
                 <button
                     type="button"
-                    style={{ width: 'fit-content' }}
+                    style={{ width: 'fit-content', marginRight: '0.3rem' }}
                     onClick={handleChangelogClick}
                     aria-label="업데이트 내역 열기"
                 >
                     <released-badge channel-id={RELEASED_CHANNEL_ID}></released-badge>
                     <IonIcon
-                        name='rocket'
+                        name='gift-outline'
                         style={{
                             fontSize: '20px',
                             color: 'var(--text-color)',
@@ -87,8 +80,10 @@ function ChangelogAction() {
 }
 
 function Header({ title }) {
+    const search = useSearch();
     const [version, setVersion] = useState("");
     const [isCompatible, setIsCompatible] = useState(false);
+    const [isSearchCompatible, setIsSearchCompatible] = useState(false);
     const [isAgentCompatible, setIsAgentCompatible] = useState(false);
 
     useEffect(() => {
@@ -96,6 +91,7 @@ function Header({ title }) {
         if (app) {
             setVersion(app.version);
             setIsCompatible(isNativeFeatureCompatible("header", app));
+            setIsSearchCompatible(isNativeFeatureCompatible("search", app));
             setIsAgentCompatible(isNativeFeatureCompatible("agent", app));
         }
     }, []);
@@ -115,23 +111,31 @@ function Header({ title }) {
                     <div className="app-header-actions">
                         <ChangelogAction />
 
+                        {isSearchCompatible && search?.enabled && (
+                            <button
+                                type="button"
+                                style={{ width: 'fit-content' }}
+                                onClick={search.show}
+                                aria-label="통합 검색 열기"
+                                aria-haspopup="dialog"
+                            >
+                                <IonIcon name="search-outline" aria-hidden="true"
+                                    style={{
+                                        fontSize: '20px',
+                                        color: 'var(--text-color)',
+                                        position: 'relative',
+                                        top: '2px'
+                                    }} />
 
-                        {isAgentCompatible && (
-                            <div style={{ position: 'relative' }}>
-                                <button
-                                    type="button"
-                                    style={{ width: 'fit-content' }}
-                                    onClick={handleAiClick}
-                                    aria-label="AI 챗봇 열기"
-                                >
-                                    <img
-                                        src="/icons/ai-chatbot-animated.svg"
-                                        className="ai-chatbot-icon"
-                                        alt=""
-                                        aria-hidden="true"
-                                    />
-                                </button>
-                            </div>
+                            </button>
+                        )}
+                        {!isSearchCompatible && isAgentCompatible && (
+                            <button type="button" style={{ width: 'fit-content' }} onClick={() => {
+                                try { Promise.resolve(KlasNativeBridge.openPage('https://klasplus.yuntae.in/agent')).catch(() => toast('앱을 최신버전으로 업데이트해주세요.')); }
+                                catch { toast('앱을 최신버전으로 업데이트해주세요.'); }
+                            }} aria-label="AI 챗봇 열기">
+                                <img src="/icons/ai-chatbot-animated.svg" className="ai-chatbot-icon" alt="" aria-hidden="true" />
+                            </button>
                         )}
 
                         <button
