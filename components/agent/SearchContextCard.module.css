@@ -1,0 +1,9 @@
+.card { margin: 4px 4px 10px; padding: 10px 12px; border: 1px solid color-mix(in srgb, var(--text-color) 10%, transparent); border-radius: 16px; background: color-mix(in srgb, var(--text-color) 5%, transparent); }
+.header { display: flex; align-items: center; gap: 7px; font-size: 12px; }
+.header strong { font-weight: 600; }
+.header span { opacity: .6; }
+.header > button { margin-left: auto; flex-shrink: 0; display: grid; place-items: center; width: 32px; height: 32px; min-height: 32px; padding: 0; border: 0; background: transparent; color: inherit; font-size: 18px; }
+.card ul { list-style: none; padding: 0; margin: 5px 0 0; max-height: 112px; overflow-y: auto; }
+.card li { display: flex; align-items: baseline; gap: 8px; padding: 3px 0; font-size: 12px; }
+.card li span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.card small { opacity: .6; flex-shrink: 0; max-width: 45%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

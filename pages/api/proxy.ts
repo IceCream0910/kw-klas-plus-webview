@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { fetchUniversity, universityUrl } from '../../lib/server/universityFetch';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    res.setHeader('Cache-Control', 'private, no-store');
     if (req.method !== 'POST') {
         res.setHeader('Allow', 'POST');
         return res.status(405).json({ error: 'Method not allowed' });
@@ -45,13 +46,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             data = await response.text();
         }
 
-        if (response.status !== 200) {
-            console.error('KLAS API error:', data);
-        }
-
         res.status(response.status).json(data);
     } catch (error) {
-        console.error('Proxy error:', error);
         res.status(500).json({ error: 'Proxy request failed' });
     }
 }

@@ -3,8 +3,9 @@ import "../styles/globals.css";
 import { useEffect } from "react";
 import Script from 'next/script';
 import { useRouter } from 'next/router';
-import { identifyUser } from '../lib/core/analytics';
+import { ANALYTICS_ENABLED, identifyUser } from '../lib/core/analytics';
 import Head from 'next/head';
+import SearchProvider from '../components/search/SearchProvider';
 import { isNativeFeatureCompatible } from '../lib/core/nativeApp';
 
 const READING_ROUTES = new Set([
@@ -120,15 +121,15 @@ function MyApp({ Component, pageProps }) {
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </Head>
-      <div className={`${getShellClassName(router.pathname)}${BOTTOM_NAV_ROUTES.has(router.pathname) ? ' app-shell--with-bottom-nav' : ''}`}>
+      <SearchProvider><div className={`${getShellClassName(router.pathname)}${BOTTOM_NAV_ROUTES.has(router.pathname) ? ' app-shell--with-bottom-nav' : ''}`}>
         <Component {...pageProps} />
-      </div>
-      <Script
+      </div></SearchProvider>
+      {ANALYTICS_ENABLED && <Script
         src="https://rybbit.yuntae.in/api/script.js"
         data-site-id="e4129eea280e"
         data-replay-mask-text-selectors='[".rr-mask"]'
         strategy="afterInteractive"
-      />
+      />}
       <Script src="https://embed.released.so/1/embed.js" />
     </>
   );

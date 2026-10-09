@@ -11,6 +11,12 @@
     overflow: hidden;
 }
 
+.embedded { width: 100%; height: 100%; min-height: 0; margin: 0; }
+.embedded::before { display: none; }
+.embedded .header { padding-left: 12px; padding-right: 12px; }
+.embedded .bottomDock { padding-bottom: 0; }
+.embedded .bottomDock:empty { display: none; }
+
 .page::before {
     content: '';
     position: absolute;

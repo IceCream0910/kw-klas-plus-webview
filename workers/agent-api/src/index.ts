@@ -1,5 +1,6 @@
 import { AGENT_INSTRUCTIONS } from "./prompt";
 import { AGENT_TOOLS, WRITE_TOOL_NAMES } from "./tools";
+import { type AgentSearchContext, validateSearchContext, searchContextInstruction } from './searchContext';
 export { AgentConversation } from "./conversation";
 
 interface Env {
@@ -23,7 +24,7 @@ interface AgentAttachment {
 }
 
 type AgentRequest =
-  | { type: "message"; message: string; attachments?: AgentAttachment[]; messageId: string; assistantMessageId: string; conversationId: string; userId: string; previousResponseId?: string }
+  | { type: "message"; message: string; searchContext?: AgentSearchContext; attachments?: AgentAttachment[]; messageId: string; assistantMessageId: string; conversationId: string; userId: string; previousResponseId?: string }
   | { type: "tool_output"; callId: string; output: unknown; assistantMessageId: string; conversationId: string; userId: string; previousResponseId: string };
 
 const encoder = new TextEncoder();
@@ -128,6 +129,7 @@ export default {
           role: "user",
           content: body.message.trim(),
           attachments: (body.attachments ?? []).map(({ name, mimeType }) => ({ name, mimeType })),
+          ...(body.searchContext ? { searchContext: body.searchContext } : {}),
           createdAt: Date.now()
         }
       });
@@ -295,7 +297,8 @@ function validateRequest(body: AgentRequest) {
   if (body.type === "message") {
     if (!validId(body.messageId)) throw new Error("A valid messageId is required");
     const attachments = body.attachments ?? [];
-    if (!body.message.trim() && attachments.length === 0) throw new Error("A message or attachment is required");
+    if (body.searchContext !== undefined) validateSearchContext(body.searchContext);
+    if (!body.message.trim() && attachments.length === 0 && !body.searchContext) throw new Error("A message or attachment is required");
     if (!Array.isArray(attachments) || attachments.length > 3) throw new Error("Up to 3 attachments are allowed");
     attachments.forEach(validateAttachment);
   }
@@ -323,8 +326,9 @@ function allowedMimeType(mimeType: string) {
 
 function messageContent(body: Extract<AgentRequest, { type: "message" }>) {
   const content: Array<Record<string, unknown>> = [
-    { type: "input_text", text: body.message.trim() || "첨부된 파일의 내용을 확인해 주세요." }
+    { type: "input_text", text: body.message.trim() || "첨부된 자료를 확인해 주세요." }
   ];
+  if (body.searchContext) content.push({ type: 'input_text', text: searchContextInstruction(body.searchContext) });
   for (const attachment of body.attachments ?? []) {
     content.push(attachment.mimeType.startsWith("image/")
       ? { type: "input_image", image_url: attachment.dataUrl, detail: "auto" }
