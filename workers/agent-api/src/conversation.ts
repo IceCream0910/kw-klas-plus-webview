@@ -1,9 +1,12 @@
+import type { AgentSearchContext } from './searchContext';
+
 export interface ConversationMessage {
   id: string;
   role: "user" | "assistant";
   content: string;
   createdAt: number;
   attachments?: Array<{ name: string; mimeType: string }>;
+  searchContext?: AgentSearchContext;
 }
 
 interface ConversationRecord {
