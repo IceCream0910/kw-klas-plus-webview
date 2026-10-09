@@ -7,41 +7,47 @@ export default async function handler(req, res) {
 
     const srCategoryId = req.query.srCategoryId || "";
     const query = req.query.query || "";
+    const searchKey = req.query.searchKey ?? '1';
+    const page = Number(req.query.page || 0);
+    if (typeof query !== 'string' || query.length > 200 || typeof srCategoryId !== 'string' || !/^\d{0,10}$/.test(srCategoryId) || typeof searchKey !== 'string' || !/^[1-4]$/.test(searchKey) || !Number.isInteger(page) || page < 0 || page > 100) {
+        return res.status(400).json({ error: 'Invalid search' });
+    }
 
     if (req.method !== 'GET') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
     try {
-        const data = await getKWNoticeList(srCategoryId, query);
+        const data = await getKWNoticeList(srCategoryId, query, page, searchKey);
         if (!data) {
             return res.status(500).json({ error: 'Failed to fetch data' });
         }
 
-        return res.status(200).json(data);
+        res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=60');
+        return res.status(200).json(req.query.pageInfo === '1' ? data : data.items);
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ error: 'Internal server error' });
+        return res.status(error.name === 'TimeoutError' || error.name === 'AbortError' ? 504 : 502).json({ error: 'School notice unavailable' });
     }
 }
 
 
-async function getKWNoticeList(srCategoryId, query) {
+export async function getKWNoticeList(srCategoryId, query, page, searchKey = '1', signal) {
     try {
-        let url;
+        const url = new URL('https://www.kw.ac.kr/ko/life/notice.jsp');
+        url.searchParams.set('srCategoryId', srCategoryId);
+        url.searchParams.set('tpage', String(page + 1));
         if (query) {
-            // Search mode
-            url = 'https://www.kw.ac.kr/ko/life/notice.jsp?srCategoryId=&mode=list&searchKey=3&x=28&y=15&searchVal=' + encodeURIComponent(query);
-        } else {
-            // Normal list mode
-            url = 'https://www.kw.ac.kr/ko/life/notice.jsp?srCategoryId=' + srCategoryId;
+            url.searchParams.set('mode', 'list');
+            url.searchParams.set('searchKey', searchKey);
+            url.searchParams.set('searchVal', query);
         }
-
         const response = await fetch(url, {
+            signal: signal ?? AbortSignal.timeout(20000),
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
             }
         });
+        if (!response.ok) throw new Error('upstream_failed');
         const html = await response.text();
 
         const root = parse(html);
@@ -59,11 +65,17 @@ async function getKWNoticeList(srCategoryId, query) {
                 const infoText = notice.querySelector('p.info')?.text.trim();
                 const [views, createdDate, modifiedDate, author] = infoText ? infoText.split('|').map(item => item.trim()) : [];
 
+                let canonicalLink = null;
+                if (link) {
+                    const target = new URL(link, 'https://www.kw.ac.kr');
+                    const documentId = target.searchParams.get('DUID');
+                    if (target.origin === 'https://www.kw.ac.kr' && /^\d+$/.test(documentId || '')) canonicalLink = `https://www.kw.ac.kr/ko/life/notice.jsp?BoardMode=view&DUID=${documentId}`;
+                }
                 return {
                     number: parseInt(number),
                     category,
                     title,
-                    link: link ? `https://www.kw.ac.kr${link}` : null,
+                    link: canonicalLink,
                     hasAttachment,
                     views: views ? parseInt(views.replace('조회수 ', '')) : null,
                     createdDate: createdDate ? createdDate.replace('작성일 ', '') : null,
@@ -71,12 +83,15 @@ async function getKWNoticeList(srCategoryId, query) {
                     author
                 };
             });
-            return noticeList;
+            const more = root.querySelectorAll('.paging a[href]').some(anchor => {
+                const target = new URL(anchor.getAttribute('href'), 'https://www.kw.ac.kr');
+                return Number(target.searchParams.get('tpage')) > page + 1;
+            });
+            return { items: noticeList, more };
         } else {
-            return [];
+            throw new Error('unexpected_markup');
         }
     } catch (error) {
-        console.error('에러 발생:', error.message);
-        return [];
+        throw error;
     }
 }
