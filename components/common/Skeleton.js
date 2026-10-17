@@ -122,5 +122,4 @@ export const SkeletonLayouts = {
     )
 };
 
-export { SkeletonLayouts };
 export default Skeleton;
