@@ -62,8 +62,9 @@ test('public requests share in-flight work, cache for 60 seconds, and never send
     const { SearchCoordinator } = await load('coordinator.js');
     let calls = 0, time = now;
     const runner = new SearchCoordinator({ now: () => time, fetcher: async (url, options) => {
-        calls++; assert.equal(options.body, undefined);
-        return { ok: true, json: async () => ({ items: [], more: false }) };
+        calls++; const request = JSON.parse(options.body); assert.equal(request.token, undefined);
+        assert.ok(request.sources.every(source => source.kind === 'school'));
+        return new Response(JSON.stringify({ type: 'result', id: 'school', status: 'success', items: [], more: false }) + '\n' + JSON.stringify({ type: 'done' }) + '\n', { headers: { 'Content-Type': 'application/x-ndjson' } });
     } });
     const query = { scope: 'opaque', term: '2026,2', keyword: '장학' };
     await Promise.all([runner.school(query), runner.school(query)]);
