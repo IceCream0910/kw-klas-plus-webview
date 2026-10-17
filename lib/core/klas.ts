@@ -1,5 +1,5 @@
 import { isNativeFeatureCompatible } from './nativeApp';
-import { klasPath, klasUrl, KLAS_PAGE_PATHS, KlasApiError } from '../klas/contract';
+import { klasPath, KlasApiError } from '../klas/contract';
 import { nativeKlasRequest } from '../klas/nativeTransport';
 
 export async function KLAS(url: string, token: string, body?: unknown, options: { signal?: AbortSignal } = {}): Promise<any> {
@@ -16,8 +16,7 @@ export async function KLAS(url: string, token: string, body?: unknown, options: 
 }
 
 export async function KLAS_PAGE(url: string, options: { signal?: AbortSignal } = {}): Promise<string> {
-    const target = klasUrl(url);
-    if (target.search || !KLAS_PAGE_PATHS.has(target.pathname)) throw new KlasApiError('INVALID_ENDPOINT');
+    const path = klasPath(url);
     if (!isNativeFeatureCompatible('klasApi')) throw new KlasApiError('NATIVE_API_REQUIRED');
-    return nativeKlasRequest(`page:${target.pathname}`, null, { signal: options.signal });
+    return nativeKlasRequest(`page:${path}`, null, { signal: options.signal });
 }

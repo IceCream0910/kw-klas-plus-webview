@@ -61,7 +61,7 @@ test('foreign and alternate URLs are rejected before either transport runs', asy
     app(t, 'AndroidApp_v34'); const mock = bridge({}); let requests = 0;
     t.mock.method(globalThis, 'fetch', async () => { requests++; throw new Error('unexpected fetch'); });
     const request = client(mock);
-    for (const url of ['https://evil.test/path', 'https://klas.kw.ac.kr.evil.test/path', 'https://evil@klas.kw.ac.kr/path', 'http://klas.kw.ac.kr/path', 'https://klas.kw.ac.kr:444/path', endpoint + '?next=evil', endpoint + '#fragment', 'https://klas.kw.ac.kr/std/cps/inqire/../inqire/AtnlcScreHakjukInfo.do', 'https://klas.kw.ac.kr/unknown.do']) await assert.rejects(request(url, 'token', {}));
+    for (const url of ['https://evil.test/path', 'https://klas.kw.ac.kr.evil.test/path', 'https://evil@klas.kw.ac.kr/path', 'http://klas.kw.ac.kr/path', 'https://klas.kw.ac.kr:444/path', endpoint + '#fragment', 'https://klas.kw.ac.kr/std/cps/inqire/../inqire/AtnlcScreHakjukInfo.do', 'https://klas.kw.ac.kr/%2e%2e/path', 'https://klas.kw.ac.kr//evil.test/path']) await assert.rejects(request(url, 'token', {}));
     assert.equal(requests, 0); assert.equal(mock.calls.length, 0);
 });
 
@@ -129,15 +129,15 @@ test('legacy server core refuses redirects without forwarding SESSION to another
 });
 
 
-test('registered KLAS page reads use native GET operation without an internal crawler request', async t => {
+test('new KLAS page reads use native GET operation without an internal crawler request', async t => {
     app(t, 'iOSApp_v2'); const html = '<main><h2>학사 정보</h2><script>secret()</script></main>';
     const mock = bridge(html); const overrides = { [path.join(repo, 'lib/core/klasNativeBridge.js')]: { __esModule: true, ...mock } };
     t.mock.method(globalThis, 'fetch', async () => { throw new Error('internal crawler called'); });
     const { KLAS_PAGE } = source('lib/core/klas.ts', overrides);
-    const value = await KLAS_PAGE('https://klas.kw.ac.kr/std/cps/atnlc/TimetableStdPage.do');
-    assert.equal(value, html); assert.equal(mock.calls[0][1], 'page:/std/cps/atnlc/TimetableStdPage.do');
+    const value = await KLAS_PAGE('https://klas.kw.ac.kr/new/page.do?term=2026');
+    assert.equal(value, html); assert.equal(mock.calls[0][1], 'page:/new/page.do?term=2026');
     const { officialPageMarkdown } = source('lib/klas/pageContent.js');
-    const markdown = officialPageMarkdown(value, 'https://klas.kw.ac.kr/std/cps/atnlc/TimetableStdPage.do');
+    const markdown = officialPageMarkdown(value, 'https://klas.kw.ac.kr/new/page.do?term=2026');
     assert.ok(markdown.includes('학사 정보')); assert.ok(!markdown.includes('secret'));
     await assert.rejects(KLAS_PAGE('https://evil.test/')); assert.equal(mock.calls.length, 1);
 });
@@ -189,4 +189,28 @@ test('Android secondary WebViews use injected build identity for API only', asyn
     const { isNativeFeatureCompatible } = source('lib/core/nativeApp.js');
     assert.equal(isNativeFeatureCompatible('klasApi'), true);
     assert.equal(isNativeFeatureCompatible('header'), false);
+});
+
+ test('new endpoints and query parameters need no native registration', async t => {
+    app(t, 'AndroidApp_v34');
+    const mock = bridge({ ok: true });
+    const url = 'https://klas.kw.ac.kr/new/feature.do?q=%ED%95%99%EC%82%AC';
+    assert.deepEqual(await client(mock)(url, '', {}), { ok: true });
+    assert.equal(mock.calls[0][1], '/new/feature.do?q=%ED%95%99%EC%82%AC');
+    const { serverKLAS } = source('lib/server/klas.js');
+    t.mock.method(globalThis, 'fetch', async (target, options) => {
+        assert.equal(target, url); assert.equal(options.redirect, 'manual');
+        return Response.json({ ok: true });
+    });
+    assert.deepEqual(await serverKLAS(url, 'token', {}), { ok: true });
+});
+
+test('new POST endpoint bridge failures report unknown outcome without retry', async t => {
+    app(t, 'AndroidApp_v34'); let calls = 0;
+    const mock = { default: {
+        requestKlasApi: async () => { calls++; throw new Error('bridge timeout'); },
+        cancelKlasApi: async () => {},
+    } };
+    await assert.rejects(client(mock)('https://klas.kw.ac.kr/new/action.do', '', {}), { code: 'OUTCOME_UNKNOWN' });
+    assert.equal(calls, 1);
 });
