@@ -1,19 +1,11 @@
 {
   "main": ".open-next/worker.js",
   "name": "klas-plus-webview",
-  "compatibility_date": "2025-11-17",
+  "compatibility_date": "2026-10-01",
   "compatibility_flags": [
     "nodejs_compat",
     "nodejs_compat_populate_process_env"
   ],
-  "vars": {
-    "NEXT_PUBLIC_ANDROID_LATEST_VERSION": "23",
-    "NEXT_PUBLIC_DEVELOPMENT": "false",
-    "NEXT_PUBLIC_LATEST_POLICY_DATE": "20250412",
-    "NEXT_PUBLIC_NODE_API_URL": "https://klasplus-node.vercel.app",
-    "NEXT_PUBLIC_NOTICE_TEXT": "",
-    "NEXT_PUBLIC_AGENT_API_URL": "https://klasplus-agent.yuntae.in"
-  },
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
