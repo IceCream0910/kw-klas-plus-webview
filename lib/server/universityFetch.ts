@@ -1,3 +1,4 @@
+import { fetchKlas } from './klas';
 const PAGE_HOSTS = new Set(['kw.ac.kr', 'www.kw.ac.kr', 'klas.kw.ac.kr']);
 
 export function universityUrl(value: unknown, purpose: 'klas' | 'page'): URL {
@@ -12,6 +13,7 @@ export function universityUrl(value: unknown, purpose: 'klas' | 'page'): URL {
 
 // Never follow a university redirect into a different network boundary.
 export async function fetchUniversity(url: URL, options: RequestInit = {}): Promise<Response> {
+    if (url.hostname === 'klas.kw.ac.kr') return fetchKlas(url.href, options, { api: false });
     const response = await fetch(url.href, { ...options, redirect: 'manual' });
     if (response.status >= 300 && response.status < 400) {
         await response.body?.cancel();

@@ -1,3 +1,4 @@
+import { hasKlasSession } from '../lib/core/nativeApp';
 import KlasNativeBridge from '../lib/core/klasNativeBridge';
 import React, { useState, useEffect } from "react";
 import Spacer from "../components/common/spacer";
@@ -32,12 +33,12 @@ export default function Janghak() {
 
   useEffect(() => {
     window.receiveToken = (receivedToken) => {
-      if (receivedToken) setToken(receivedToken);
+      if (hasKlasSession(receivedToken)) if (receivedToken) setToken(receivedToken);
     };
   }, []);
 
   useEffect(() => {
-    if (!token) return;
+    if (!hasKlasSession(token)) return;
 
     KLAS("https://klas.kw.ac.kr/std/cps/inqire/JanghakHistoryStdList.do", token)
       .then((data) => {

@@ -1,3 +1,5 @@
+import { hasKlasSession } from '../../lib/core/nativeApp';
+import { loadLectureNotices } from '../../lib/klas/services';
 import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 import { useState, useEffect } from 'react';
 import IonIcon from '@reacticons/ionicons';
@@ -58,11 +60,8 @@ const LectureNotices = ({ token }) => {
                     })
                 };
             } else {
-                response = await fetch("/api/lectureNotice", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ token, all: fetchAll }),
-                });
+                const result = await loadLectureNotices(token, fetchAll);
+                response = { json: async () => result };
             }
             const data = await response.json();
             setNotices(data.notices);
@@ -73,7 +72,7 @@ const LectureNotices = ({ token }) => {
     };
 
     useEffect(() => {
-        if (!token) return;
+        if (!hasKlasSession(token)) return;
         fetchNotices(false);
     }, [token]);
 

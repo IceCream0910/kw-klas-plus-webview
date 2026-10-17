@@ -1,3 +1,4 @@
+import { isNativeFeatureCompatible, hasKlasSession } from '../../lib/core/nativeApp';
 import Head from 'next/head';
 import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 import { agentSearchContext } from '../../lib/search/agentContext';
@@ -78,13 +79,14 @@ export default function AgentExperience({ embedded = false, active = true, initi
     }, []);
 
     const loadStudentName = useCallback(async (token) => {
-        if (!token) {
+        if (!hasKlasSession(token)) {
             setStudentName('');
             setStudentNameStatus('waiting');
             return;
         }
-        if (profileToken.current === token) return;
-        profileToken.current = token;
+        const profileKey = isNativeFeatureCompatible('klasApi') ? 'native' : token;
+        if (profileToken.current === profileKey) return;
+        profileToken.current = profileKey;
         const requestId = ++profileRequestId.current;
         setStudentNameStatus('loading');
         try {
@@ -105,13 +107,14 @@ export default function AgentExperience({ embedded = false, active = true, initi
     useEffect(() => {
         if (!active) return;
         const previousReceiveToken = window.receiveToken;
-        sessionToken.current = getSearchSession() || localStorage.getItem('klasSessionToken') || '';
+        sessionToken.current = isNativeFeatureCompatible('klasApi') ? '' : getSearchSession() || localStorage.getItem('klasSessionToken') || '';
+        if (isNativeFeatureCompatible('klasApi')) localStorage.removeItem('klasSessionToken');
         loadStudentName(sessionToken.current);
         const receiveToken = (receivedToken) => {
-            if (!receivedToken) return;
+            if (!hasKlasSession(receivedToken)) return;
             if (embedded) previousReceiveToken?.(receivedToken);
-            sessionToken.current = receivedToken;
-            localStorage.setItem('klasSessionToken', receivedToken);
+            sessionToken.current = isNativeFeatureCompatible('klasApi') ? '' : receivedToken;
+            if (!isNativeFeatureCompatible('klasApi')) localStorage.setItem('klasSessionToken', receivedToken);
             loadStudentName(receivedToken);
         };
         window.receiveToken = receiveToken;

@@ -1,3 +1,5 @@
+import { nativeSearchBatch } from '../../lib/klas/search';
+import { isNativeFeatureCompatible } from '../../lib/core/nativeApp';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
@@ -37,7 +39,7 @@ export default function SearchProvider({ children }) {
     }, []);
     useEffect(() => {
         const store = new SearchCache(); cache.current = store;
-        coordinator.current = new SearchCoordinator();
+        coordinator.current = new SearchCoordinator({ nativeBatch: isNativeFeatureCompatible('klasApi') ? nativeSearchBatch : null });
         const receive = async json => {
             let data;
             try { data = typeof json === 'string' ? JSON.parse(json) : json; } catch { return; }

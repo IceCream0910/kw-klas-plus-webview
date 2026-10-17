@@ -1,3 +1,4 @@
+import { hasKlasSession } from '../lib/core/nativeApp';
 import KlasNativeBridge from '../lib/core/klasNativeBridge';
 import { useState, useEffect, useRef } from "react";
 import { Line } from "react-chartjs-2";
@@ -23,8 +24,8 @@ export default function Grade() {
 
   useEffect(() => {
     window.receiveToken = function (receivedToken) {
-      if (!receivedToken) return;
-      setToken(receivedToken);
+      if (!hasKlasSession(receivedToken)) return;
+      if (receivedToken) setToken(receivedToken);
     };
 
     window.closeWebViewBottomSheet = function () {
@@ -40,7 +41,7 @@ export default function Grade() {
   }, [])
 
   useEffect(() => {
-    if (!token) return;
+    if (!hasKlasSession(token)) return;
     KLAS("https://klas.kw.ac.kr/std/cps/inqire/AtnlcScreSungjukInfo.do", token)
       .then((data) => {
         setGrade(data);

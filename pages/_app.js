@@ -1,3 +1,4 @@
+import { cancelNativeKlasRequests } from '../lib/klas/nativeTransport';
 import KlasNativeBridge from '../lib/core/klasNativeBridge';
 import "../styles/globals.css";
 import { useEffect } from "react";
@@ -56,6 +57,18 @@ const getShellClassName = (pathname) => {
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
+  useEffect(() => {
+    router.events.on('routeChangeStart', cancelNativeKlasRequests);
+    window.addEventListener('pagehide', cancelNativeKlasRequests);
+    window.addEventListener('klas-search-reset', cancelNativeKlasRequests);
+    return () => {
+      router.events.off('routeChangeStart', cancelNativeKlasRequests);
+      window.removeEventListener('pagehide', cancelNativeKlasRequests);
+      window.removeEventListener('klas-search-reset', cancelNativeKlasRequests);
+      cancelNativeKlasRequests();
+    };
+  }, [router.events]);
+
 
   useEffect(() => {
     const navigateFromNative = (tab) => {

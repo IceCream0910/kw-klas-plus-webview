@@ -1,3 +1,4 @@
+import { hasKlasSession } from '../lib/core/nativeApp';
 import { setSearchSession } from '../lib/search/session';
 import KlasNativeBridge from '../lib/core/klasNativeBridge';
 import React, { useState, useEffect } from 'react';
@@ -146,7 +147,7 @@ export default function Feed() {
   }, []);
 
   useEffect(() => {
-    if (!token) return;
+    if (!hasKlasSession(token)) return;
     KLAS("https://klas.kw.ac.kr/std/cmn/frame/StdHome.do", token, { searchYearhakgi: yearHakgi })
       .then((data) => {
         setAdvisor(data.rspnsblProfsr);
@@ -172,9 +173,9 @@ export default function Feed() {
     }
 
     window.receiveToken = (receivedToken) => {
-      if (receivedToken) {
+      if (hasKlasSession(receivedToken)) {
         setSearchSession(receivedToken);
-        setToken(receivedToken);
+        if (receivedToken) setToken(receivedToken);
         KLAS("https://klas.kw.ac.kr/std/cps/inqire/AtnlcScreHakjukInfo.do", receivedToken)
           .then((data) => {
             if (data && data.hakbun) {

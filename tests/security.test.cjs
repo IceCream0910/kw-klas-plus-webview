@@ -134,12 +134,12 @@ test('university POST and page conversion remain usable; redirects are never fol
   const calls = [];
   t.mock.method(globalThis, 'fetch', async (url, options) => {
     calls.push({ url, options });
-    if (url.includes('redirect')) return new Response(null, { status: 302, headers: { Location: 'http://127.0.0.1/private' } });
+    if ((url.includes('redirect') || url.includes('StandStdList.do'))) return new Response(null, { status: 302, headers: { Location: 'http://127.0.0.1/private' } });
     if (url.includes('www.kw.ac.kr')) return new Response('<main><h2>공지</h2><a href="/next">다음</a><img src="/photo.png"></main>');
     return Response.json({ grades: [4.5] });
   });
   const result = apiResponse();
-  await proxy({ method: 'POST', body: { url: 'https://klas.kw.ac.kr/std/test.do', headers: { Cookie: 'SESSION=test;', Accept: 'application/json' }, body: { selectSubj: 'test' } } }, result);
+  await proxy({ method: 'POST', body: { url: 'https://klas.kw.ac.kr/std/cps/inqire/AtnlcScreHakjukInfo.do', headers: { Cookie: 'SESSION=test;', Accept: 'application/json' }, body: { selectSubj: 'test' } } }, result);
   assert.deepEqual(result.data, { grades: [4.5] });
   assert.equal(calls[0].options.headers.cookie, 'SESSION=test;');
   assert.equal(calls[0].options.body, '{"selectSubj":"test"}');
@@ -148,7 +148,7 @@ test('university POST and page conversion remain usable; redirects are never fol
   assert.equal(page.statusCode, 200);
   assert.match(page.data.markdown, /https:\/\/www.kw.ac.kr\/next/);
   assert.match(page.data.markdown, /https:\/\/www.kw.ac.kr\/photo.png/);
-  for (const [handler, req] of [[proxy, { method: 'POST', body: { url: 'https://klas.kw.ac.kr/redirect' } }],
+  for (const [handler, req] of [[proxy, { method: 'POST', body: { url: 'https://klas.kw.ac.kr/std/cps/inqire/StandStdList.do' } }],
     [crawler, { method: 'GET', query: { url: 'https://www.kw.ac.kr/redirect' } }]]) {
     const redirect = apiResponse();
     await handler(req, redirect);

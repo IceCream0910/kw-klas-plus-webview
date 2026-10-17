@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { fetchUniversity, universityUrl } from '../../lib/server/universityFetch';
+import { fetchKlas } from '../../lib/server/klas';
+import { klasPath, klasUrl } from '../../lib/klas/contract';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     res.setHeader('Cache-Control', 'private, no-store');
@@ -15,7 +16,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let target: URL;
     const upstreamHeaders: Record<string, string> = { 'Content-Type': 'application/json' };
     try {
-        target = universityUrl(url, 'klas');
+        klasPath(url);
+        target = klasUrl(url);
         if (method !== 'POST' || !headers || typeof headers !== 'object' || Array.isArray(headers)) {
             throw new Error('Unsupported proxy request');
         }
@@ -31,7 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
-        const response = await fetchUniversity(target, {
+        const response = await fetchKlas(target.href, {
             method,
             headers: upstreamHeaders,
             body: JSON.stringify(body),

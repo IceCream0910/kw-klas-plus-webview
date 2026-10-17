@@ -1,3 +1,4 @@
+import { hasKlasSession } from '../../lib/core/nativeApp';
 import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 import { useState, useEffect } from "react";
 import { KLAS } from "../../lib/core/klas";
@@ -15,8 +16,8 @@ export default function IdCard() {
     useEffect(() => {
         if (typeof window !== "undefined") {
             window.receiveToken = function (receivedToken) {
-                if (!receivedToken) return;
-                setToken(receivedToken);
+                if (!hasKlasSession(receivedToken)) return;
+                if (receivedToken) setToken(receivedToken);
             };
 
             const savedPhotoVisibility = localStorage.getItem('idCardShowPhoto');
@@ -27,7 +28,7 @@ export default function IdCard() {
     }, [])
 
     useEffect(() => {
-        if (!token) return;
+        if (!hasKlasSession(token)) return;
 
         KLAS("https://klas.kw.ac.kr/std/cps/inqire/AtnlcScreHakjukInfo.do", token)
             .then((data) => {

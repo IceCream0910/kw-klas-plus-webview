@@ -1,3 +1,4 @@
+import { hasKlasSession } from '../lib/core/nativeApp';
 import KlasNativeBridge from '../lib/core/klasNativeBridge';
 import { useState, useEffect } from 'react';
 import Spacer from '../components/common/spacer';
@@ -18,7 +19,7 @@ export default function LectureHome() {
 
     useEffect(() => {
         window.receivedData = function (token, subj, yearHakgi) {
-            if (!token || !subj || !yearHakgi) return;
+            if (!hasKlasSession(token) || !subj || !yearHakgi) return;
             fetchSubjectInfo(token, subj);
             fetchSubjectPlaceTime(token, subj, yearHakgi);
 

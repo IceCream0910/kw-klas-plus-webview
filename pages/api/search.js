@@ -1,4 +1,4 @@
-import { fetchUniversity, universityUrl } from '../../lib/server/universityFetch';
+import { serverKLAS } from '../../lib/server/klas';
 import { BOARD_PATHS, boardItems, schoolItems, SearchRequestError } from '../../lib/search/coordinator';
 import { getKWNoticeList } from './crawler/kwNotice';
 
@@ -32,14 +32,9 @@ async function fetchSource(source, body, signal) {
             return { items: schoolItems(data, body.term), more: data.more };
         }
         if (!body.token) throw new SearchRequestError(401);
-        const response = await fetchUniversity(universityUrl(`https://klas.kw.ac.kr/std/lis/sport/${BOARD_PATHS[source.kind]}/BoardStdList.do`, 'klas'), {
-            method: 'POST', signal: controller.signal, headers: { 'Content-Type': 'application/json', Accept: 'application/json', Cookie: `SESSION=${body.token};` },
-            body: JSON.stringify({ selectYearhakgi: body.term, selectSubj: source.courseId, selectChangeYn: 'Y', searchCondition: 'ALL', searchKeyword: body.keyword,
-                currentPage: source.page, pageInit: source.page === 0 }),
-        });
-        if (!response.ok) throw new SearchRequestError(response.status);
-        if (!response.headers.get('content-type')?.includes('application/json')) throw new SearchRequestError(401);
-        const data = await response.json();
+        const data = await serverKLAS(`https://klas.kw.ac.kr/std/lis/sport/${BOARD_PATHS[source.kind]}/BoardStdList.do`, body.token, {
+            selectYearhakgi: body.term, selectSubj: source.courseId, selectChangeYn: 'Y', searchCondition: 'ALL', searchKeyword: body.keyword,
+                currentPage: source.page, pageInit: source.page === 0 }, { signal: controller.signal });
         return { items: boardItems(data, { courseId: source.courseId, courseName: source.courseName }, source.kind, body.term), more: source.page + 1 < data.page.totalPages };
     } finally { clearTimeout(timer); signal.removeEventListener('abort', abort); }
 }
