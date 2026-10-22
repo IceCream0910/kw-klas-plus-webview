@@ -59,7 +59,7 @@
   "devDependencies": {
     "@types/react": "19.2.3",
     "typescript": "5.5.2",
-    "wrangler": "^4.131.0",
+    "wrangler": "^4.151.3",
     "yarn-audit-fix": "^11.0.4"
   },
   "overrides": {
