@@ -17,6 +17,7 @@ const emptySubscribe = () => () => { };
 
 const getClientCompat = () => isNativeFeatureCompatible("bottomNav");
 const getNativeBottomNavCompat = () => isNativeFeatureCompatible("nativeBottomNav");
+const getSystemTabBarCompat = () => isNativeFeatureCompatible("systemTabBar");
 
 const getServerCompat = () => false;
 
@@ -57,6 +58,7 @@ const BUTTON_BASE_STYLE = {
 function BottomNav({ currentTab }) {
     const isCompatible = useSyncExternalStore(emptySubscribe, getClientCompat, getServerCompat);
     const hasNativeBottomNav = useSyncExternalStore(emptySubscribe, getNativeBottomNavCompat, getServerCompat);
+    const hasSystemTabBar = useSyncExternalStore(emptySubscribe, getSystemTabBarCompat, getServerCompat);
     const router = useRouter();
 
     const handleTabClick = (tab) => {
@@ -112,11 +114,11 @@ function BottomNav({ currentTab }) {
                     })}
                 </div>}
 
-                <GradualBlur
+                {!hasSystemTabBar && <GradualBlur
                     position="bottom"
                     height="8rem"
                     strength={1.5}
-                />
+                />}
             </nav>
         </>
     );
