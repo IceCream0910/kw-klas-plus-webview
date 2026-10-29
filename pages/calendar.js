@@ -148,7 +148,7 @@ export default function CalendarPage() {
 
             <div className="calendar-toolbar" style={styles.header}>
 
-                <h2 className="page-heading" style={{ marginBottom: '20px', marginTop: '20px' }}>
+                <h2 className="page-heading">
                     <span>{currentMonth.format('MM월')}</span>
                     <span className="calendar-actions">
                     <button type="button" onClick={moveToToday}
