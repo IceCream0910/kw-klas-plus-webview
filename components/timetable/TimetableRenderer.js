@@ -62,6 +62,15 @@ const TimetableRenderer = ({ timetableData, onClassClick }) => {
                                         ...colorStyle
                                     }}
                                     onClick={() => onClassClick(classItem.subj, classItem.title)}
+                                    role="button"
+                                    tabIndex={0}
+                                    aria-label={`${classItem.title}, ${classItem.startTime}부터 ${classItem.endTime}, ${classItem.info}`}
+                                    onKeyDown={(event) => {
+                                        if (event.key === 'Enter' || event.key === ' ') {
+                                            event.preventDefault();
+                                            onClassClick(classItem.subj, classItem.title);
+                                        }
+                                    }}
                                 >
                                     <div><b>{classItem.title}</b></div>
                                     <div>{classItem.info}</div>
@@ -82,6 +91,14 @@ const TimetableRenderer = ({ timetableData, onClassClick }) => {
                     key={`weekend-${acc.length}`}
                     className="weekend-class"
                     onClick={() => onClassClick(classItem.subj, classItem.title)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            onClassClick(classItem.subj, classItem.title);
+                        }
+                    }}
                 >
                     <div><b>{classItem.title}</b></div>
                 </div>

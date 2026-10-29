@@ -1,12 +1,13 @@
 import { cancelNativeKlasRequests } from '../lib/klas/nativeTransport';
 import KlasNativeBridge from '../lib/core/klasNativeBridge';
 import "../styles/globals.css";
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Script from 'next/script';
 import { useRouter } from 'next/router';
 import { ANALYTICS_ENABLED, identifyUser } from '../lib/core/analytics';
 import Head from 'next/head';
 import SearchProvider from '../components/search/SearchProvider';
+import NativeAccessGate from '../components/common/NativeAccessGate';
 import { isNativeFeatureCompatible } from '../lib/core/nativeApp';
 
 const READING_ROUTES = new Set([
@@ -47,7 +48,7 @@ const HOME_TABS_BY_PATH = Object.fromEntries(
 
 const getShellClassName = (pathname) => {
   if (pathname.startsWith('/modal/')) return 'app-shell app-shell--modal';
-  if (pathname === '/changelog' || pathname === '/') return 'app-shell app-shell--flush';
+  if (['/', '/download', '/changelog'].includes(pathname)) return 'app-shell app-shell--flush';
   if (pathname === '/agent') return 'app-shell app-shell--legacy-edge app-shell--agent';
   if (pathname === '/onboarding') return 'app-shell app-shell--legacy-edge';
   if (READING_ROUTES.has(pathname)) return 'app-shell app-shell--reading';
@@ -57,6 +58,8 @@ const getShellClassName = (pathname) => {
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
+  const [nativeReady, setNativeReady] = useState(false);
+  const handleNativeReady = useCallback(() => setNativeReady(true), []);
   useEffect(() => {
     router.events.on('routeChangeStart', cancelNativeKlasRequests);
     window.addEventListener('pagehide', cancelNativeKlasRequests);
@@ -71,6 +74,7 @@ function MyApp({ Component, pageProps }) {
 
 
   useEffect(() => {
+    if (!nativeReady || !KlasNativeBridge.isAvailable()) return;
     const navigateFromNative = (tab) => {
       if (!Object.prototype.hasOwnProperty.call(HOME_TAB_PATHS, tab)) return false;
       router.push(HOME_TAB_PATHS[tab]).catch((error) => {
@@ -92,11 +96,11 @@ function MyApp({ Component, pageProps }) {
     }
 
     try {
-      KlasNativeBridge.completePageLoad();
+      Promise.resolve(KlasNativeBridge.completePageLoad()).catch((error) => {
+        console.error('Failed to complete native page load:', error);
+      });
     } catch (error) {
-      if (['/privacy', '/tos', '/changelog'].includes(window.location.pathname)) return;
-      if (process.env.NEXT_PUBLIC_DEVELOPMENT) return;
-      window.location.replace("https://play.google.com/store/apps/details?id=com.icecream.kwklasplus");
+      console.error('Failed to complete native page load:', error);
     }
 
     const handleRouteChange = (url = router.asPath) => {
@@ -127,16 +131,16 @@ function MyApp({ Component, pageProps }) {
         delete window.klasNativeNavigate;
       }
     };
-  }, [router.events]);
+  }, [nativeReady, router.events]);
 
   return (
     <>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </Head>
-      <SearchProvider><div className={`${getShellClassName(router.pathname)}${BOTTOM_NAV_ROUTES.has(router.pathname) ? ' app-shell--with-bottom-nav' : ''}`}>
+      <NativeAccessGate onNativeReady={handleNativeReady}><SearchProvider><div className={`${getShellClassName(router.pathname)}${BOTTOM_NAV_ROUTES.has(router.pathname) ? ' app-shell--with-bottom-nav' : ''}`}>
         <Component {...pageProps} />
-      </div></SearchProvider>
+      </div></SearchProvider></NativeAccessGate>
       {ANALYTICS_ENABLED && <Script
         src="https://rybbit.yuntae.in/api/script.js"
         data-site-id="e4129eea280e"

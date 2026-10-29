@@ -102,9 +102,8 @@ export default function Feed() {
 
     setYearHakgi(yearHakgi);
 
-    try { KlasNativeBridge.completePageLoad() } catch (error) { console.log('not app') }
-
     setupWindowFunctions();
+    try { KlasNativeBridge.completePageLoad() } catch (error) { console.log('not app') }
     fetchData();
 
     // 더미데이터
