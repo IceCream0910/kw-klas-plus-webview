@@ -44,6 +44,64 @@ function bridge(value, fail) {
 }
 function client(mock) { return source('lib/core/klas.ts', { [path.join(repo, 'lib/core/klasNativeBridge.js')]: { __esModule: true, ...mock } }).KLAS; }
 
+test('demo sessions require native transport and never use the legacy proxy', async t => {
+    app(t, 'browser');
+    window.__klasDemoSession = { version: 1, generation: 2 };
+    let proxy = 0;
+    t.mock.method(globalThis, 'fetch', async () => { proxy++; throw new Error('unexpected proxy'); });
+    await assert.rejects(client(bridge({}))(endpoint, 'old-user-token', {}), { code: 'NATIVE_API_REQUIRED' });
+    assert.equal(proxy, 0);
+    window.__klasNativeApiApp = { platform: 'ios', version: 3 };
+    const mock = bridge({ kname: '김광운' });
+    assert.deepEqual(await client(mock)(endpoint, 'old-user-token', {}), { kname: '김광운' });
+    assert.equal(proxy, 0);
+    assert.equal(mock.calls.length, 1);
+});
+
+test('demo task and lecture actions are routed locally while regular bridge actions stay native', t => {
+    app(t, 'iOSApp_v3');
+    const navigations = [];
+    window.location = { assign: value => navigations.push(value) };
+    const { demoBridgeInvocation } = source('lib/core/demoSession.js');
+    assert.equal(demoBridgeInvocation('evaluteKLASScript', ['appModule.goTask()']), null);
+    window.__klasDemoSession = { version: 1 };
+    demoBridgeInvocation('evaluteKLASScript', ['appModule.goTask()']);
+    demoBridgeInvocation('requestOnlineLecture', ['{}']);
+    assert.deepEqual(navigations, ['/demo?feature=task', '/demo?feature=lecture']);
+    assert.equal(demoBridgeInvocation('changeTab', ['feed']), null);
+});
+
+test('demo AI and conversation actions never contact the Agent service', async t => {
+    app(t, 'iOSApp_v3'); window.__klasDemoSession = { version: 1 };
+    t.mock.method(globalThis, 'fetch', async () => { throw new Error('unexpected Agent network'); });
+    const agent = source('lib/agentStream.js');
+    const events = [];
+    await agent.streamAgent({}, { onEvent: (type, data) => events.push([type, data]) });
+    assert.equal(events[0][0], 'content.delta');
+    assert.equal(events[1][0], 'run.completed');
+    assert.deepEqual(await agent.fetchConversations('demo'), { conversations: [] });
+    assert.deepEqual(await agent.fetchConversation('demo', 'demo'), { messages: [], latestResponseId: null });
+    assert.deepEqual(await agent.renameConversation('demo', 'demo', '제목'), { success: true });
+    assert.deepEqual(await agent.deleteConversation('demo', 'demo'), { success: true });
+});
+
+test('demo public data uses local fixtures and unknown server APIs cannot proxy to school', async t => {
+    app(t, 'iOSApp_v3');
+    window.__klasDemoSession = { version: 1 };
+    window.location = { href: 'https://klasplus.yuntae.in/feed', origin: 'https://klasplus.yuntae.in' };
+    let calls = 0;
+    window.fetch = async () => { calls++; throw new Error('unexpected school proxy'); };
+    source('lib/core/demoSession.js');
+    const cafeteria = await (await window.fetch('/api/crawler/cafeteria')).json();
+    assert.equal(cafeteria.restaurants[0].name, '함지마루');
+    const notices = await (await window.fetch('/api/crawler/kwNotice')).json();
+    assert.equal(notices.items[0].title, '데모 학사 안내');
+    assert.equal((await window.fetch('/api/proxy')).status, 501);
+    assert.equal((await window.fetch('/api/new-school-proxy')).status, 501);
+    await assert.rejects(window.fetch('https://klas.kw.ac.kr/anything'), /DEMO_NETWORK_BLOCKED/);
+    assert.equal(calls, 0);
+});
+
 test('Android 34 and iOS 2 start native mode; older and unidentified apps retain proxy', async t => {
     for (const [ua, native] of [['AndroidApp_v33', false], ['AndroidApp_v34', true], ['AndroidApp_v35', true], ['iOSApp_v1', false], ['iOSApp_v2', true], ['iOSApp_v3', true], ['browser', false]]) {
         await t.test(ua, async t => {

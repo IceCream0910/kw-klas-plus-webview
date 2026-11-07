@@ -4,12 +4,20 @@ const fs = require('node:fs');
 const path = require('node:path');
 const ts = require('typescript');
 function source(relative, overrides = {}) {
+    const filename = path.resolve(__dirname, '..', relative);
     const code = ts.transpileModule(fs.readFileSync(path.resolve(__dirname, '..', relative), 'utf8'), {
         fileName: relative.replace(/\.js$/, '.jsx'),
         compilerOptions: { jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true, module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 }
     }).outputText;
     const module = { exports: {} };
-    new Function('require', 'module', 'exports', code)(name => overrides[name] ?? require(name), module, module.exports);
+    new Function('require', 'module', 'exports', code)(name => {
+        if (name in overrides) return overrides[name];
+        if (name.startsWith('.')) {
+            const resolved = path.resolve(path.dirname(filename), name + (path.extname(name) ? '' : '.js'));
+            return source(path.relative(path.resolve(__dirname, '..'), resolved));
+        }
+        return require(name);
+    }, module, module.exports);
     return module.exports;
 }
 const { KlasNativeBridgeAdapter } = source('lib/core/klasNativeBridge.js');

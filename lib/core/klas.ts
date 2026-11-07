@@ -1,9 +1,14 @@
 import { isNativeFeatureCompatible } from './nativeApp';
 import { klasPath, KlasApiError } from '../klas/contract';
 import { nativeKlasRequest } from '../klas/nativeTransport';
+import { isDemoSession } from './demoSession';
 
 export async function KLAS(url: string, token: string, body?: unknown, options: { signal?: AbortSignal } = {}): Promise<any> {
     const path = klasPath(url);
+    if (isDemoSession()) {
+        if (!isNativeFeatureCompatible('klasApi')) throw new KlasApiError('NATIVE_API_REQUIRED');
+        return nativeKlasRequest(path, body, { signal: options.signal });
+    }
     if (isNativeFeatureCompatible('klasApi')) return nativeKlasRequest(path, body, { signal: options.signal });
     if (!token) throw new KlasApiError('SESSION_REQUIRED', 401);
     const response = await fetch('/api/proxy', {
