@@ -1,4 +1,3 @@
-import { isDemoSession } from '../../lib/core/demoSession';
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import ToggleSwitch from '../common/ToggleSwitch';
@@ -52,7 +51,7 @@ export default function SettingsDeadlineNotificationSection() {
         mutating.current = true; version.current++; setSaving(true);
         try {
             const result = await setDeadlineNotificationsEnabled(enabled);
-            if (mounted.current) { setState(result); setFailed(false); if (isDemoSession()) toast.success(enabled ? '데모 마감 알림을 켰어요.' : '데모 마감 알림을 껐어요.'); }
+            if (mounted.current) { setState(result); setFailed(false); }
         } catch { if (mounted.current) { setFailed(true); toast.error('알림 설정을 변경하지 못했어요. 다시 시도해 주세요.'); } }
         finally { mutating.current = false; if (mounted.current) setSaving(false); }
     };

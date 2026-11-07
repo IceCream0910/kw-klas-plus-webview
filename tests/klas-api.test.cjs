@@ -278,3 +278,16 @@ test('web demo actions are delegated to native without local routing', t => {
     const { demoBridgeInvocation } = source('lib/core/demoSession.js');
     for (const method of ['evaluteKLASScript', 'openOnlineLecture', 'openLibraryQRSettingsModal', 'setAppLockEnabled']) assert.equal(demoBridgeInvocation(method, []), null);
 });
+
+
+test('lecture plan partial optional responses stay renderable and a missing core plan is rejected', () => {
+    const { normalizeLecturePlan } = source('lib/lecturePlan/normalizeLecturePlan.js');
+    assert.equal(normalizeLecturePlan({}), null);
+    assert.equal(normalizeLecturePlan({ lecturePlan: [] }), null);
+    const plan = { gwamokKname: '프로그래밍', summary: '개요' };
+    const result = normalizeLecturePlan({ lecturePlan: [plan], lectureTeam: null });
+    assert.deepEqual(result.lecturePlan, [plan]);
+    assert.deepEqual(result.lectureAssistant, []);
+    assert.deepEqual(result.lectureTeam, []);
+    assert.deepEqual(result.lectureStdCrtNum, {});
+});

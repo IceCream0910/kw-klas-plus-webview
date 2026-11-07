@@ -60,7 +60,7 @@ export default function DemoActivity() {
                 <button onClick={() => { const v = video.current; if (!v) return; if (v.paused) v.play().catch(() => setError('재생 버튼을 다시 눌러 주세요.')); else v.pause(); }}>{playing ? '일시 정지' : '학습 시작'}</button>{' '}
                 <label>학습 속도 <select value={speed} onChange={event => setSpeed(Number(event.target.value))}><option value="1">1배</option><option value="1.5">1.5배</option><option value="2">2배</option></select></label>
                 <p><button disabled={busy} onClick={save}>진행률 저장</button></p>
-            </> : feature === 'plan' ? <><h3>컴퓨터프로그래밍 · 3학점</h3><p>담당: 김교수</p><p>변수, 조건문, 반복문, 함수와 자료구조를 배우고 예제 프로그램을 작성해요.</p><p>평가: 과제 30%, 중간평가 30%, 기말평가 30%, 출석 10%</p></> : feature === 'qr' ? <><p>김광운 · 0000000000</p><p>데모 출입증이에요. 실제 출입이나 출석에는 사용할 수 없어요.</p><button onClick={() => setState({ ...state, submitted: true })}>출석 동작 체험</button>{state.submitted && <p role="status">데모 출석을 완료했어요.</p>}</> : <>
+            </> : feature === 'plan' ? <><h3>컴퓨터프로그래밍 · 3학점</h3><p>담당: 김교수</p><p>변수, 조건문, 반복문, 함수와 자료구조를 배우고 예제 프로그램을 작성해요.</p><p>평가: 과제 30%, 중간평가 30%, 기말평가 30%, 출석 10%</p></> : feature === 'qr' ? <><p>김광운 · 0000000000</p><p>데모 출입증이에요. 실제 출입이나 출석에는 사용할 수 없어요.</p><p>강의 홈의 QR 출석 버튼에서 실제 카메라로 샘플 QR 코드를 스캔해 주세요.</p><a href="/demo/attendance-qr.svg" target="_blank" rel="noreferrer">심사용 샘플 QR 코드 보기</a></> : <>
                 <p>{feature === 'task' || feature === 'project' ? '변수를 사용해 간단한 프로그램을 작성하고 설명을 제출해 보세요.' : '수업에서 배운 내용을 입력해 보세요.'}</p>
                 <label htmlFor="demo-answer">내용</label>
                 <textarea id="demo-answer" value={text} onChange={event => setText(event.target.value)} rows={6} style={{ width: '100%', boxSizing: 'border-box' }} />
