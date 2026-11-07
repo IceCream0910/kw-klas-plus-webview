@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import KlasNativeBridge from '../lib/core/klasNativeBridge';
 import { isDemoSession } from '../lib/core/demoSession';
 
 export default function DemoSettingsModal() {
@@ -17,6 +16,7 @@ export default function DemoSettingsModal() {
     const library = type === 'library';
     const save = async event => {
         event.preventDefault();
+        if (!isDemoSession()) { dialog.current?.close(); setType(null); return; }
         const values = new FormData(event.currentTarget);
         if (!library && values.get('password') !== values.get('confirm')) { setError('비밀번호가 일치하지 않아요.'); return; }
         if (library) sessionStorage.setItem('demo-library-settings', JSON.stringify({ student: values.get('student'), phone: values.get('phone') }));

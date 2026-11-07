@@ -1,3 +1,4 @@
+import { isDemoSession } from '../../lib/core/demoSession';
 import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 import { useState, useEffect } from 'react';
 import IonIcon from '@reacticons/ionicons';
@@ -39,11 +40,12 @@ const SettingsAppLockSection = () => {
             }
         };
         document.addEventListener("visibilitychange", handleVisibilityChange);
-        window.addEventListener('klas-demo-settings-changed', loadSettings);
+        const demoSettingsChanged = () => { if (isDemoSession()) loadSettings(); };
+        window.addEventListener('klas-demo-settings-changed', demoSettingsChanged);
 
         return () => {
             delete window.onBiometricSettingChanged;
-            window.removeEventListener('klas-demo-settings-changed', loadSettings);
+            window.removeEventListener('klas-demo-settings-changed', demoSettingsChanged);
             document.removeEventListener("visibilitychange", handleVisibilityChange);
         };
     }, []);
@@ -52,7 +54,7 @@ const SettingsAppLockSection = () => {
         const checked = e.target.checked;
         setIsAppLockEnabled(checked);
         if (KlasNativeBridge.isAvailable('setAppLockEnabled')) {
-            Promise.resolve(KlasNativeBridge.setAppLockEnabled(checked)).then(loadSettings);
+            KlasNativeBridge.setAppLockEnabled(checked);
         }
     };
 

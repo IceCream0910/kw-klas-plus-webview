@@ -17,7 +17,10 @@ export default function DemoActivity() {
     const [speed, setSpeed] = useState(1);
     const [error, setError] = useState('');
     const [busy, setBusy] = useState(false);
-    const request = (endpoint, body = {}) => KLAS(`https://klas.kw.ac.kr/demo/${endpoint}.do`, '', { feature, ...body });
+    const request = (endpoint, body = {}) => {
+        if (!isDemoSession()) return Promise.reject(new Error('DEMO_SESSION_REQUIRED'));
+        return KLAS(`https://klas.kw.ac.kr/demo/${endpoint}.do`, '', { feature, ...body });
+    };
 
     useEffect(() => {
         setActive(isDemoSession());
