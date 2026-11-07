@@ -19,6 +19,17 @@ export default function SearchOverlay({ closing = false, query, setQuery, onInpu
     const submitSearch = () => { if (closing) return; lastSubmitted.current = query; submitRef.current(); };
     useEffect(() => { if (closing) input.current?.blur(); }, [closing]);
     useEffect(() => {
+        // The dialog is portalled to body, so filtering __next only blurs the page.
+        const background = document.getElementById('__next');
+        background?.classList.add(styles.pageBackground);
+        return () => background?.classList.remove(styles.pageBackground);
+    }, []);
+    useEffect(() => {
+        const background = document.getElementById('__next');
+        background?.classList.toggle(styles.pageBackgroundClosing, closing);
+        return () => background?.classList.remove(styles.pageBackgroundClosing);
+    }, [closing]);
+    useEffect(() => {
         if (closing || mode !== 'search' || !query.trim()) return;
         const timer = setTimeout(() => { if (lastSubmitted.current !== query) { lastSubmitted.current = query; submitRef.current(); } }, 1500);
         return () => clearTimeout(timer);
