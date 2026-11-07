@@ -157,9 +157,10 @@ body {
   justify-content: space-between;
   gap: 12px;
   width: min(100%, var(--page-wide));
-  min-height: 64px;
+  /* iPadOS 26 앱이 상단 탭 바 줄과 창 제어 버튼을 피할 왼쪽 위치를 넣어 준다. 값이 없으면 기존 배치와 같다 */
+  min-height: calc(var(--klas-top-bar-top, 10px) + var(--klas-top-bar-height, 34px) + 20px);
   margin: 0 auto;
-  padding: 10px max(var(--page-gutter), env(safe-area-inset-right)) 20px max(var(--page-gutter), env(safe-area-inset-left));
+  padding: var(--klas-top-bar-top, 10px) max(var(--page-gutter), env(safe-area-inset-right)) 20px max(var(--page-gutter), env(safe-area-inset-left), var(--klas-window-controls-inset-left, 0px));
   background: linear-gradient(to bottom, var(--background) 0%, transparent 100%);
   pointer-events: auto;
 }
@@ -1209,6 +1210,13 @@ released-badge {
 .calendar-toolbar,
 .calendar-toolbar h2 {
   min-width: 0;
+}
+
+/* 앱 헤더와 같이 iPadOS 26 상단 탭 바 줄에 맞추고 창 제어 버튼을 피한다. 값이 없으면 기존 배치와 같다 */
+.calendar-toolbar h2 {
+  min-height: var(--klas-top-bar-height, auto);
+  margin: var(--klas-top-bar-top, 20px) 0 20px;
+  padding-left: max(0px, calc(var(--klas-window-controls-inset-left, 0px) - max(var(--page-gutter), env(safe-area-inset-left)) - 5px));
 }
 
 .calendar-actions {
