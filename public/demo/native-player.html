@@ -1,0 +1,10 @@
+<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>프로그래밍 시작하기 · 데모</title><style>html,body{margin:0;background:#000;height:100%;overflow:hidden}video{width:100%;height:100%;object-fit:contain}</style></head><body><video playsinline autoplay src="/demo/lecture.mp4"></video><script>
+const v=document.querySelector('video');
+window.VCPlayControllerEvent={PLAY:'play',PAUSE:'pause',MUTE:'mute',UNMUTE:'unmute',SEEK_END:'seek',CHANGE_PLAYBACK_RATE:'rate',FULL_SCREEN:'full',CLOSE_FULL_SCREEN:'inline'};
+window.VCPlayControllerMedia={MOVING_TIME:10};
+const target={fire:function(event,value){switch(event){case 'play':v.play().catch(()=>{});break;case 'pause':v.pause();break;case 'mute':v.muted=true;break;case 'unmute':v.muted=false;break;case 'seek':v.currentTime=Math.max(0,Math.min(v.duration||0,value));break;case 'rate':v.playbackRate=value;break;case 'full':if(v.webkitEnterFullscreen)v.webkitEnterFullscreen();else v.requestFullscreen?.();break;case 'inline':document.exitFullscreen?.();break;}}};
+const player={_eventTarget:target,changeCurrTimeManually:function(value){target.fire('seek',value)}};
+Object.defineProperties(player,{_duration:{get:()=>v.duration||0},_currTime:{get:()=>v.currentTime},_isPlaying:{get:()=>!v.paused},_isMuted:{get:()=>v.muted,set:value=>v.muted=value},_isFullScreen:{get:()=>!!document.fullscreenElement||!!v.webkitDisplayingFullscreen}});
+window.bcPlayController={getPlayController:()=>player,_uniPlayerEventTarget:target};
+window.$=function(){return {text:()=>String(v.playbackRate),remove:()=>{}}};
+</script></body></html>

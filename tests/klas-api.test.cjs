@@ -58,19 +58,6 @@ test('demo sessions require native transport and never use the legacy proxy', as
     assert.equal(mock.calls.length, 1);
 });
 
-test('demo task and lecture actions are routed locally while regular bridge actions stay native', t => {
-    app(t, 'iOSApp_v3');
-    const navigations = [];
-    window.location = { assign: value => navigations.push(value) };
-    const { demoBridgeInvocation } = source('lib/core/demoSession.js');
-    assert.equal(demoBridgeInvocation('evaluteKLASScript', ['appModule.goTask()']), null);
-    window.__klasDemoSession = { version: 1 };
-    demoBridgeInvocation('evaluteKLASScript', ['appModule.goTask()']);
-    demoBridgeInvocation('requestOnlineLecture', ['{}']);
-    assert.deepEqual(navigations, ['/demo?feature=task', '/demo?feature=lecture']);
-    assert.equal(demoBridgeInvocation('changeTab', ['feed']), null);
-});
-
 test('demo AI and conversation actions never contact the Agent service', async t => {
     app(t, 'iOSApp_v3'); window.__klasDemoSession = { version: 1 };
     t.mock.method(globalThis, 'fetch', async () => { throw new Error('unexpected Agent network'); });
@@ -286,24 +273,8 @@ test('new POST endpoint bridge failures report unknown outcome without retry', a
     assert.equal(calls, 1);
 });
 
-test('demo library and lock actions open settings modals; school links show an explanation', t => {
-    app(t, 'iOSApp_v3');
-    window.__klasDemoSession = { version: 1 };
-    const events = [], messages = [];
-    window.dispatchEvent = event => events.push(event.detail.type);
-    globalThis.CustomEvent = class { constructor(name, options) { this.detail = options.detail; } };
-    t.after(() => { delete globalThis.CustomEvent; });
-    window.alert = message => messages.push(message);
-    window.location = { href: 'https://klasplus.yuntae.in/settings' };
+test('web demo actions are delegated to native without local routing', t => {
+    app(t, 'iOSApp_v3'); window.__klasDemoSession = { version: 1 };
     const { demoBridgeInvocation } = source('lib/core/demoSession.js');
-    demoBridgeInvocation('openLibraryQRSettingsModal', []);
-    demoBridgeInvocation('setAppLockEnabled', [true]);
-    demoBridgeInvocation('setAppLockPassword', []);
-    demoBridgeInvocation('openExternalLink', ['https://klas.kw.ac.kr/std/test.do']);
-    demoBridgeInvocation('openInKLAS', []);
-    assert.deepEqual(events, ['library', 'lock', 'lock']);
-    assert.equal(messages.length, 2);
-    assert.match(messages[0], /데모 모드/);
-    assert.equal(demoBridgeInvocation('setAppLockEnabled', [false]), null);
-    assert.equal(demoBridgeInvocation('setDeadlineNotificationsEnabled', [true]), null);
+    for (const method of ['evaluteKLASScript', 'openOnlineLecture', 'openLibraryQRSettingsModal', 'setAppLockEnabled']) assert.equal(demoBridgeInvocation(method, []), null);
 });

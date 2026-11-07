@@ -13,6 +13,10 @@ export default function DemoSettingsModal() {
     }, []);
     useEffect(() => { if (type) dialog.current?.showModal(); }, [type]);
     if (!type) return null;
+    if (type === 'unavailable') return <dialog ref={dialog} onCancel={() => setType(null)} onClose={() => setType(null)} aria-label="데모 모드 안내" style={{ background: 'var(--background)', color: 'var(--text-color)', border: 0, borderRadius: 20, width: 'min(420px, 85vw)' }}>
+        <p>데모 모드에서는 학교 페이지를 사용할 수 없어요.</p>
+        <button type="button" autoFocus onClick={() => { dialog.current.close(); setType(null); }}>확인</button>
+    </dialog>;
     const library = type === 'library';
     const save = async event => {
         event.preventDefault();
