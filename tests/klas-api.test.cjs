@@ -91,11 +91,24 @@ test('demo public data uses local fixtures and unknown server APIs cannot proxy 
     window.location = { href: 'https://klasplus.yuntae.in/feed', origin: 'https://klasplus.yuntae.in' };
     let calls = 0;
     window.fetch = async () => { calls++; throw new Error('unexpected school proxy'); };
-    source('lib/core/demoSession.js');
+    const nativeCalls = [];
+    source('lib/core/demoSession.js', { [path.join(repo, 'lib/klas/nativeTransport.js')]: {
+        nativeKlasRequest: async (endpoint, body) => {
+            nativeCalls.push([endpoint, body]);
+            if (endpoint.endsWith('PublicCafeteria.do')) return { restaurants: [{ name: '함지마루' }] };
+            const items = [{ title: '데모 학사 안내' }];
+            return body.pageInfo === '1' ? { items, more: false } : items;
+        }
+    } });
     const cafeteria = await (await window.fetch('/api/crawler/cafeteria')).json();
     assert.equal(cafeteria.restaurants[0].name, '함지마루');
     const notices = await (await window.fetch('/api/crawler/kwNotice')).json();
-    assert.equal(notices.items[0].title, '데모 학사 안내');
+    assert.equal(notices[0].title, '데모 학사 안내');
+    const paged = await (await window.fetch('/api/crawler/kwNotice?pageInfo=1')).json();
+    assert.equal(paged.items[0].title, '데모 학사 안내');
+    assert.equal(paged.more, false);
+    assert.equal(nativeCalls.length, 3);
+    assert.equal(nativeCalls[0][0], '/demo/PublicCafeteria.do');
     assert.equal((await window.fetch('/api/proxy')).status, 501);
     assert.equal((await window.fetch('/api/new-school-proxy')).status, 501);
     await assert.rejects(window.fetch('https://klas.kw.ac.kr/anything'), /DEMO_NETWORK_BLOCKED/);

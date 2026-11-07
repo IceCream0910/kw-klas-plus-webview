@@ -30,7 +30,7 @@ export default function LectureHome() {
             })
                 .then((data) => {
                     console.log(data);
-                    setData(data);
+                    setData({ ...data, ...Object.fromEntries(['noticeList', 'cntntList', 'atendSubList', 'taskTop', 'examTop', 'anQuizTop', 'prjctTop', 'dscsnTop'].map(key => [key, Array.isArray(data?.[key]) ? data[key] : []])) });
                 })
                 .catch((error) => {
                     console.error(error);
