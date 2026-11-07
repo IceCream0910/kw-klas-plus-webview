@@ -3,10 +3,10 @@ import moment from 'moment';
 function EventItem({ event, onClick }) {
     const getEventTypeStyle = (typeNm) => {
         const typeColors = {
-            '과제': '#e74c3c',
-            '시험': '#e67e22',
-            '수업': '#3498db',
-            '기타': '#95a5a6'
+            '과제': '#b5382d',
+            '시험': '#97500b',
+            '수업': '#24608b',
+            '기타': '#5a6366'
         };
 
         return {
@@ -37,6 +37,14 @@ function EventItem({ event, onClick }) {
     return (
         <div
             onClick={() => onClick && onClick(event)}
+            role={onClick ? 'button' : undefined}
+            tabIndex={onClick ? 0 : undefined}
+            onKeyDown={onClick ? (keyEvent) => {
+                if (keyEvent.key === 'Enter' || keyEvent.key === ' ') {
+                    keyEvent.preventDefault();
+                    onClick(event);
+                }
+            } : undefined}
             style={{
                 padding: '12px',
                 marginBottom: '8px',
@@ -55,12 +63,12 @@ function EventItem({ event, onClick }) {
                 </span>
             </div>
 
-            <div style={{ fontSize: '12px', opacity: 0.7 }}>
+            <div style={{ fontSize: '12px', opacity: 0.85 }}>
                 {formatDate(event.start, event.end)}
             </div>
 
             {event.subjNm && (
-                <div style={{ fontSize: '12px', opacity: 0.6, marginTop: '2px' }}>
+                <div style={{ fontSize: '12px', opacity: 0.85, marginTop: '2px' }}>
                     {event.subjNm}
                 </div>
             )}

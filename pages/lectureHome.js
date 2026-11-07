@@ -292,7 +292,7 @@ export default function LectureHome() {
                                 </div>
                             </div>
 
-                            {data.atendSubList.map((aSubitem, index) => (
+                            {(data.atendSubList || []).map((aSubitem, index) => (
                                 <div key={index} style={{
                                     display: 'flex',
                                     justifyContent: 'space-between',

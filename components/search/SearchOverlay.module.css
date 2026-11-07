@@ -23,7 +23,7 @@
 .backdrop {
     position: absolute;
     inset: 0;
-    z-index: -1;
+    z-index: -2;
     background: linear-gradient(to bottom, var(--background, #fff8f7) 0%, color-mix(in srgb, var(--background, #fff8f7) 94%, transparent) 35%, color-mix(in srgb, var(--background, #fff8f7) 82%, transparent) 76%, transparent 100%), rgb(0 0 0 / 24%);
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
@@ -316,7 +316,7 @@
     max-width: 740px;
     box-sizing: border-box;
     padding: 4px 0;
-    animation: search-ui-in .45s .24s both;
+    animation: search-surface-in .56s cubic-bezier(.16, 1, .3, 1) both;
 }
 
 .header>.closeButton {
@@ -374,7 +374,7 @@
     width: 100%;
     max-width: 740px;
     min-height: 0;
-    animation: search-ui-in .45s .24s both;
+    animation: search-surface-in .56s cubic-bezier(.16, 1, .3, 1) both;
 }
 
 .modePanel[hidden] {
@@ -382,11 +382,11 @@
 }
 
 .backdrop {
-    animation: search-backdrop-in .7s cubic-bezier(.22, 1, .36, 1) both;
+    animation: search-backdrop-in .56s cubic-bezier(.16, 1, .3, 1) both;
 }
 
 .overlay > :last-child {
-    animation: search-ui-in .45s .24s both;
+    animation: search-surface-in .56s cubic-bezier(.16, 1, .3, 1) both;
 }
 
 .closing {
@@ -396,16 +396,58 @@
 .closing > .header,
 .closing > .modePanel,
 .closing > :last-child {
-    animation: search-ui-out .35s ease-in both;
+    animation: search-ui-out .32s cubic-bezier(.4, 0, 1, 1) both;
 }
 
 .closing > .backdrop {
-    animation: search-backdrop-out .7s ease-in-out both;
+    animation: search-backdrop-out .42s ease-in-out both;
+}
+
+/* A soft edge bloom, behind the content, evokes Siri's expanding light. */
+.overlay::before {
+    content: '';
+    position: absolute;
+    inset: -16px;
+    z-index: -1;
+    pointer-events: none;
+    border-radius: 44px;
+    box-shadow: inset 0 12px 28px -14px #7c8fff,
+        inset 18px 0 32px -18px #c87cff,
+        inset -18px 0 32px -18px #ff91ba,
+        inset 0 -16px 32px -18px #80cfff;
+    filter: blur(12px);
+    opacity: .5;
+    animation: search-bloom-in .64s cubic-bezier(.16, 1, .3, 1) both;
+}
+
+.header { transform-origin: center top; }
+.modePanel { transform-origin: center 65%; }
+.overlay > :last-child { transform-origin: center bottom; }
+
+.closing::before {
+    animation: search-bloom-out .42s ease-in both;
+}
+
+@keyframes search-surface-in {
+    from { opacity: 0; filter: blur(12px); transform: translateY(22px) scale(.96, 1.04) skewX(.8deg); }
+    65% { opacity: 1; filter: blur(0); }
+    to { opacity: 1; filter: blur(0); transform: none; }
+}
+
+@keyframes search-bloom-in {
+    from { opacity: 0; transform: scale(1.06, 1.02); }
+    45% { opacity: .85; }
+    to { opacity: .5; transform: none; }
+}
+
+@keyframes search-bloom-out {
+    from { opacity: .5; transform: none; }
+    to { opacity: 0; transform: scale(1.04, 1.02); }
 }
 
 @keyframes search-ui-out {
-    from { opacity: 1; }
-    to { opacity: 0; }
+    from { opacity: 1; filter: blur(0); transform: none; }
+    to { opacity: 0; filter: blur(8px); transform: translateY(14px) scale(.97, .94) skewX(-.6deg); }
 }
 
 @keyframes search-backdrop-out {
@@ -562,7 +604,9 @@
     .closing > .header,
     .closing > .modePanel,
     .closing > .backdrop,
-    .closing > :last-child {
+    .closing > :last-child,
+    .overlay::before,
+    .closing::before {
         animation: none;
     }
 

@@ -39,9 +39,11 @@ const SettingsAppLockSection = () => {
             }
         };
         document.addEventListener("visibilitychange", handleVisibilityChange);
+        window.addEventListener('klas-demo-settings-changed', loadSettings);
 
         return () => {
             delete window.onBiometricSettingChanged;
+            window.removeEventListener('klas-demo-settings-changed', loadSettings);
             document.removeEventListener("visibilitychange", handleVisibilityChange);
         };
     }, []);
@@ -50,7 +52,7 @@ const SettingsAppLockSection = () => {
         const checked = e.target.checked;
         setIsAppLockEnabled(checked);
         if (KlasNativeBridge.isAvailable('setAppLockEnabled')) {
-            KlasNativeBridge.setAppLockEnabled(checked);
+            Promise.resolve(KlasNativeBridge.setAppLockEnabled(checked)).then(loadSettings);
         }
     };
 

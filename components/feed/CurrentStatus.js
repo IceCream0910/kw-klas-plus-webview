@@ -7,12 +7,14 @@ const handleYearHakgiSelect = () => {
     }
 };
 
-function CurrentStatus({ statusText, showClassActions, selectedSubj, selectedSubjName, isNoCourse }) {
+function CurrentStatus({ statusText, showClassActions, selectedSubj, selectedSubjName, isNoCourse, onLectureClick, onQRClick }) {
     const handleLectureClick = () => {
+        if (onLectureClick) return onLectureClick();
         KlasNativeBridge.openLectureActivity(selectedSubj, selectedSubjName);
     };
 
     const handleQRClick = () => {
+        if (onQRClick) return onQRClick();
         KlasNativeBridge.qrCheckIn(selectedSubj, selectedSubjName);
     };
 

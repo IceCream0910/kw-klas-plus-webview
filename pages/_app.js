@@ -1,3 +1,4 @@
+import DemoSettingsModal from '../components/DemoSettingsModal';
 import { cancelNativeKlasRequests } from '../lib/klas/nativeTransport';
 import KlasNativeBridge from '../lib/core/klasNativeBridge';
 import "../styles/globals.css";
@@ -140,6 +141,7 @@ function MyApp({ Component, pageProps }) {
       </Head>
       <NativeAccessGate onNativeReady={handleNativeReady}><SearchProvider><div className={`${getShellClassName(router.pathname)}${BOTTOM_NAV_ROUTES.has(router.pathname) ? ' app-shell--with-bottom-nav' : ''}`}>
         <Component {...pageProps} />
+        <DemoSettingsModal />
       </div></SearchProvider></NativeAccessGate>
       {ANALYTICS_ENABLED && <Script
         src="https://rybbit.yuntae.in/api/script.js"

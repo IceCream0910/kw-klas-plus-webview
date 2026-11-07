@@ -272,3 +272,25 @@ test('new POST endpoint bridge failures report unknown outcome without retry', a
     await assert.rejects(client(mock)('https://klas.kw.ac.kr/new/action.do', '', {}), { code: 'OUTCOME_UNKNOWN' });
     assert.equal(calls, 1);
 });
+
+test('demo library and lock actions open settings modals; school links show an explanation', t => {
+    app(t, 'iOSApp_v3');
+    window.__klasDemoSession = { version: 1 };
+    const events = [], messages = [];
+    window.dispatchEvent = event => events.push(event.detail.type);
+    globalThis.CustomEvent = class { constructor(name, options) { this.detail = options.detail; } };
+    t.after(() => { delete globalThis.CustomEvent; });
+    window.alert = message => messages.push(message);
+    window.location = { href: 'https://klasplus.yuntae.in/settings' };
+    const { demoBridgeInvocation } = source('lib/core/demoSession.js');
+    demoBridgeInvocation('openLibraryQRSettingsModal', []);
+    demoBridgeInvocation('setAppLockEnabled', [true]);
+    demoBridgeInvocation('setAppLockPassword', []);
+    demoBridgeInvocation('openExternalLink', ['https://klas.kw.ac.kr/std/test.do']);
+    demoBridgeInvocation('openInKLAS', []);
+    assert.deepEqual(events, ['library', 'lock', 'lock']);
+    assert.equal(messages.length, 2);
+    assert.match(messages[0], /데모 모드/);
+    assert.equal(demoBridgeInvocation('setAppLockEnabled', [false]), null);
+    assert.equal(demoBridgeInvocation('setDeadlineNotificationsEnabled', [true]), null);
+});

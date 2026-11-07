@@ -32,7 +32,7 @@ export default function SearchProvider({ children }) {
     const close = useCallback(() => {
         coordinator.current?.cancel(); setClosing(true); setError('');
         clearTimeout(closeTimer.current);
-        const duration = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 700;
+        const duration = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 420;
         closeTimer.current = setTimeout(() => { setOpen(false); setClosing(false); }, duration);
         setRemoteStatus(status => status === 'loading' ? 'cancelled' : status);
         setSources(previous => Object.fromEntries(Object.entries(previous).map(([id, source]) => [id, source.status === 'loading' ? { ...source, status: 'cancelled' } : source])));
