@@ -13,6 +13,7 @@ import Header from '../components/common/header';
 import BottomNav from '../components/common/bottomNav';
 import { useTimetableStatus } from '../lib/timetable/useTimetableStatus';
 import { useDeadlines } from '../lib/calendar/useDeadlines';
+import { decodeDeadlineFeed } from '../lib/calendar/deadlineFeed.mjs';
 import { initializePullToRefresh } from '../lib/pullToRefreshUtils';
 import Card from '../components/common/Card';
 import CurrentStatus from '../components/feed/CurrentStatus';
@@ -44,6 +45,7 @@ const getCurrentSemesterYearHakgi = (today = new Date()) => {
 };
 
 export default function Feed() {
+  const [deadlineFeedStatus, setDeadlineFeedStatus] = useState(null);
   const [yearHakgi, setYearHakgi] = useState(null);
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -140,6 +142,7 @@ export default function Feed() {
     return () => {
       pullToRefresh.destroy();
       delete window.receiveDeadlineData;
+      delete window.receiveDeadlineFeed;
       delete window.receiveNoticeData;
       delete window.receiveTimetableData;
     }
@@ -157,9 +160,12 @@ export default function Feed() {
   }, [token, yearHakgi]);
 
   const setupWindowFunctions = () => {
-    window.receiveDeadlineData = (json) => {
-      processAndSetDeadlines(JSON.parse(json));
+    window.receiveDeadlineFeed = (status, json) => {
+      const result = decodeDeadlineFeed(status, json);
+      if (result.data !== null) processAndSetDeadlines(result.data);
+      setDeadlineFeedStatus(result.status);
     };
+    window.receiveDeadlineData = (json) => window.receiveDeadlineFeed('READY', json);
 
     window.receiveTimetableData = (json) => {
       setTimetableData(JSON.parse(json));
@@ -265,9 +271,17 @@ export default function Feed() {
 
           <Spacer y={15} />
           <div id="remaining-deadline" className="deadline-grid">
-            {filteredDeadlines ? (
+            {(deadlineFeedStatus === 'FAILED' || deadlineFeedStatus === 'PARTIAL') && (
+              <Card title="남은 할 일" isAnimated={false}>
+                <p role="status">{deadlineFeedStatus === 'FAILED'
+                  ? '할 일을 불러오지 못했어요.'
+                  : '일부 할 일을 불러오지 못했어요.'}</p>
+                <button type="button" onClick={() => KlasNativeBridge.reload()}>다시 시도</button>
+              </Card>
+            )}
+            {filteredDeadlines && (deadlineFeedStatus !== 'PARTIAL' || filteredDeadlines.length > 0) ? (
               filteredDeadlines.length === 0 ? (
-                <Card title="남은 할 일" isAnimated={false} id="notices" style={{ paddingBottom: '30px' }}>
+                deadlineFeedStatus !== 'FAILED' && <Card title="남은 할 일" isAnimated={false} id="notices" style={{ paddingBottom: '30px' }}>
                   <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', justifyContent: 'center', marginTop: '10px', opacity: '.3' }}>
                     <IonIcon name="checkmark-circle" style={{ fontSize: '50px', marginBottom: '5px' }} />
                     <span>할 일을 모두 끝냈어요!</span>
@@ -301,7 +315,7 @@ export default function Feed() {
                 ))
               )
             ) : (
-              <SkeletonLayouts.DeadlineList />
+              deadlineFeedStatus === null && <SkeletonLayouts.DeadlineList />
             )}
           </div>
 
