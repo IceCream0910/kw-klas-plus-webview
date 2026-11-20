@@ -112,16 +112,16 @@ const SettingsInfoSection = ({ appVersion = 'n/a' }) => {
                     )}
                     <span className={styles.avatars}
                         style={contributors.length > 0 ? { width: 32 + (contributors.length - 1) * 22 } : undefined}>
-                    {contributors.map((person, index) => (
-                        <span className={styles.avatar} key={person.id} title={person.login}
-                            style={{ zIndex: contributors.length - index, transform: `translateX(${index * 22}px)` }}>
-                            <span>{person.login.slice(0, 2)}</span>
-                            <img src={`https://avatars.githubusercontent.com/u/${person.id}?s=64`} alt=""
-                                width="28" height="28" loading="lazy" referrerPolicy="no-referrer"
-                                onError={event => { event.currentTarget.style.display = 'none'; }} />
-                        </span>
-                    ))}
-                    {contributors.length === 0 && <span className={styles.fallback}>GitHub</span>}
+                        {contributors.map((person, index) => (
+                            <span className={styles.avatar} key={person.id} title={person.login}
+                                style={{ zIndex: contributors.length - index, transform: `translateX(${index * 22}px)` }}>
+                                <span>{person.login.slice(0, 2)}</span>
+                                <img src={`https://avatars.githubusercontent.com/u/${person.id}?s=64`} alt=""
+                                    width="28" height="28" loading="lazy" referrerPolicy="no-referrer"
+                                    onError={event => { event.currentTarget.style.display = 'none'; }} />
+                            </span>
+                        ))}
+                        {contributors.length === 0 && <span className={styles.fallback}>GitHub</span>}
                     </span>
                 </span>
             </a>
@@ -136,7 +136,7 @@ const SettingsInfoSection = ({ appVersion = 'n/a' }) => {
                     <span
                         onClick={(e) => {
                             e.stopPropagation();
-                            KlasNativeBridge.openExternalLink('https://klasplus.yuntae.in');
+                            KlasNativeBridge.openExternalLink('https://klasplus.yuntae.in/download');
                         }}
                         style={{
                             opacity: .8,
