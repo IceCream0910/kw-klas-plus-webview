@@ -142,6 +142,56 @@ html:has(.home-tab-transition) {
   scrollbar-gutter: stable;
 }
 
+.feed-status-sample {
+  display: grid;
+  align-content: start;
+  gap: 9px;
+  min-block-size: 128px;
+}
+
+.feed-deadlines {
+  min-block-size: 222px;
+}
+
+.feed-deadline-filter {
+  min-height: 28px;
+  margin-bottom: 15px;
+  padding-inline: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.feed-deadline-grid--sample {
+  display: grid;
+  gap: 12px;
+}
+
+.feed-deadline-sample-lines {
+  display: grid;
+  gap: 9px;
+}
+
+.feed-deadline-grid--sample > .card {
+  min-block-size: 181px;
+}
+
+.feed-deadline-grid--sample > :nth-child(n + 2) {
+  display: none;
+}
+
+@media (min-width: 600px) {
+  .feed-deadline-grid--sample > :nth-child(2) {
+    display: block;
+  }
+}
+
+@media (min-width: 960px) {
+  .feed-deadline-grid--sample > :nth-child(3) {
+    display: block;
+  }
+}
+
 .app-shell main,
 .app-shell section,
 .app-shell article,
@@ -731,6 +781,7 @@ html[data-scroll-locked] {
 
 #remaining-deadline {
   display: grid;
+  align-items: start;
   grid-gap: 12px;
   flex-wrap: wrap;
   grid-template-columns: repeat(1, minmax(0, 1fr));

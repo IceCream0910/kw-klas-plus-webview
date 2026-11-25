@@ -75,16 +75,6 @@ export const SkeletonLayouts = {
         <Skeleton height="200px" />
     ),
 
-    DeadlineList: () => (
-        <SkeletonGroup
-            items={[
-                { height: UI_CONSTANTS.SKELETON_HEIGHT.LARGE },
-                { height: UI_CONSTANTS.SKELETON_HEIGHT.LARGE },
-                { height: UI_CONSTANTS.SKELETON_HEIGHT.LARGE }
-            ]}
-        />
-    ),
-
     AdvisorInfo: () => (
         <Skeleton height={UI_CONSTANTS.SKELETON_HEIGHT.EXTRA_LARGE} />
     ),

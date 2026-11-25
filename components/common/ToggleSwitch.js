@@ -8,6 +8,7 @@ function ToggleSwitch({
     disabled = false,
     role,
     scale = 0.8,
+    className,
     style = {}
 }) {
     const handleChange = (e) => {
@@ -21,7 +22,7 @@ function ToggleSwitch({
     };
 
     return (
-        <div style={{
+        <div className={className} style={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',

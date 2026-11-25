@@ -10,14 +10,13 @@ import Spacer from '../components/common/spacer';
 import toast, { Toaster } from 'react-hot-toast';
 import { KLAS } from '../lib/core/klas';
 import Header from '../components/common/header';
-import BottomNav from '../components/common/bottomNav';
 import { useTimetableStatus } from '../lib/timetable/useTimetableStatus';
 import { useDeadlines } from '../lib/calendar/useDeadlines';
 import { initializePullToRefresh } from '../lib/pullToRefreshUtils';
 import Card from '../components/common/Card';
 import CurrentStatus from '../components/feed/CurrentStatus';
-import ToggleSwitch from '../components/common/ToggleSwitch';
-import DeadlineContent from '../components/calendar/DeadlineContent';
+import FeedDeadlines from '../components/feed/FeedDeadlines';
+import { Skeleton, SkeletonBox, SkulletProvider } from 'skullet/react';
 import { SkeletonLayouts } from '../components/common/Skeleton';
 import NoticeTabs from '../components/feed/NoticeTabs';
 import NoticeList from '../components/feed/NoticeList';
@@ -34,6 +33,15 @@ const SEMESTER_SCHEDULE = [
   { yearHakgi: '2026,2', start: new Date(2026, 8, 1), end: new Date(2026, 11, 21) }
 ];
 
+const statusPlaceholder = (
+  <div className="feed-status-sample">
+    <SkeletonBox width="32%" height={18} />
+    <SkeletonBox width="64%" height={18} />
+    <SkeletonBox width="38%" height={14} />
+    <SkeletonBox width={152} height={36} radius="12px" />
+  </div>
+);
+
 const NO_COURSE_STATUS_TEXT = '지금은 선택된<br/>학기 중이 아니에요.';
 const NO_SEMESTER_STATUS_TEXT = '현재 진행중인<br/>학기가 없어요.';
 
@@ -44,9 +52,12 @@ const getCurrentSemesterYearHakgi = (today = new Date()) => {
 };
 
 export default function Feed() {
-  const [yearHakgi, setYearHakgi] = useState(null);
+  const [yearHakgi] = useState(() => {
+    if (typeof window === 'undefined') return null;
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('yearHakgi') || localStorage.getItem('currentYearHakgi');
+  });
   const [token, setToken] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [cafeteria, setCafeteria] = useState(null);
   const [kwNotice, setKWNotice] = useState(null);
   const [advisor, setAdvisor] = useState(null);
@@ -55,7 +66,6 @@ export default function Feed() {
   const [selectedBuilding, setSelectedBuilding] = useState(null);
 
   const {
-    timetable,
     statusText,
     selectedSubj,
     selectedSubjName,
@@ -64,7 +74,6 @@ export default function Feed() {
   } = useTimetableStatus();
 
   const {
-    deadlines,
     filteredDeadlines,
     excludeNotStarted,
     showToggle,
@@ -91,17 +100,6 @@ export default function Feed() {
   const isNoCourseStatus = (isSemesterMismatch || isNoSemester);
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    var yearHakgi = urlParams.get('yearHakgi');
-    if (!yearHakgi) {
-      const storedYearHakgi = localStorage.getItem('currentYearHakgi');
-      if (storedYearHakgi) {
-        yearHakgi = storedYearHakgi;
-      }
-    }
-
-    setYearHakgi(yearHakgi);
-
     setupWindowFunctions();
     try { KlasNativeBridge.completePageLoad() } catch (error) { console.log('not app') }
     fetchData();
@@ -238,72 +236,33 @@ export default function Feed() {
       <div className="feed-page" style={{ padding: '5px' }}>
         <Toaster position="top-center" />
         <Header title={<Logo size={40} />} />
-        <BottomNav currentTab="feed" />
         <div className='pull-to-swipe-area'>
-          <CurrentStatus
-            statusText={displayedStatusText}
-            showClassActions={canShowClassActions}
-            isNoCourse={isNoCourseStatus}
-            selectedSubj={displayedSelectedSubj}
-            selectedSubjName={displayedSelectedSubjName}
-          />
+          <SkulletProvider reveal="together">
+            <Skeleton
+              loading={!displayedStatusText}
+              skeleton={statusPlaceholder}
+              label="수업 상태 불러오는 중"
+            >
+              {displayedStatusText && (
+                <CurrentStatus
+                  statusText={displayedStatusText}
+                  showClassActions={canShowClassActions}
+                  isNoCourse={isNoCourseStatus}
+                  selectedSubj={displayedSelectedSubj}
+                  selectedSubjName={displayedSelectedSubjName}
+                />
+              )}
+            </Skeleton>
 
-          <Spacer y={10} />
-
-          {showToggle && (
-            <>
-              <Spacer y={15} />
-              <ToggleSwitch
-                label="아직 시작일이 되지 않은 항목 숨기기"
-                checked={excludeNotStarted}
-                onChange={handleToggleChange}
-                id="exclude-not-started"
-                style={{ padding: '0 5px' }}
-              />
-            </>
-          )}
-
-          <Spacer y={15} />
-          <div id="remaining-deadline" className="deadline-grid">
-            {filteredDeadlines ? (
-              filteredDeadlines.length === 0 ? (
-                <Card title="남은 할 일" isAnimated={false} id="notices" style={{ paddingBottom: '30px' }}>
-                  <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', justifyContent: 'center', marginTop: '10px', opacity: '.3' }}>
-                    <IonIcon name="checkmark-circle" style={{ fontSize: '50px', marginBottom: '5px' }} />
-                    <span>할 일을 모두 끝냈어요!</span>
-                  </div>
-                </Card>
-              ) : (
-                filteredDeadlines.map((item, index) => (
-                  <Card key={index} style={{ paddingBottom: '15px' }}>
-                    <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', margin: '-5px -5px 0 0' }}>
-                      <b style={{ fontSize: '15px' }}>{item.name}</b>
-                      <div style={{ position: 'relative', top: '-8px', right: '-5px' }}>
-                        <button
-                          style={{ width: 'fit-content', background: 'var(--background)', fontSize: '12px', padding: '8px 10px' }}
-                          onClick={() => KlasNativeBridge.openLectureActivity(item.subj, item.name)}
-                        >
-                          강의 홈
-                        </button>
-                      </div>
-                    </div>
-
-                    <div onClick={() => KlasNativeBridge.evaluate('/std/lis/evltn/OnlineCntntsStdPage.do', yearHakgi, item.subj)}>
-                      <DeadlineContent name="온라인 강의" data={item.onlineLecture} />
-                    </div>
-                    <div onClick={() => KlasNativeBridge.evaluate('/std/lis/evltn/TaskStdPage.do', yearHakgi, item.subj)}>
-                      <DeadlineContent name="과제" data={item.task} />
-                    </div>
-                    <div onClick={() => KlasNativeBridge.evaluate('/std/lis/evltn/PrjctStdPage.do', yearHakgi, item.subj)}>
-                      <DeadlineContent name="팀 프로젝트" data={item.teamTask} />
-                    </div>
-                  </Card>
-                ))
-              )
-            ) : (
-              <SkeletonLayouts.DeadlineList />
-            )}
-          </div>
+            <Spacer y={25} />
+            <FeedDeadlines
+              items={filteredDeadlines}
+              showToggle={showToggle}
+              excludeNotStarted={excludeNotStarted}
+              onToggle={handleToggleChange}
+              yearHakgi={yearHakgi}
+            />
+          </SkulletProvider>
 
           <Spacer y={20} />
           <div className="feed-bottom-layout">
