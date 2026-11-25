@@ -340,6 +340,13 @@ select {
   margin-bottom: 0.5rem;
 }
 
+.profile-card .profile-card-grades {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: 100%;
+  text-align: center;
+}
+
 .grade-card {
   display: flex;
   flex-direction: column;

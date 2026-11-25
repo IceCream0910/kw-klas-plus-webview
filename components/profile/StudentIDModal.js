@@ -1,7 +1,7 @@
 import KlasNativeBridge from '../../lib/core/klasNativeBridge';
 import { isNativeFeatureCompatible } from '../../lib/core/nativeApp';
 import { useState, useEffect, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import IonIcon from '@reacticons/ionicons';
 import Spacer from '../common/spacer';
 
@@ -87,7 +87,8 @@ const DummyQR = ({ isDarkMode }) => (
 );
 
 const StudentIDModal = ({ onClose, data, stdInfo }) => {
-    const [isAnimationComplete, setIsAnimationComplete] = useState(false);
+    const reducedMotion = useReducedMotion();
+    const [isAnimationComplete, setIsAnimationComplete] = useState(Boolean(reducedMotion));
     const [showPhoto, setShowPhoto] = useState(true);
     const [activeTab, setActiveTab] = useState('idCard'); // 'library' | 'idCard'
     const [qrValues, setQrValues] = useState({ library: '', idCard: '' });
@@ -241,9 +242,11 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
 
     return (
         <motion.div
-            initial={{ opacity: 0 }}
+            initial={reducedMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: reducedMotion ? 0 : 0.2 }}
+            onAnimationComplete={() => setIsAnimationComplete(true)}
             onClick={onClose}
             style={{
                 position: 'fixed',
@@ -255,17 +258,9 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                 justifyContent: 'center'
             }}
         >
-            <motion.div
-                layoutId="card"
-                onLayoutAnimationComplete={() => setIsAnimationComplete(true)}
+            <div
                 onClick={(e) => e.stopPropagation()}
                 className={`modal-card ${isAnimationComplete ? 'modal-card-shadow' : ''}`}
-                transition={{
-                    type: 'spring',
-                    stiffness: 400,
-                    damping: 38,
-                    mass: 0.8
-                }}
                 style={{
                     width: '90%',
                     maxWidth: '340px',
@@ -280,9 +275,9 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                 }}
             >
                 <motion.div
-                    initial={{ opacity: 0 }}
+                    initial={reducedMotion ? false : { opacity: 0 }}
                     animate={{ opacity: isAnimationComplete ? 1 : 0 }}
-                    transition={{ duration: 0.25, ease: 'easeOut' }}
+                    transition={{ duration: reducedMotion ? 0 : 0.25, ease: 'easeOut' }}
                     style={{
                         display: 'flex',
                         flexDirection: 'column',
@@ -778,7 +773,7 @@ const StudentIDModal = ({ onClose, data, stdInfo }) => {
                         </div>
                     )}
                 </motion.div>
-            </motion.div>
+            </div>
 
             <style jsx>{`
                 .modal-card {
