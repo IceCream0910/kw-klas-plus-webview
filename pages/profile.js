@@ -1,6 +1,7 @@
 "use client";
 import KlasNativeBridge from '../lib/core/klasNativeBridge';
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence } from "framer-motion";
 import Header from "../components/common/header";
 import ProfileCard from "../components/profile/ProfileCard";
@@ -15,7 +16,6 @@ import {
   useModalSettings
 } from "../lib/profile/useProfileData";
 
-import BottomNav from "../components/common/bottomNav";
 import Spacer from "../components/common/spacer";
 
 export default function Home() {
@@ -51,7 +51,6 @@ export default function Home() {
   return (
     <main className="profile-page">
       <Header title={<h2>전체</h2>} />
-      <BottomNav currentTab="menu" />
 
       <ProfileCard
         data={data}
@@ -82,15 +81,18 @@ export default function Home() {
         />
       ))}
 
-      <AnimatePresence>
-        {isCardOpen && (
-          <StudentIDModal
-            onClose={() => setIsCardOpen(false)}
-            data={data}
-            stdInfo={stdInfo}
-          />
-        )}
-      </AnimatePresence>
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {isCardOpen && (
+            <StudentIDModal
+              onClose={() => setIsCardOpen(false)}
+              data={data}
+              stdInfo={stdInfo}
+            />
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
 
       <Spacer y={80} />
 

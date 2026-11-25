@@ -93,9 +93,16 @@ export default function SearchProvider({ children }) {
     useEffect(() => {
         if (!homePaths.has(router.pathname)) return;
         try { Promise.resolve(KlasNativeBridge.setSearchOverlayOpen(open)).catch(() => {}); } catch { /* 구 앱에는 신규 메서드가 없다. */ }
-        if (!open) trigger.current?.focus();
         return () => { if (open) { try { Promise.resolve(KlasNativeBridge.setSearchOverlayOpen(false)).catch(() => {}); } catch {} } };
     }, [open, router.pathname]);
+    useEffect(() => {
+        if (open) return;
+        const button = trigger.current;
+        trigger.current = null;
+        if (button?.isConnected && !button.closest('[hidden]')) {
+            button.focus({ preventScroll: true });
+        }
+    }, [open]);
     const results = useMemo(() => {
         const local = localSearch([...menus, ...items], committed);
         const all = new Map(local.map(item => [item.id, item]));

@@ -10,6 +10,7 @@ import Head from 'next/head';
 import SearchProvider from '../components/search/SearchProvider';
 import NativeAccessGate from '../components/common/NativeAccessGate';
 import { isNativeFeatureCompatible } from '../lib/core/nativeApp';
+import HomeTabTransition from '../components/common/HomeTabTransition';
 
 const READING_ROUTES = new Set([
   '/boardView',
@@ -29,13 +30,6 @@ const BALANCED_ROUTES = new Set([
   '/settings'
 ]);
 
-const BOTTOM_NAV_ROUTES = new Set([
-  '/calendar',
-  '/feed',
-  '/profile',
-  '/timetableTab'
-]);
-
 const HOME_TAB_PATHS = {
   feed: '/feed',
   timetable: '/timetableTab',
@@ -46,6 +40,7 @@ const HOME_TAB_PATHS = {
 const HOME_TABS_BY_PATH = Object.fromEntries(
   Object.entries(HOME_TAB_PATHS).map(([tab, path]) => [path, tab])
 );
+const HOME_TAB_ROUTES = Object.values(HOME_TAB_PATHS);
 
 const getShellClassName = (pathname) => {
   if (pathname.startsWith('/modal/')) return 'app-shell app-shell--modal';
@@ -59,6 +54,7 @@ const getShellClassName = (pathname) => {
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
+  const homeTab = HOME_TABS_BY_PATH[router.pathname];
   const [nativeReady, setNativeReady] = useState(false);
   const handleNativeReady = useCallback(() => setNativeReady(true), []);
   useEffect(() => {
@@ -139,8 +135,12 @@ function MyApp({ Component, pageProps }) {
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </Head>
-      <NativeAccessGate onNativeReady={handleNativeReady}><SearchProvider><div className={`${getShellClassName(router.pathname)}${BOTTOM_NAV_ROUTES.has(router.pathname) ? ' app-shell--with-bottom-nav' : ''}`}>
-        <Component {...pageProps} />
+      <NativeAccessGate onNativeReady={handleNativeReady}><SearchProvider><div className={`${getShellClassName(router.pathname)}${homeTab ? ' app-shell--with-bottom-nav' : ''}`}>
+        {homeTab ? (
+          <HomeTabTransition pathname={router.pathname} paths={HOME_TAB_ROUTES} currentTab={homeTab}>
+            <Component {...pageProps} />
+          </HomeTabTransition>
+        ) : <Component {...pageProps} />}
         <DemoSettingsModal />
       </div></SearchProvider></NativeAccessGate>
       {ANALYTICS_ENABLED && <Script

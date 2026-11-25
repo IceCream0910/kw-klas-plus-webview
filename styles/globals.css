@@ -127,6 +127,21 @@ body {
   padding-bottom: max(0px, env(safe-area-inset-bottom));
 }
 
+.home-tab-transition {
+  position: relative;
+  z-index: 0;
+}
+
+.home-tab-pages {
+  position: relative;
+  isolation: isolate;
+  overflow-x: clip;
+}
+
+html:has(.home-tab-transition) {
+  scrollbar-gutter: stable;
+}
+
 .app-shell main,
 .app-shell section,
 .app-shell article,
@@ -182,7 +197,9 @@ body {
 .app-header-actions {
   display: flex;
   align-items: center;
+  align-self: flex-start;
   flex: 0 0 auto;
+  min-block-size: var(--klas-top-bar-height, 34px);
 }
 
 .app-header-actions button {
@@ -1061,10 +1078,20 @@ input[type="datetime-local"] {
   box-sizing: border-box;
 }
 
-released-badge {
+.app-header-changelog {
   position: relative;
-  top: -8px;
-  right: -30px;
+  margin-inline-end: 0.3rem;
+}
+
+.app-header-changelog-dot {
+  position: absolute;
+  inset-block-start: 4px;
+  inset-inline-end: 3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--red);
+  pointer-events: none;
 }
 
 .released-badge-probe {
@@ -1072,7 +1099,7 @@ released-badge {
   width: 0;
   height: 0;
   overflow: hidden;
-  visibility: hidden;
+  opacity: 0;
   pointer-events: none;
 }
 
@@ -1210,6 +1237,16 @@ released-badge {
 .calendar-toolbar,
 .calendar-toolbar h2 {
   min-width: 0;
+}
+
+.calendar-toolbar {
+  display: flow-root;
+}
+
+.home-tab-header > .calendar-toolbar {
+  position: absolute;
+  inset: 0 5px auto;
+  z-index: 1000;
 }
 
 /* 앱 헤더와 같이 iPadOS 26 상단 탭 바 줄에 맞추고 창 제어 버튼을 피한다. 값이 없으면 기존 배치와 같다 */

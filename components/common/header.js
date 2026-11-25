@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { createPortal } from 'react-dom';
 import IonIcon from "@reacticons/ionicons";
 import Spacer from "../common/spacer";
 import KlasNativeBridge from "../../lib/core/klasNativeBridge";
@@ -6,8 +7,12 @@ import { getNativeAppFromUserAgent, isNativeFeatureCompatible } from "../../lib/
 import toast, { Toaster } from 'react-hot-toast';
 import GradualBlur from "../common/GradualBlur";
 import { useSearch } from '../search/SearchProvider';
+import HomeTabHeaderContext from './HomeTabHeaderContext';
 
 const RELEASED_CHANNEL_ID = "b8696cec-f681-43a8-9baa-d5737483003e";
+const subscribeToUserAgent = () => () => {};
+const getUserAgent = () => navigator.userAgent;
+const getServerUserAgent = () => null;
 
 const handleChangelogClick = () => {
     try {
@@ -30,6 +35,8 @@ function ChangelogAction() {
             if (!badgeElement || isDisposed) return;
 
             const updateUnreadState = () => {
+                // The calendar hides the header without changing the unread state.
+                if (badgeElement.closest('[hidden]')) return;
                 const { width, height } = badgeElement.getBoundingClientRect();
                 setHasUnreadRelease(width > 0 && height > 0);
             };
@@ -59,11 +66,11 @@ function ChangelogAction() {
             {hasUnreadRelease && (
                 <button
                     type="button"
-                    style={{ width: 'fit-content', marginRight: '0.3rem' }}
+                    className="app-header-changelog"
                     onClick={handleChangelogClick}
                     aria-label="업데이트 내역 열기"
                 >
-                    <released-badge channel-id={RELEASED_CHANNEL_ID}></released-badge>
+                    <span className="app-header-changelog-dot" aria-hidden="true" />
                     <IonIcon
                         name='gift-outline'
                         style={{
@@ -79,33 +86,26 @@ function ChangelogAction() {
     );
 }
 
-function Header({ title }) {
+function useHeaderApp() {
+    const userAgent = useSyncExternalStore(subscribeToUserAgent, getUserAgent, getServerUserAgent);
+    return userAgent ? getNativeAppFromUserAgent() : null;
+}
+
+export function HeaderBar({ title, titleRef, inactive = false }) {
     const search = useSearch();
-    const [version, setVersion] = useState("");
-    const [isCompatible, setIsCompatible] = useState(false);
-    const [isSearchCompatible, setIsSearchCompatible] = useState(false);
-    const [isAgentCompatible, setIsAgentCompatible] = useState(false);
-
-    useEffect(() => {
-        const app = getNativeAppFromUserAgent();
-        if (app) {
-            setVersion(app.version);
-            setIsCompatible(isNativeFeatureCompatible("header", app));
-            setIsSearchCompatible(isNativeFeatureCompatible("search", app));
-            setIsAgentCompatible(isNativeFeatureCompatible("agent", app));
-        }
-    }, []);
-
-    if (!isCompatible) {
+    const app = useHeaderApp();
+    if (!isNativeFeatureCompatible("header", app)) {
         return null;
     }
 
+    const isSearchCompatible = isNativeFeatureCompatible("search", app);
+    const isAgentCompatible = isNativeFeatureCompatible("agent", app);
     return (
         <>
             <Toaster position="bottom-center" />
-            <div className="app-header">
+            <div className="app-header" hidden={inactive}>
                 <div className="app-header-inner">
-                    <div onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                    <div ref={titleRef} className="app-header-title" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
                         {title}
                     </div>
                     <div className="app-header-actions">
@@ -164,7 +164,19 @@ function Header({ title }) {
                     strength={1.5}
                 />
             </div>
+        </>
+    );
+}
 
+function Header({ title }) {
+    const homeTabHeader = useContext(HomeTabHeaderContext);
+    const app = useHeaderApp();
+    if (!isNativeFeatureCompatible("header", app)) return null;
+
+    const titleHost = homeTabHeader?.titleHost;
+    return (
+        <>
+            {homeTabHeader ? titleHost && createPortal(title, titleHost) : <HeaderBar title={title} />}
             <Spacer y={75} className="app-header-spacer" />
         </>
     );

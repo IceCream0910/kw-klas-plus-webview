@@ -5,23 +5,24 @@ import { isPublicRoute } from '../../lib/core/publicRoutes.mjs';
 
 export default function NativeAccessGate({ children, onNativeReady }) {
   const router = useRouter();
-  const [allowedPath, setAllowedPath] = useState(null);
+  const [nativeAccess, setNativeAccess] = useState(false);
   const publicPage = isPublicRoute(router.pathname);
+  const allowed = nativeAccess && KlasNativeBridge.isAvailable();
 
   useEffect(() => {
     if (publicPage) return;
     if (KlasNativeBridge.isAvailable()) {
-      setAllowedPath(router.pathname);
+      setNativeAccess(true);
     } else {
       void router.replace('/');
     }
   }, [publicPage, router.pathname, router]);
 
   useEffect(() => {
-    if ((publicPage || allowedPath === router.pathname) && KlasNativeBridge.isAvailable()) {
+    if ((publicPage || allowed) && KlasNativeBridge.isAvailable()) {
       onNativeReady();
     }
-  }, [publicPage, allowedPath, router.pathname, onNativeReady]);
+  }, [publicPage, allowed, onNativeReady]);
 
-  return publicPage || allowedPath === router.pathname ? children : null;
+  return publicPage || allowed ? children : null;
 }

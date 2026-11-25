@@ -1,5 +1,6 @@
 import KlasNativeBridge from '../lib/core/klasNativeBridge';
-import React, { useState, useEffect, cloneElement, Children } from 'react';
+import React, { useState, useEffect, useContext, useLayoutEffect, useRef, cloneElement, Children } from 'react';
+import { createPortal } from 'react-dom';
 import Spacer from "../components/common/spacer";
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
@@ -8,11 +9,40 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import IonIcon from '@reacticons/ionicons';
 import { useCalendar } from '../lib/calendar/useCalendar';
 import ToggleSwitch from '../components/common/ToggleSwitch';
-import BottomNav from '../components/common/bottomNav';
 import ColorPicker from '../components/common/ColorPicker';
+import HomeTabHeaderContext from '../components/common/HomeTabHeaderContext';
 
 const localizer = momentLocalizer(moment);
 var yearHakgi;
+
+function CalendarToolbar({ children }) {
+    const headerHost = useContext(HomeTabHeaderContext)?.calendarHost;
+    const toolbarRef = useRef(null);
+    const [height, setHeight] = useState(0);
+
+    useLayoutEffect(() => {
+        if (!headerHost) return;
+        const toolbar = toolbarRef.current;
+        const measure = () => setHeight(toolbar.getBoundingClientRect().height);
+        measure();
+        const observer = new ResizeObserver(measure);
+        observer.observe(toolbar);
+        return () => observer.disconnect();
+    }, [headerHost]);
+
+    const toolbar = (
+        <div className="calendar-toolbar" ref={toolbarRef}>
+            {children}
+        </div>
+    );
+
+    return headerHost ? (
+        <>
+            {createPortal(toolbar, headerHost)}
+            <Spacer y={height} />
+        </>
+    ) : toolbar;
+}
 
 const TouchCellWrapper = ({ children, value, onSelectSlot, isLoading }) => {
     const child = Children.only(children);
@@ -144,9 +174,8 @@ export default function CalendarPage() {
                     pointer-events: none !important;
                 }
             `}</style>
-            <BottomNav currentTab="calendar" />
 
-            <div className="calendar-toolbar" style={styles.header}>
+            <CalendarToolbar>
 
                 <h2 className="page-heading">
                     <span>{currentMonth.format('MM월')}</span>
@@ -165,7 +194,7 @@ export default function CalendarPage() {
                     </button>
                     </span>
                 </h2>
-            </div>
+            </CalendarToolbar>
             <Spacer y={10} />
             <div style={styles.calendarContainer}>
                 <Calendar
@@ -561,9 +590,6 @@ function EventForm({ event, date, isOpen, onSave, onDelete, onClose }) {
 
 
 const styles = {
-    header: {
-        marginBottom: '20px',
-    },
     calendarContainer: {
         height: '75dvh',
     },
