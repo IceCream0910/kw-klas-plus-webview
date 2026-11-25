@@ -404,11 +404,78 @@ select {
   margin-bottom: 0.5rem;
 }
 
+.profile-card-section {
+  width: 100%;
+}
+
+.profile-favorites-content {
+  display: flow-root;
+}
+
+.profile-card-identity {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 20px;
+  align-items: center;
+  width: 100%;
+  padding: 0;
+  text-align: start;
+}
+
+.profile-card-identity > svg {
+  font-size: 20px;
+}
+
+.profile-card-identity-fields {
+  min-width: 0;
+  padding-top: 5px;
+  overflow-wrap: anywhere;
+}
+
+.profile-card-name,
+.profile-card-student,
+.profile-card-enrollment {
+  display: flex;
+  align-items: center;
+  min-height: 1.25em;
+  line-height: 1.25;
+}
+
+.profile-card-name {
+  margin-bottom: 5px;
+  font-size: 18px;
+}
+
+.profile-card-student {
+  flex-wrap: wrap;
+  gap: 0 5px;
+  font-size: 14px;
+}
+
+.profile-card-enrollment {
+  color: var(--text-color-transparent);
+  font-size: 12px;
+}
+
 .profile-card .profile-card-grades {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   width: 100%;
+  padding-top: 15px;
   text-align: center;
+}
+
+.profile-card-grades > div > span {
+  display: block;
+  opacity: .8;
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+.profile-card-grades h3 {
+  display: grid;
+  place-items: center;
+  min-height: 1.25em;
+  line-height: 1.25;
 }
 
 .grade-card {

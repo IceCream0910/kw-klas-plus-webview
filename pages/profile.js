@@ -21,7 +21,7 @@ import Spacer from "../components/common/spacer";
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { data, totGrade, stdInfo } = useProfileData();
+  const { profile, totGrade } = useProfileData();
   const {
     isCardOpen,
     setIsCardOpen,
@@ -53,8 +53,7 @@ export default function Home() {
       <Header title={<h2>전체</h2>} />
 
       <ProfileCard
-        data={data}
-        stdInfo={stdInfo}
+        profile={profile}
         totGrade={totGrade}
         onCardClick={handleCardClick}
       />
@@ -83,11 +82,11 @@ export default function Home() {
 
       {typeof document !== 'undefined' && createPortal(
         <AnimatePresence>
-          {isCardOpen && (
+          {isCardOpen && profile?.data && (
             <StudentIDModal
               onClose={() => setIsCardOpen(false)}
-              data={data}
-              stdInfo={stdInfo}
+              data={profile.data}
+              stdInfo={profile.stdInfo}
             />
           )}
         </AnimatePresence>,
