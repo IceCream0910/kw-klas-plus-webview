@@ -1,4 +1,4 @@
-import { Ssgoi } from '@ssgoi/react';
+import { Ssgoi, spring } from '@ssgoi/react';
 import { slide } from '@ssgoi/react/view-transitions';
 import { useMemo, useState, useSyncExternalStore } from 'react';
 import BottomNav from './bottomNav';
@@ -7,6 +7,9 @@ import { HeaderBar } from './header';
 
 const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
 const CALENDAR_PATH = '/calendar';
+const slideSpring = spring({ stiffness: 470, damping: 43, restDelta: 0.005, restSpeed: 0.05 });
+const setSlideSpring = ({ animation }) => animation.set({ integrator: slideSpring });
+const homeTabSlide = slide({}, { override: { forward: setSlideSpring, backward: setSlideSpring } });
 
 function subscribeToMotionPreference(onChange) {
     const query = window.matchMedia(REDUCED_MOTION);
@@ -25,7 +28,7 @@ export default function HomeTabTransition({ pathname, paths, currentTab, childre
     const reducedMotion = useSyncExternalStore(subscribeToMotionPreference, shouldReduceMotion, () => true);
     const config = useMemo(() => ({
         scrollLock: false,
-        transitions: reducedMotion ? [] : [{ ordered: paths, transition: slide() }]
+        transitions: reducedMotion ? [] : [{ ordered: paths, transition: homeTabSlide }]
     }), [paths, reducedMotion]);
 
     return (
@@ -33,8 +36,8 @@ export default function HomeTabTransition({ pathname, paths, currentTab, childre
             <HomeTabHeaderContext.Provider value={header}>
                 <div className="home-tab-pages">
                     <Ssgoi config={config}>
-                        <div key={pathname} data-ssgoi-transition={pathname}>
-                            {children}
+                        <div key={pathname} className="home-tab-page" data-ssgoi-transition={pathname}>
+                            <div className="home-tab-content">{children}</div>
                         </div>
                     </Ssgoi>
                 </div>

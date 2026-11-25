@@ -124,6 +124,8 @@ body {
 }
 
 .app-shell--with-bottom-nav {
+  max-width: none;
+  padding-inline: 0;
   padding-bottom: max(0px, env(safe-area-inset-bottom));
 }
 
@@ -136,6 +138,25 @@ body {
   position: relative;
   isolation: isolate;
   overflow-x: clip;
+}
+
+.home-tab-page {
+  background: var(--background);
+}
+
+.home-tab-content,
+.home-tab-header {
+  width: min(100%, var(--page-wide));
+  margin-inline: auto;
+  padding-left: max(var(--page-gutter), env(safe-area-inset-left));
+  padding-right: max(var(--page-gutter), env(safe-area-inset-right));
+}
+
+.home-tab-header {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 1000;
+  pointer-events: none;
 }
 
 html:has(.home-tab-transition) {
@@ -1300,9 +1321,8 @@ input[type="datetime-local"] {
 }
 
 .home-tab-header > .calendar-toolbar {
-  position: absolute;
-  inset: 0 5px auto;
-  z-index: 1000;
+  margin-inline: 5px;
+  pointer-events: auto;
 }
 
 /* 앱 헤더와 같이 iPadOS 26 상단 탭 바 줄에 맞추고 창 제어 버튼을 피한다. 값이 없으면 기존 배치와 같다 */
