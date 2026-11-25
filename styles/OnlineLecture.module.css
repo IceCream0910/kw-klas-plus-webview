@@ -1,0 +1,245 @@
+.page {
+  --lecture-muted: #635757;
+  --lecture-complete: #247544;
+  --lecture-ended: #aa3737;
+  --lecture-deadline: #934912;
+  padding-block: 16px 24px;
+}
+
+.header {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.heading h1 {
+  font-size: 1.3rem;
+  line-height: 1.25;
+}
+
+.heading .openKlas {
+  width: auto;
+  min-height: 40px;
+  margin-inline-start: auto;
+  padding: 8px 13px;
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  font-size: .8125rem;
+  white-space: nowrap;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 3px;
+  padding: 3px;
+  background: var(--card-background);
+  border-radius: 14px;
+}
+
+.filters button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
+  min-height: 38px;
+  padding: 5px 2px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  font-size: .8125rem;
+  color: var(--lecture-muted);
+}
+
+.filters [aria-pressed='true'] {
+  border-color: var(--card-border);
+  background: var(--background);
+  color: var(--text-color);
+  font-weight: 650;
+}
+
+.count {
+  font-size: .75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.list {
+  display: grid;
+  align-items: start;
+  gap: 9px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 82px;
+  padding: 11px 12px;
+  border: 1px solid transparent;
+  border-radius: 16px;
+  background: var(--card-background);
+  color: var(--text-color);
+  text-align: start;
+  transition: background-color .15s ease;
+}
+
+.card:active {
+  transform: none;
+  background-color: var(--notice-hover);
+}
+
+.page button:focus-visible {
+  outline: 2px solid var(--button-text);
+  outline-offset: 2px;
+}
+
+.details,
+.metadata {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.title {
+  font-size: .9375rem;
+  font-weight: 650;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.metadata {
+  font-size: .8125rem;
+  line-height: 1.3;
+}
+
+.statusLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 3px 7px;
+}
+
+.status,
+.period {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status {
+  font-weight: 550;
+  font-variant-numeric: tabular-nums;
+}
+
+.status[data-tone='complete'] {
+  color: var(--lecture-complete);
+}
+
+.status[data-tone='ended'] {
+  color: var(--lecture-ended);
+}
+
+.period {
+  color: var(--lecture-muted);
+  overflow-wrap: anywhere;
+}
+
+.period svg,
+.status svg {
+  flex: 0 0 auto;
+}
+
+.deadline {
+  color: var(--lecture-deadline);
+  font-weight: 650;
+}
+
+.action {
+  display: grid;
+  place-items: center;
+  min-inline-size: 4.2rem;
+  min-block-size: 32px;
+  padding-inline: 7px;
+  border-radius: 999px;
+  background: var(--background);
+  font-size: .8125rem;
+  font-weight: 550;
+  white-space: nowrap;
+}
+
+.action:global(.skeleton) {
+  background: var(--skeleton-base);
+}
+
+.progressTrack {
+  display: block;
+  height: 4px;
+  margin-top: 2px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--skeleton-mid);
+}
+
+.progressTrack > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--lecture-muted);
+}
+
+.empty {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 24px 12px;
+  border-radius: 16px;
+  background: var(--card-background);
+  color: var(--lecture-muted);
+  text-align: center;
+}
+
+.empty svg {
+  font-size: 23px;
+}
+
+.empty p {
+  margin: 0;
+  font-size: .875rem;
+}
+
+@media (min-width: 680px) {
+  .list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .page {
+    --lecture-muted: #bbb0b0;
+    --lecture-complete: #a3daaa;
+    --lecture-ended: #ffa6a6;
+    --lecture-deadline: #ffc08b;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page button {
+    transition: none;
+  }
+
+  .page :global(.skeleton) {
+    animation: none;
+  }
+}

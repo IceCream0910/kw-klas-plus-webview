@@ -1230,8 +1230,7 @@ input[type="datetime-local"] {
   min-width: 0;
 }
 
-.search-result-grid .grid-state,
-.online-lecture-grid .grid-state {
+.search-result-grid .grid-state {
   gap: 0;
 }
 
@@ -1286,7 +1285,6 @@ input[type="datetime-local"] {
 }
 
 .janghak-list,
-.online-lecture-grid,
 .ranking-card-grid,
 .grade-card-grid {
   min-width: 0;
@@ -1379,7 +1377,6 @@ input[type="datetime-local"] {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .online-lecture-grid,
   .janghak-list,
   .ranking-card-grid,
   .grade-card-grid,
@@ -1390,7 +1387,6 @@ input[type="datetime-local"] {
     align-items: start;
   }
 
-  .online-lecture-grid>*,
   .janghak-list>*,
   .ranking-card-grid>*,
   .grade-card-grid>*,
@@ -1443,7 +1439,6 @@ input[type="datetime-local"] {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .online-lecture-grid,
   .janghak-list,
   .search-result-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));

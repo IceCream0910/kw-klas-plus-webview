@@ -1,58 +1,38 @@
 import KlasNativeBridge from '../../lib/core/klasNativeBridge';
-import Spacer from '../common/spacer';
-import ToggleSwitch from '../common/ToggleSwitch';
+import styles from '../../styles/OnlineLecture.module.css';
 
-/**
- * 온라인 강의 페이지 헤더 컴포넌트
- * @param {Object} props
- * @param {boolean} props.excludeFinished - 완료된 강의 제외 여부
- * @param {Function} props.onToggleChange - 토글 변경 핸들러
- * @returns {JSX.Element}
- */
-const OnlineLectureHeader = ({ excludeFinished, onToggleChange }) => {
-    const handleKLASOpen = () => {
-        if (typeof window !== 'undefined' && KlasNativeBridge) {
-            KlasNativeBridge.openInKLAS();
-        }
-    };
+const filters = [
+    { key: 'all', label: '전체' },
+    { key: 'remaining', label: '미완료' },
+    { key: 'complete', label: '완료' }
+];
 
+export default function OnlineLectureHeader({ groups, filter, onSelectFilter }) {
     return (
-        <>
-            <Spacer y={15} />
-            <h2 className="page-heading">
-                온라인 강의
+        <header className={styles.header}>
+            <div className={styles.heading}>
+                <h1>온라인 강의</h1>
                 <button
-                    onClick={handleKLASOpen}
-                    style={{
-                        float: 'right',
-                        border: '1px solid var(--card-background)',
-                        width: 'fit-content',
-                        fontSize: '14px',
-                        marginTop: '-5px',
-                        borderRadius: '20px',
-                        padding: '10px 15px'
-                    }}
+                    type="button"
+                    className={styles.openKlas}
+                    onClick={() => KlasNativeBridge.openInKLAS()}
                 >
                     KLAS에서 열기
                 </button>
-            </h2>
-            <Spacer y={30} />
-            <ToggleSwitch
-                id="toggle"
-                checked={excludeFinished}
-                onChange={onToggleChange}
-                label="수강 완료 강의 제외"
-                style={{
-                    justifyContent: 'flex-end',
-                    gap: '5px',
-                    fontSize: '14px',
-                    opacity: .8,
-                    paddingRight: '5px'
-                }}
-            />
-            <Spacer y={20} />
-        </>
+            </div>
+            <div className={styles.filters} role="group" aria-label="수강 상태 필터">
+                {filters.map(({ key, label }) => (
+                    <button
+                        key={key}
+                        type="button"
+                        aria-pressed={filter === key}
+                        onClick={() => onSelectFilter(key)}
+                    >
+                        {label}
+                        {groups && <span className={styles.count}>{groups[key].length}</span>}
+                    </button>
+                ))}
+            </div>
+        </header>
     );
-};
-
-export default OnlineLectureHeader;
+}

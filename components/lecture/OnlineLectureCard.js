@@ -1,102 +1,57 @@
-import KlasNativeBridge from '../../lib/core/klasNativeBridge';
-import Spacer from '../common/spacer';
+import { useId } from 'react';
 import IonIcon from '@reacticons/ionicons';
-import { isBeforeStartDate, handlePreviewLecture, createLectureData } from '../../lib/lecture/onlineLectureUtils';
+import KlasNativeBridge from '../../lib/core/klasNativeBridge';
+import { createLectureData, getLecturePresentation, handlePreviewLecture, isBeforeStartDate } from '../../lib/lecture/onlineLectureUtils';
+import styles from '../../styles/OnlineLecture.module.css';
 
-const OnlineLectureCard = ({ item }) => {
-    if (!item.grcode) return null;
+export default function OnlineLectureCard({ item, now }) {
+    const titleId = useId();
+    const actionId = useId();
+    const detailsId = useId();
+    const { status, tone, period, deadline, progress, upcoming } = getLecturePresentation(item, now);
 
-    const handlePreview = () => {
-        if (item.starting) {
-            alert("학습 시작일 이전에 강의 영상을 미리 시청할 수 있습니다. 이 경우 학습 시간은 인정되지 않습니다. 학습 시작일 이후 강의를 다시 시청해야 출석으로 인정되니 주의바랍니다.");
-            KlasNativeBridge.openExternalLink(item.starting);
+    const openLecture = () => {
+        if (isBeforeStartDate(item)) {
+            handlePreviewLecture(item, KlasNativeBridge);
         } else {
-            alert("아직 강의 영상이 업로드되지 않았습니다.");
+            KlasNativeBridge.requestOnlineLecture(JSON.stringify(createLectureData(item)));
         }
     };
 
-    const handleLectureOpen = () => {
-        const lectureData = createLectureData(item);
-        KlasNativeBridge.requestOnlineLecture(JSON.stringify(lectureData));
-    };
-
     return (
-        <div className="card" style={{
-            display: 'flex',
-            gap: '10px',
-            alignContent: 'center',
-            padding: '15px',
-            border: item.prog === 100 ? '0.5px solid var(--green)' : undefined
-        }}
-            onClick={() => isBeforeStartDate(item.startDate) ? handlePreview() : handleLectureOpen()}>
-            <div style={{ width: '100%' }}>
-                <span style={{ wordBreak: 'break-all' }}><b>{item.sbjt}</b></span>
-                <Spacer y={5} />
-                <span style={{ fontSize: '15px' }}>
-                    <IonIcon style={{
-                        fontSize: '13px',
-                        position: 'relative',
-                        top: '2px',
-                        opacity: .5
-                    }} name='time-outline' />
-                    <span style={{
-                        fontSize: '13px',
-                        marginLeft: '5px',
-                        opacity: .5
-                    }}>{item.lrnPd}</span>
-                </span><br />
-                <span style={{ fontSize: '15px' }}>
-                    <IonIcon style={{
-                        fontSize: '13px',
-                        position: 'relative',
-                        top: '2px',
-                        opacity: .5
-                    }} name='time-outline' />
-                    <span style={{
-                        fontSize: '13px',
-                        marginLeft: '5px',
-                        opacity: .5
-                    }}>{item.prog}% ({item.learnTime}분/{item.ptime}분)</span>
+        <li>
+            <button
+                type="button"
+                className={styles.card}
+                aria-labelledby={`${titleId} ${actionId}`}
+                aria-describedby={detailsId}
+                onClick={openLecture}
+            >
+                <span className={styles.details}>
+                    <strong className={styles.title} id={titleId}>{item.sbjt}</strong>
+                    <span className={styles.metadata} id={detailsId}>
+                        <span className={styles.statusLine}>
+                            <span className={styles.status} data-tone={tone}>
+                                {tone === 'complete' && <IonIcon name="checkmark-circle-outline" aria-hidden="true" />}
+                                {status}
+                            </span>
+                            {deadline && <span className={styles.deadline}>{deadline}</span>}
+                        </span>
+                        {period && (
+                            <span className={styles.period}>
+                                <IonIcon name="calendar-outline" aria-hidden="true" />
+                                {period}
+                            </span>
+                        )}
+                    </span>
+                    {progress !== null && (
+                        <span className={styles.progressTrack} aria-hidden="true">
+                            <span style={{ width: `${progress}%` }} />
+                        </span>
+                    )}
                 </span>
-            </div>
-
-            <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '5px',
-                width: 'fit-content',
-                justifyContent: 'center'
-            }}>
-                {isBeforeStartDate(item.startDate) ? (
-                    <button
-                        onClick={handlePreview}
-                        style={{
-                            width: '70px',
-                            background: 'var(--background)',
-                            fontSize: '12px',
-                            padding: '8px 10px',
-                            textAlign: 'center'
-                        }}
-                    >
-                        미리보기
-                    </button>
-                ) : (
-                    <button
-                        onClick={handleLectureOpen}
-                        style={{
-                            width: '50px',
-                            background: 'var(--background)',
-                            fontSize: '12px',
-                            padding: '8px 10px',
-                            textAlign: 'center'
-                        }}
-                    >
-                        보기
-                    </button>
-                )}
-            </div>
-        </div>
+                <span id={actionId} className={styles.action}>{upcoming ? '미리보기' : '보기'}</span>
+            </button>
+        </li>
     );
-};
-
-export default OnlineLectureCard;
+}
